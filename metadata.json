@@ -1,0 +1,25 @@
+{
+  "teamName": "Techtonic",
+  "teamMembers": [
+    {
+      "name": "Rongze Han",
+      "github": "rongze-han",
+      "email": "rongzeh@student.unimelb.edu.au"
+    },
+    {
+      "name": "Rishabh Maheshwari",
+      "github": "rishabh-uni",
+      "email": "maheshwarir@student.unimelb.edu.au"
+    },
+    {
+      "name": "Marcus Minnelli",
+      "github": "Marcus-Minnelli",
+      "email": "mminnelli@student.unimelb.edu.au"
+    },
+    {
+      "name": "Hitarrth Chheda",
+      "github": "Hitarrth-Chheda",
+      "email": "chhedah@student.unimelb.edu.au"
+    }
+  ]
+}

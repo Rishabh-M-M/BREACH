@@ -10,7 +10,7 @@ namespace ProjectBreach.Core
     public class PowerManager : Singleton<PowerManager>
     {
         [Header("Power Settings")]
-        [SerializeField] private int maxPower = 50;
+        [SerializeField] private int maxPower = 100;
         [SerializeField] private int currentLoad = 0;
 
         public int MaxPower => maxPower;

@@ -4,14 +4,16 @@ Shader "Custom/PowerBarGlow"
     {
         _MainTex ("Texture", 2D) = "white" {}
 
-        // Strong blue base colour
+        // Main blue colour
         _GlowColour ("Glow Colour", Color) = (0, 0.35, 1, 1)
 
-        // Faster pulse
+        // Pulse
         _PulseSpeed ("Pulse Speed", Range(0, 10)) = 4
-
-        // Glow intensity
         _GlowStrength ("Glow Strength", Range(0, 2)) = 0.7
+
+        // Liquid movement
+        _FlowSpeed ("Flow Speed", Range(0, 5)) = 1.5
+        _FlowStrength ("Flow Strength", Range(0, 1)) = 0.25
     }
 
     SubShader
@@ -39,8 +41,12 @@ Shader "Custom/PowerBarGlow"
             float4 _MainTex_ST;
 
             float4 _GlowColour;
+
             float _PulseSpeed;
             float _GlowStrength;
+
+            float _FlowSpeed;
+            float _FlowStrength;
 
             struct appdata
             {
@@ -71,14 +77,44 @@ Shader "Custom/PowerBarGlow"
             {
                 fixed4 tex = tex2D(_MainTex, i.uv);
 
-                // Pulsing animation
+                // --------------------------------
+                // PULSING ENERGY
+                // --------------------------------
+
                 float pulse = (sin(_Time.y * _PulseSpeed) + 1) / 2;
 
-                // Increase brightness during pulse
                 float glow = 1 + pulse * _GlowStrength;
 
-                fixed4 result = tex * _GlowColour * glow;
 
+                // --------------------------------
+                // LIQUID FLOW
+                // --------------------------------
+
+                // Moving wave across the bar
+                float wave = sin(
+                    (i.uv.x * 12)
+                    - (_Time.y * _FlowSpeed * 4)
+                );
+
+                // Convert wave into a soft highlight
+                float liquid = (wave + 1) / 2;
+
+                liquid *= _FlowStrength;
+
+
+                // --------------------------------
+                // FINAL COLOUR
+                // --------------------------------
+
+                fixed4 result = tex * _GlowColour;
+
+                // Pulse brightness
+                result.rgb *= glow;
+
+                // Moving liquid highlight
+                result.rgb += liquid;
+
+                // Preserve transparency
                 result.a *= i.color.a;
 
                 return result;

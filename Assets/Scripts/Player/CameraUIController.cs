@@ -6,6 +6,10 @@ public class CameraUIController : MonoBehaviour
     public GameObject mainHUD;
     public GameObject cameraScreen;
     public GameObject power;
+    public GameObject equipmentPanel;
+
+    [Header("Recording UI")]
+    public CameraRecordingUI cameraRecordingUI;
 
     [Header("Cameras")]
     public Camera mainCamera;
@@ -25,33 +29,34 @@ public class CameraUIController : MonoBehaviour
 
     void Start()
     {
-        // Normal gameplay starts with the HUD visible
-        // and the camera screen hidden.
         if (mainHUD != null)
             mainHUD.SetActive(true);
 
         if (cameraScreen != null)
             cameraScreen.SetActive(false);
 
-        // Power remains visible in both gameplay and camera mode.
         if (power != null)
             power.SetActive(true);
 
-        // Main gameplay camera starts active.
+        // No room selected initially
+        if (equipmentPanel != null)
+            equipmentPanel.SetActive(false);
+
         if (mainCamera != null)
             mainCamera.enabled = true;
 
-        // Security camera starts disabled and renders nothing
-        // until a room is selected.
         if (securityCamera != null)
         {
             securityCamera.enabled = false;
             securityCamera.cullingMask = 0;
         }
 
-        // The background camera is only needed while viewing cameras.
         if (backgroundCamera != null)
             backgroundCamera.enabled = false;
+
+        // Set default REC display
+        if (cameraRecordingUI != null)
+            cameraRecordingUI.StopRecording();
     }
 
     public void OpenCameraScreen()
@@ -65,27 +70,31 @@ public class CameraUIController : MonoBehaviour
             cameraScreen.transform.SetAsLastSibling();
         }
 
-        // Keep Power above the camera screen.
         if (power != null)
         {
             power.SetActive(true);
             power.transform.SetAsLastSibling();
         }
 
-        // Replace the normal gameplay camera with the camera interface.
+        // No room selected yet
+        if (equipmentPanel != null)
+            equipmentPanel.SetActive(false);
+
+        // IMPORTANT:
+        // Do NOT reset or stop the recording timer here.
+        // The timer keeps its previous time.
+        //
+        // Recording only continues when a room is selected.
+
         if (mainCamera != null)
             mainCamera.enabled = false;
 
         if (securityCamera != null)
         {
             securityCamera.enabled = true;
-
-            // No room is selected initially, so don't render
-            // any 3D scene into the camera feed.
             securityCamera.cullingMask = 0;
         }
 
-        // Render the plain background while no room is selected.
         if (backgroundCamera != null)
             backgroundCamera.enabled = true;
     }
@@ -101,6 +110,14 @@ public class CameraUIController : MonoBehaviour
         if (power != null)
             power.SetActive(true);
 
+        if (equipmentPanel != null)
+            equipmentPanel.SetActive(false);
+
+        // IMPORTANT:
+        // Stop counting, but keep the recorded time.
+        if (cameraRecordingUI != null)
+            cameraRecordingUI.StopRecording();
+
         if (securityCamera != null)
         {
             securityCamera.enabled = false;
@@ -113,11 +130,9 @@ public class CameraUIController : MonoBehaviour
         if (mainCamera != null)
             mainCamera.enabled = true;
 
-        // Return the player camera to its default orientation.
         if (cameraController != null)
             cameraController.ResetLook();
 
-        // Return to the main room when leaving the camera interface.
         if (roomCameraSwitcher != null)
             roomCameraSwitcher.GoToMainRoom();
     }
@@ -126,29 +141,31 @@ public class CameraUIController : MonoBehaviour
     {
         if (securityCamera == null)
         {
-            Debug.LogWarning(
-                "Security Camera is not assigned."
-            );
+            Debug.LogWarning("Security Camera is not assigned.");
             return;
         }
 
         if (room1CameraPoint == null)
         {
-            Debug.LogWarning(
-                "Room 1 Camera Point is not assigned."
-            );
+            Debug.LogWarning("Room 1 Camera Point is not assigned.");
             return;
         }
 
-        // Move the security camera to the selected room's viewpoint.
         securityCamera.transform.position =
             room1CameraPoint.position;
 
         securityCamera.transform.rotation =
             room1CameraPoint.rotation;
 
-        // Allow the security camera to render the room.
         securityCamera.cullingMask = -1;
+
+        // Show equipment after selecting Room 1
+        if (equipmentPanel != null)
+            equipmentPanel.SetActive(true);
+
+        // Start/continue recording
+        if (cameraRecordingUI != null)
+            cameraRecordingUI.StartRecording();
 
         Debug.Log("Showing Room 1 camera.");
     }

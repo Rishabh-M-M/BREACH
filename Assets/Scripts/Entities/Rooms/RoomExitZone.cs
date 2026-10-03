@@ -20,7 +20,10 @@ public class RoomExitZone : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (!other.TryGetComponent(out Enemy enemy)) return;
+        // GetComponentInParent (not TryGetComponent) so the trigger still detects the
+        // Enemy when the collider belongs to a child object of the enemy.
+        Enemy enemy = other.GetComponentInParent<Enemy>();
+        if (enemy == null) return;
         if (destinationPoint == null)
         {
             Debug.LogWarning("[RoomExitZone] destinationPoint not assigned!");

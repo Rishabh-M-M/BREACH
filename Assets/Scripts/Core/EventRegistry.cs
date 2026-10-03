@@ -27,9 +27,37 @@ namespace ProjectBreach.Core
         public static void BroadcastGameStateChanged(GameState state)
             => OnGameStateChanged?.Invoke(state);
 
-        // TODO: Add back the OnRoomFallen event after finishing Room.cs in Step 7
-        // public static event Action<Room> OnRoomFallen;
-        // public static void BroadcastRoomFallen(Room room)
-        //     => OnRoomFallen?.Invoke(room);
+        public static event Action OnEnemyResolved;
+        public static void BroadcastOnEnemyResolved()
+            => OnEnemyResolved?.Invoke();
+
+        // Fired when a room flips to Fallen. Room.SetFallen is the only publisher.
+        public static event Action<Room> OnRoomFallen;
+        public static void BroadcastRoomFallen(Room room)
+            => OnRoomFallen?.Invoke(room);
+
+        // Fired on an actual kill only. OnEnemyResolved also counts breaches, so
+        // the upgrade economy must not reuse it.
+        public static event Action OnEnemyKilled;
+        public static void BroadcastEnemyKilled()
+            => OnEnemyKilled?.Invoke();
+
+        public static event Action<int, int> OnCoreHPChanged;
+        public static void BroadcastCoreHPChanged(int current, int max)
+            => OnCoreHPChanged?.Invoke(current, max);
+
+        public static event Action<int, TrapState> OnTrapStateChanged;
+        public static void BroadcastTrapStateChanged(int roomIndex, TrapState state)
+            => OnTrapStateChanged?.Invoke(roomIndex, state);
+
+        // Rest-period countdown. Remaining seconds are passed on every tick, and a
+        // negative value marks "no rest period active" so HUDs can hide themselves.
+        public static event Action<float> OnRestCountdown;
+        public static void BroadcastRestCountdown(float remaining)
+            => OnRestCountdown?.Invoke(remaining);
+
+        public static event Action<int> OnUpgradePointsChanged;
+        public static void BroadcastUpgradePointsChanged(int points)
+            => OnUpgradePointsChanged?.Invoke(points);
     }
 }

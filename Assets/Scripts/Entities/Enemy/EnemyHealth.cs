@@ -1,5 +1,5 @@
 using UnityEngine;
-using ProjectBreach.Core;  // 必须引入，用于完整的 IDamageable 接口
+using ProjectBreach.Core;  // Required for the full IDamageable interface
 
 /// <summary>
 /// EnemyHealth
@@ -44,7 +44,7 @@ public class EnemyHealth : MonoBehaviour, IDamageable
 
         currentHealth -= amount;
 
-        // 【从代码1整合过来的受击特效逻辑】
+        // Hit-flash hook, integrated from the shader/feedback pass.
         if (TryGetComponent(out HitEffectController hitEffect))
         {
             hitEffect.TriggerHit();
@@ -61,6 +61,12 @@ public class EnemyHealth : MonoBehaviour, IDamageable
     /// </summary>
     public void Die()
     {
+        EventRegistry.BroadcastOnEnemyResolved();
+
+        // Kill-only signal. OnEnemyResolved also counts breaches, and the upgrade
+        // economy must not pay out for an enemy that merely reached the core.
+        EventRegistry.BroadcastEnemyKilled();
+
         isDead = true;
         animator.SetTrigger("Die");
 

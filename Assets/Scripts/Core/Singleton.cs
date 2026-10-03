@@ -3,7 +3,7 @@ using UnityEngine;
 namespace ProjectBreach.Core
 {
     /// <summary>
-    /// only Singleton Class.all Manager inherents this。
+    /// Minimal singleton base. All managers inherit from this.
     /// Usage：public class PowerManager : Singleton&lt;PowerManager&gt; {}
     /// </summary>
     public class Singleton<T> : MonoBehaviour where T : Singleton<T>
@@ -14,7 +14,7 @@ namespace ProjectBreach.Core
         {
             if (Instance != null && Instance != this)
             {
-                Debug.LogWarning($"[Singleton] 重复的 {typeof(T).Name}，已销毁");
+                Debug.LogWarning($"[Singleton] Duplicate {typeof(T).Name} detected; destroying this instance.");
                 Destroy(gameObject);
                 return;
             }

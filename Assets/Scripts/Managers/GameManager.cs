@@ -42,6 +42,18 @@ namespace ProjectBreach.Core
         }
 
         /// <summary>
+        /// Called by WaveManager when a wave is fully resolved (killed or breached)
+        /// and more waves remain. Moves the state machine into the WaveClear rest
+        /// period so UI (wave info panel / upgrade prompts) can react.
+        /// </summary>
+        public void SetWaveClearState()
+        {
+            State = GameState.WaveClear;
+            EventRegistry.BroadcastGameStateChanged(State);
+            Debug.Log("[GameManager] Wave clear — rest period");
+        }
+
+        /// <summary>
         /// Reset the state machine to MainMenu. Called by GameOverScreen before
         /// loading the start scene, so the next run never inherits a stale
         /// GameOver/Victory state from the previous one.

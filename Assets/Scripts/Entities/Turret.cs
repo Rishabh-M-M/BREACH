@@ -16,6 +16,10 @@ namespace ProjectBreach.Core
         [SerializeField] private float fireRate = 1f;      // Seconds between shots
         [SerializeField] private float attackRange = 8f;
 
+        [Header("Target Filtering")]
+        [Tooltip("Collider layers considered for targeting. Left as Everything on purpose: the EnemyHealth guard in AcquireTarget is what blocks friendly fire, so an unconfigured mask cannot silently disarm the turret.")]
+        [SerializeField] private LayerMask targetMask = ~0;
+
         [Header("References")]
         [SerializeField] private GameObject projectilePrefab;
         [SerializeField] private Transform firePoint;
@@ -51,6 +55,45 @@ namespace ProjectBreach.Core
 
         private float defaultLocalZ;
 
+        // Verbose combat logging is a WebGL performance tax (console I/O every shot).
+        private static bool verboseLogging = false;
+
+        // Whether THIS turret currently holds a power allocation. Tracked per-turret so
+        // the ledger never depends on which code path toggled the turret (button,
+        // Inspector, EMP, future systems) -- see ReconcilePowerState().
+        private bool holdingPower;
+
+        /// <summary>
+        /// Keeps the power ledger in sync with the actual IsActive state, every frame.
+        /// Any activation path (UI button, direct Inspector toggle, scripted enable)
+        /// allocates exactly once; any deactivation refunds exactly once. If power is
+        /// insufficient the turret is forced back off and the player is notified, so
+        /// there is no such thing as a free activation.
+        /// </summary>
+        private void ReconcilePowerState()
+        {
+            if (IsDead) return;
+
+            if (isActive && !holdingPower)
+            {
+                if (PowerManager.Instance == null || PowerManager.Instance.TryAllocate(powerCost))
+                {
+                    // No PowerManager in a test scene: activate for free rather than brick the turret.
+                    holdingPower = true;
+                }
+                else
+                {
+                    isActive = false;
+                    UIManager.Instance?.ShowMessage("Insufficient power!");
+                }
+            }
+            else if (!isActive && holdingPower)
+            {
+                PowerManager.Instance?.Refund(powerCost);
+                holdingPower = false;
+            }
+        }
+
         private int currentHP;
         private float fireTimer;
         private IDamageable currentTarget;
@@ -69,10 +112,18 @@ namespace ProjectBreach.Core
             base.Awake();
             currentHP = maxHP;
 
+            // Safety net: a zero mask silently disarms this turret (OverlapSphere returns
+            // nothing) whenever the Enemy layer has not been configured yet. Fall back to
+            // Everything; the EnemyHealth guard in AcquireTarget still blocks friendly fire.
+            if (targetMask.value == 0)
+            {
+                targetMask = ~0;
+            }
+
             if (turretHead != null)
             {
-                defaultLocalX = turretHead.localEulerAngles.x;   // 缓存 -90
-                defaultLocalZ = turretHead.localEulerAngles.z;   // 缓存 0
+                defaultLocalX = turretHead.localEulerAngles.x;   // Cache the authored rest pose
+                defaultLocalZ = turretHead.localEulerAngles.z;   // Cache the authored rest pose
                 headRestLocalPos = turretHead.localPosition;
             }
 
@@ -89,6 +140,7 @@ namespace ProjectBreach.Core
         {
             // Activation glow/grayscale and recoil recovery run regardless of active state,
             // so a turret smoothly fades out and its head settles even the instant it's turned off.
+            ReconcilePowerState();
             UpdateActivationVisual();
             UpdateRecoil();
 
@@ -122,6 +174,11 @@ namespace ProjectBreach.Core
         /// </summary>
         private void UpdateActivationVisual()
         {
+            // Derive the visual target from the source of truth (isActive) every frame,
+            // so edits made straight in the Inspector (or any system that flips isActive
+            // without calling TurnOn/TurnOff, e.g. a power cut) are reflected too.
+            targetActivation = isActive ? 1f : 0f;
+
             if (Mathf.Approximately(currentActivation, targetActivation)) return;
 
             currentActivation = Mathf.MoveTowards(currentActivation, targetActivation, activationLerpSpeed * Time.deltaTime);
@@ -216,6 +273,11 @@ namespace ProjectBreach.Core
             {
                 if (hit.gameObject == this.gameObject) continue;
 
+                // Friendly-fire guard: turrets and the MainControlRoom are IDamageable too,
+                // so the interface alone cannot tell friend from foe. Only colliders with an
+                // EnemyHealth in their hierarchy are valid targets.
+                if (hit.GetComponentInParent<EnemyHealth>() == null) continue;
+
                 if (hit.TryGetComponent(out IDamageable target) && !target.IsDead)
                 {
 
@@ -254,7 +316,7 @@ namespace ProjectBreach.Core
             if (projObj.TryGetComponent(out Projectile proj))
             {
                 proj.Initialize(currentTarget, damage);  // Use Initialize, not Init
-                Debug.Log($"[Turret] Fired at target, damage: {damage}");
+                if (verboseLogging) Debug.Log($"[Turret] Fired at target, damage: {damage}");
             }
 
             recoilAmount = 1f; // UpdateRecoil() eases this back to 0 every frame
@@ -274,7 +336,7 @@ namespace ProjectBreach.Core
             if (IsDead) return;
 
             currentHP -= amount;
-            Debug.Log($"[Turret] Took {amount} damage, HP: {currentHP}/{maxHP}");
+            if (verboseLogging) Debug.Log($"[Turret] Took {amount} damage, HP: {currentHP}/{maxHP}");
 
             if (currentHP <= 0)
             {
@@ -284,14 +346,11 @@ namespace ProjectBreach.Core
 
         public void Die()
         {
-            Debug.Log("[Turret] Destroyed! Refunding power.");
+            Debug.Log("[Turret] Destroyed!");
 
-            // Refund power to PowerManager
-            if (PowerManager.Instance != null)
-            {
-                PowerManager.Instance.Refund(powerCost);
-            }
-
+            // Power refund is owned by Room.NotifyStructureDestroyed (Indirection), which
+            // refunds only when this turret was active. Refunding here as well double-pays
+            // the player and silently inflates the power budget.
             // Notify owner room
             OwnerRoom?.NotifyStructureDestroyed(this);
 

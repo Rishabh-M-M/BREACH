@@ -24,9 +24,12 @@ namespace ProjectBreach.Core
         private bool hasHit = false;
         private Vector3 flyDirection;
 
+        // Verbose logging is a WebGL performance tax (console I/O on every spawn/hit).
+        private static bool verboseLogging = false;
+
         private void Awake()
         {
-            Debug.Log($"[Projectile] Awake - Speed: {speed}, Damage: {damage}, Direction: {flyDirection}");
+            if (verboseLogging) Debug.Log($"[Projectile] Awake - Speed: {speed}, Damage: {damage}, Direction: {flyDirection}");
         }
 
         /// <summary>
@@ -44,7 +47,7 @@ namespace ProjectBreach.Core
             // Safety: auto-destroy after lifetime
             Destroy(gameObject, lifeTime);
 
-            Debug.Log($"[Projectile] Initialized, direction: {flyDirection}, speed: {speed}");
+            if (verboseLogging) Debug.Log($"[Projectile] Initialized, direction: {flyDirection}, speed: {speed}");
         }
 
         void Update()
@@ -195,7 +198,7 @@ namespace ProjectBreach.Core
             if (!damageable.IsDead)
             {
                 damageable.TakeDamage(damage);
-                Debug.Log($"[Projectile] Hit target for {damage} damage");
+                if (verboseLogging) Debug.Log($"[Projectile] Hit target for {damage} damage");
             }
             else
             {

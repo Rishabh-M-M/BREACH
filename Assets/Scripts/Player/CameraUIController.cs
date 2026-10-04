@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class CameraUIController : MonoBehaviour
 {
@@ -7,6 +8,19 @@ public class CameraUIController : MonoBehaviour
     public GameObject cameraScreen;
     public GameObject power;
     public GameObject equipmentPanel;
+
+    [Header("Glitch Transition")]
+    public GameObject glitchOverlay;
+
+    [SerializeField] private float glitchDuration = 0.4f;
+
+    [Header("Glitch Shake")]
+    [SerializeField] private float glitchShakeX = 10f;
+    [SerializeField] private float glitchShakeY = 5f;
+
+    [Header("Camera Animation")]
+    [SerializeField] private float animationDuration = 0.6f;
+    [SerializeField] private float startingScale = 0.85f;
 
     [Header("Recording UI")]
     public CameraRecordingUI cameraRecordingUI;
@@ -27,18 +41,62 @@ public class CameraUIController : MonoBehaviour
     [Header("Room Camera Points")]
     public Transform room1CameraPoint;
 
+    private RectTransform cameraScreenRect;
+    private CanvasGroup cameraScreenCanvasGroup;
+    private CanvasGroup glitchCanvasGroup;
+
+    private bool isAnimating = false;
+
     void Start()
     {
+        if (cameraScreen != null)
+        {
+            cameraScreenRect =
+                cameraScreen.GetComponent<RectTransform>();
+
+            cameraScreenCanvasGroup =
+                cameraScreen.GetComponent<CanvasGroup>();
+
+            if (cameraScreenCanvasGroup == null)
+            {
+                cameraScreenCanvasGroup =
+                    cameraScreen.AddComponent<CanvasGroup>();
+            }
+
+            cameraScreenRect.localScale =
+                Vector3.one * startingScale;
+
+            cameraScreenCanvasGroup.alpha = 0f;
+            cameraScreenCanvasGroup.interactable = false;
+            cameraScreenCanvasGroup.blocksRaycasts = false;
+
+            cameraScreen.SetActive(false);
+        }
+
+        if (glitchOverlay != null)
+        {
+            glitchCanvasGroup =
+                glitchOverlay.GetComponent<CanvasGroup>();
+
+            if (glitchCanvasGroup == null)
+            {
+                glitchCanvasGroup =
+                    glitchOverlay.AddComponent<CanvasGroup>();
+            }
+
+            glitchCanvasGroup.alpha = 0f;
+            glitchCanvasGroup.interactable = false;
+            glitchCanvasGroup.blocksRaycasts = false;
+
+            glitchOverlay.SetActive(false);
+        }
+
         if (mainHUD != null)
             mainHUD.SetActive(true);
-
-        if (cameraScreen != null)
-            cameraScreen.SetActive(false);
 
         if (power != null)
             power.SetActive(true);
 
-        // No room selected initially
         if (equipmentPanel != null)
             equipmentPanel.SetActive(false);
 
@@ -54,20 +112,30 @@ public class CameraUIController : MonoBehaviour
         if (backgroundCamera != null)
             backgroundCamera.enabled = false;
 
-        // Set default REC display
         if (cameraRecordingUI != null)
             cameraRecordingUI.StopRecording();
     }
 
     public void OpenCameraScreen()
     {
+        if (isAnimating)
+            return;
+
         if (mainHUD != null)
             mainHUD.SetActive(false);
 
         if (cameraScreen != null)
         {
             cameraScreen.SetActive(true);
+
             cameraScreen.transform.SetAsLastSibling();
+
+            cameraScreenRect.localScale =
+                Vector3.one * startingScale;
+
+            cameraScreenCanvasGroup.alpha = 0f;
+
+            StartCoroutine(AnimateCameraOpen());
         }
 
         if (power != null)
@@ -76,15 +144,8 @@ public class CameraUIController : MonoBehaviour
             power.transform.SetAsLastSibling();
         }
 
-        // No room selected yet
         if (equipmentPanel != null)
             equipmentPanel.SetActive(false);
-
-        // IMPORTANT:
-        // Do NOT reset or stop the recording timer here.
-        // The timer keeps its previous time.
-        //
-        // Recording only continues when a room is selected.
 
         if (mainCamera != null)
             mainCamera.enabled = false;
@@ -99,24 +160,145 @@ public class CameraUIController : MonoBehaviour
             backgroundCamera.enabled = true;
     }
 
+    private IEnumerator AnimateCameraOpen()
+    {
+        isAnimating = true;
+
+        float timer = 0f;
+
+        cameraScreenCanvasGroup.interactable = false;
+        cameraScreenCanvasGroup.blocksRaycasts = false;
+
+        while (timer < animationDuration)
+        {
+            timer += Time.unscaledDeltaTime;
+
+            float progress =
+                Mathf.Clamp01(
+                    timer / animationDuration
+                );
+
+            float smoothProgress =
+                1f - Mathf.Pow(
+                    1f - progress,
+                    3f
+                );
+
+            float scale =
+                Mathf.Lerp(
+                    startingScale,
+                    1f,
+                    smoothProgress
+                );
+
+            float alpha =
+                Mathf.Lerp(
+                    0f,
+                    1f,
+                    smoothProgress
+                );
+
+            cameraScreenRect.localScale =
+                Vector3.one * scale;
+
+            cameraScreenCanvasGroup.alpha =
+                alpha;
+
+            yield return null;
+        }
+
+        cameraScreenRect.localScale =
+            Vector3.one;
+
+        cameraScreenCanvasGroup.alpha =
+            1f;
+
+        cameraScreenCanvasGroup.interactable =
+            true;
+
+        cameraScreenCanvasGroup.blocksRaycasts =
+            true;
+
+        isAnimating = false;
+    }
+
     public void CloseCameraScreen()
     {
-        if (cameraScreen != null)
-            cameraScreen.SetActive(false);
+        if (isAnimating)
+            return;
 
-        if (mainHUD != null)
-            mainHUD.SetActive(true);
-
-        if (power != null)
-            power.SetActive(true);
+        if (cameraRecordingUI != null)
+            cameraRecordingUI.StopRecording();
 
         if (equipmentPanel != null)
             equipmentPanel.SetActive(false);
 
-        // IMPORTANT:
-        // Stop counting, but keep the recorded time.
-        if (cameraRecordingUI != null)
-            cameraRecordingUI.StopRecording();
+        StartCoroutine(GlitchAndClose());
+    }
+
+    private IEnumerator GlitchAndClose()
+    {
+        isAnimating = true;
+
+        if (cameraScreenCanvasGroup != null)
+        {
+            cameraScreenCanvasGroup.alpha = 1f;
+            cameraScreenCanvasGroup.interactable = false;
+            cameraScreenCanvasGroup.blocksRaycasts = false;
+        }
+
+        // Remember the original UI position
+        Vector3 originalCameraScreenPosition =
+            cameraScreen.transform.localPosition;
+
+        if (glitchOverlay != null)
+        {
+            glitchOverlay.SetActive(true);
+
+            glitchCanvasGroup.alpha = 1f;
+
+            glitchOverlay.transform.SetAsLastSibling();
+
+            if (power != null)
+                power.transform.SetAsLastSibling();
+        }
+
+        float timer = 0f;
+
+        while (timer < glitchDuration)
+        {
+            timer += Time.unscaledDeltaTime;
+
+            // Shake the ENTIRE camera UI
+            if (cameraScreen != null)
+            {
+                float shakeX =
+                    Random.Range(-glitchShakeX, glitchShakeX);
+
+                float shakeY =
+                    Random.Range(-glitchShakeY, glitchShakeY);
+
+                cameraScreen.transform.localPosition =
+                    originalCameraScreenPosition +
+                    new Vector3(shakeX, shakeY, 0f);
+            }
+
+            if (glitchCanvasGroup != null)
+                glitchCanvasGroup.alpha = 1f;
+
+            yield return null;
+        }
+
+        // Reset UI position
+        if (cameraScreen != null)
+        {
+            cameraScreen.transform.localPosition =
+                originalCameraScreenPosition;
+        }
+
+        // Cut back to main room
+        if (cameraScreen != null)
+            cameraScreen.SetActive(false);
 
         if (securityCamera != null)
         {
@@ -135,19 +317,48 @@ public class CameraUIController : MonoBehaviour
 
         if (roomCameraSwitcher != null)
             roomCameraSwitcher.GoToMainRoom();
+
+        if (glitchCanvasGroup != null)
+            glitchCanvasGroup.alpha = 0f;
+
+        if (glitchOverlay != null)
+            glitchOverlay.SetActive(false);
+
+        if (cameraScreenRect != null)
+            cameraScreenRect.localScale =
+                Vector3.one;
+
+        if (cameraScreenCanvasGroup != null)
+        {
+            cameraScreenCanvasGroup.alpha = 0f;
+            cameraScreenCanvasGroup.interactable = false;
+            cameraScreenCanvasGroup.blocksRaycasts = false;
+        }
+
+        if (mainHUD != null)
+            mainHUD.SetActive(true);
+
+        if (power != null)
+            power.SetActive(true);
+
+        isAnimating = false;
     }
 
     public void ShowRoom1()
     {
         if (securityCamera == null)
         {
-            Debug.LogWarning("Security Camera is not assigned.");
+            Debug.LogWarning(
+                "Security Camera is not assigned."
+            );
             return;
         }
 
         if (room1CameraPoint == null)
         {
-            Debug.LogWarning("Room 1 Camera Point is not assigned.");
+            Debug.LogWarning(
+                "Room 1 Camera Point is not assigned."
+            );
             return;
         }
 
@@ -159,14 +370,14 @@ public class CameraUIController : MonoBehaviour
 
         securityCamera.cullingMask = -1;
 
-        // Show equipment after selecting Room 1
         if (equipmentPanel != null)
             equipmentPanel.SetActive(true);
 
-        // Start/continue recording
         if (cameraRecordingUI != null)
             cameraRecordingUI.StartRecording();
 
-        Debug.Log("Showing Room 1 camera.");
+        Debug.Log(
+            "Showing Room 1 camera."
+        );
     }
 }

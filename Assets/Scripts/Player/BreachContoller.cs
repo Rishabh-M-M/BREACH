@@ -41,6 +41,9 @@ public class BreachController : MonoBehaviour
     [Header("Camera Effects")]
     public CameraEffects cameraEffects;
 
+    [Header("Audio")]
+    public BreachAudioManager audioManager;
+
     private Renderer[] screenRenderers;
 
     // Store the original materials so the screens can be restored
@@ -250,6 +253,13 @@ public class BreachController : MonoBehaviour
         breachRunning = true;
 
         Debug.Log("BREACH STARTED");
+
+        // Play the breach sound at the exact moment
+        // the breach effect begins.
+        if (audioManager != null)
+        {
+            audioManager.PlayBreach();
+        }
 
         ApplyBreachMaterials();
         StartBreachLights();

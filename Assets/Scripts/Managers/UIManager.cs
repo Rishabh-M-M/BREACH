@@ -69,16 +69,21 @@ namespace ProjectBreach.Core
         /// </summary>
         private void RefreshPowerBar(int load, int max)
         {
-            int remainingPower = max - load;
-
             if (powerBar != null)
             {
                 powerBar.maxValue = max;
-                powerBar.value = remainingPower;
+                powerBar.value = load;
             }
 
             if (powerText != null)
-                powerText.text = $"POWER: {remainingPower}";
+            {
+                powerText.text = $"Power: {load}/{max}";
+            }
+
+            if (availablePowerText != null)
+            {
+                availablePowerText.text = $"Available: {max - load}";
+            }
         }
 
         /// <summary>

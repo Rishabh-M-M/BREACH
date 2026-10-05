@@ -399,7 +399,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 805741273366993965, guid: 51c5821c735349c45a9200f0f800ef30, type: 3}
       propertyPath: m_Name
-      value: EnemySpawner
+      value: CorridorAEnemySpawner
       objectReference: {fileID: 0}
     - target: {fileID: 2018218700711820583, guid: 51c5821c735349c45a9200f0f800ef30, type: 3}
       propertyPath: m_LocalPosition.x
@@ -4840,6 +4840,14 @@ MonoBehaviour:
   mainHUD: {fileID: 1837023126}
   cameraScreen: {fileID: 2024833314}
   power: {fileID: 0}
+  equipmentPanel: {fileID: 0}
+  glitchOverlay: {fileID: 0}
+  glitchDuration: 0.4
+  glitchShakeX: 10
+  glitchShakeY: 5
+  animationDuration: 0.6
+  startingScale: 0.85
+  cameraRecordingUI: {fileID: 0}
   mainCamera: {fileID: 1669740831}
   securityCamera: {fileID: 617117853}
   backgroundCamera: {fileID: 0}
@@ -10165,6 +10173,7 @@ MonoBehaviour:
   lightMaxIntensity: 4
   breachLightColour: {r: 1, g: 0, b: 0, a: 1}
   cameraEffects: {fileID: 1669740829}
+  audioManager: {fileID: 0}
 --- !u!1 &2126843420
 GameObject:
   m_ObjectHideFlags: 0
@@ -10326,6 +10335,14 @@ PrefabInstance:
       propertyPath: destinationPoint
       value: 
       objectReference: {fileID: 800765704}
+    - target: {fileID: 5550726445210166776, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
+      propertyPath: m_Name
+      value: AirLockEnemySpawnerA
+      objectReference: {fileID: 0}
+    - target: {fileID: 6850429488697665182, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
+      propertyPath: m_Name
+      value: AirLockEnemySpawnerB
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:
     - {fileID: 8716967137340505595, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
@@ -10364,6 +10381,10 @@ PrefabInstance:
     - target: {fileID: 504931704493010353, guid: cd965d401276eca4a88d4c4b4553cecc, type: 3}
       propertyPath: m_LocalPosition.z
       value: -178.19
+      objectReference: {fileID: 0}
+    - target: {fileID: 1165683439822703803, guid: cd965d401276eca4a88d4c4b4553cecc, type: 3}
+      propertyPath: m_Name
+      value: ServerRoomEnemySpawner
       objectReference: {fileID: 0}
     - target: {fileID: 1859817851353877521, guid: cd965d401276eca4a88d4c4b4553cecc, type: 3}
       propertyPath: m_LocalPosition.x
@@ -10593,6 +10614,10 @@ PrefabInstance:
       propertyPath: destinationPoint
       value: 
       objectReference: {fileID: 800765704}
+    - target: {fileID: 2998606154544377471, guid: 744a6bb7e1d627043b212a45a88ffb26, type: 3}
+      propertyPath: m_Name
+      value: CorridorEnemySpawner
+      objectReference: {fileID: 0}
     - target: {fileID: 6884690444052664887, guid: 744a6bb7e1d627043b212a45a88ffb26, type: 3}
       propertyPath: m_Name
       value: RoomCCorridor
@@ -10624,6 +10649,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1177508780101574162, guid: 85d001ea16328ac4c8eae5a499789764, type: 3}
+      propertyPath: m_Name
+      value: ShopEnemySpawnerB
+      objectReference: {fileID: 0}
     - target: {fileID: 3324703362610993359, guid: 85d001ea16328ac4c8eae5a499789764, type: 3}
       propertyPath: enemyPrefab
       value: 
@@ -10691,6 +10720,10 @@ PrefabInstance:
     - target: {fileID: 5728555210687986248, guid: 85d001ea16328ac4c8eae5a499789764, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8573715448349614242, guid: 85d001ea16328ac4c8eae5a499789764, type: 3}
+      propertyPath: m_Name
+      value: ShopEnemySpawnerA
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

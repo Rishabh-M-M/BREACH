@@ -1,4 +1,5 @@
 using UnityEngine;
+using ProjectBreach.Core;
 
 public class CameraController : MonoBehaviour
 {
@@ -57,5 +58,23 @@ public class CameraController : MonoBehaviour
 
         transform.localRotation =
             Quaternion.identity;
+    }
+
+    // Mouse look must stop once the run ends: timeScale = 0 freezes gameplay but not
+    // input polling, so without this gate the camera keeps tracking the mouse
+    // underneath the GameOver/Victory panel while the UI owns the cursor.
+    private void OnEnable()
+    {
+        EventRegistry.OnGameStateChanged += HandleGameStateChanged;
+    }
+
+    private void OnDisable()
+    {
+        EventRegistry.OnGameStateChanged -= HandleGameStateChanged;
+    }
+
+    private void HandleGameStateChanged(GameState state)
+    {
+        enabled = (state == GameState.Playing || state == GameState.WaveClear);
     }
 }

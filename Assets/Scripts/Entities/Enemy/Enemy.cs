@@ -19,6 +19,14 @@ namespace ProjectBreach.Core
         public virtual void Breach()
         {
             Debug.Log("[Enemy] Breach initiated!");
+
+            // Broadcast resolution before damage chain (design doc D1: breach counts as resolved)
+            EnemyHealth health = GetComponent<EnemyHealth>();
+            if (health == null || !health.IsDead)
+            {
+                EventRegistry.BroadcastOnEnemyResolved();
+            }
+
             GameManager.Instance.NotifyBreach(this);
             gameObject.SetActive(false);
         }

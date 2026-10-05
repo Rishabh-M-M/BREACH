@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
@@ -16,6 +17,11 @@ public class EnemyMover : MonoBehaviour
     private Rigidbody rb;
     private Animator animator;
     private EnemyTargetPoint claimedTarget;
+
+    // Slow effect support (traps). Kept as a multiplier on moveSpeed so the
+    // serialized base speed is never permanently overwritten.
+    private float _speedMultiplier = 1f;
+    private Coroutine _slowRoutine;
 
     public bool HasArrived { get; private set; }
 
@@ -56,7 +62,7 @@ public class EnemyMover : MonoBehaviour
         Quaternion newRotation = Quaternion.RotateTowards(rb.rotation, targetRotation, turnSpeed * Time.fixedDeltaTime);
         rb.MoveRotation(newRotation);
 
-        Vector3 newPosition = rb.position + transform.forward * moveSpeed * Time.fixedDeltaTime;
+        Vector3 newPosition = rb.position + transform.forward * (moveSpeed * _speedMultiplier) * Time.fixedDeltaTime;
         rb.MovePosition(newPosition);
 
         float clampedAngle = Mathf.Clamp(angleToTarget, -maxSteerAngle, maxSteerAngle);
@@ -80,6 +86,38 @@ public class EnemyMover : MonoBehaviour
     public void SetAimPoint(Transform newAimPoint)
     {
         aimPoint = newAimPoint;
+    }
+
+    /// <summary>
+    /// Slow this mover for a duration. <paramref name="multiplier"/> is the speed
+    /// fraction to keep, so 0.5 means half speed. The strongest active slow wins
+    /// rather than stacking, otherwise two overlapping traps could stall an enemy
+    /// completely and desync the waypoint arrival check.
+    /// </summary>
+    public void ApplySlow(float multiplier, float duration)
+    {
+        if (multiplier >= 1f || duration <= 0f)
+        {
+            return;
+        }
+
+        multiplier = Mathf.Clamp01(multiplier);
+
+        if (_slowRoutine != null)
+        {
+            StopCoroutine(_slowRoutine);
+        }
+
+        _speedMultiplier = multiplier;
+        _slowRoutine = StartCoroutine(SlowRoutine(duration));
+    }
+
+    private IEnumerator SlowRoutine(float duration)
+    {
+        yield return new WaitForSeconds(duration);
+
+        _speedMultiplier = 1f;
+        _slowRoutine = null;
     }
 
     private void RotateTowardsAimPoint()

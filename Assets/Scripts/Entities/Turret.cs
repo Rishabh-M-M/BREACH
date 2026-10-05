@@ -1,56 +1,71 @@
 using UnityEngine;
-using ProjectBreach.Core;
 
 namespace ProjectBreach.Core
 {
     /// <summary>
-    /// Turret: Defensive structure that automatically acquires and shoots enemies.
-    /// Implements IDamageable (can be destroyed), IUpgradable (W6).
-    /// Demo values: HP 30, Damage 5, FireRate 1s, Range 80m, PowerCost 40.
+    /// Base turret weapon.
+    ///
+    /// Turrets no longer have individual HP.
+    /// The room shield determines whether the room's defensive structures
+    /// can remain operational.
     /// </summary>
-    public class Turret : DefensiveStructure, IDamageable  // IUpgradable removed for W2 Demo
+    public class Turret : DefensiveStructure
     {
         [Header("Turret Combat Settings")]
+<<<<<<< Updated upstream
         [SerializeField] private int maxHP = 30;
         [SerializeField] private int damage = 5;
         [SerializeField] private float fireRate = 1f;      // Seconds between shots
         [SerializeField] private float attackRange = 8f;
+=======
+        [SerializeField] protected int damage = 5;
+        [SerializeField] protected float fireRate = 1f;
+        [SerializeField] protected float attackRange = 8f;
+>>>>>>> Stashed changes
 
         [Header("References")]
-        [SerializeField] private GameObject projectilePrefab;
-        [SerializeField] private Transform firePoint;
+        [SerializeField] protected GameObject projectilePrefab;
+        [SerializeField] protected Transform firePoint;
 
         [Header("Turret Rotation")]
-        [SerializeField] private Transform turretHead;    // The rotating part (turret_4)
-        [SerializeField] private float rotationSpeed = 90f; // Degrees per second
-        [SerializeField] private float rotationOffset = 0f;  // Fix model forward direction (0/90/180/270)
-        [SerializeField] private bool lockXRotation = true;
+        [SerializeField] protected Transform turretHead;
+        [SerializeField] protected float rotationSpeed = 90f;
+        [SerializeField] protected float rotationOffset = 0f;
+        [SerializeField] protected bool lockXRotation = true;
 
         [Header("Activation Visuals")]
-        [SerializeField] private Renderer topRenderer;     // turret_1_high_turret_1_0 (uses TurretTop shader)
-        [SerializeField] private Renderer baseRenderer;    // bottom_1_high_bottom_1_0 (uses TurretBase shader)
-        [SerializeField] private float activationLerpSpeed = 4f; // How fast _Activation animates toward its target
+        [SerializeField] protected Renderer topRenderer;
+        [SerializeField] protected Renderer baseRenderer;
+        [SerializeField] protected float activationLerpSpeed = 4f;
 
         [Header("Shooting Recoil")]
-        [SerializeField] private float recoilDistance = 0.12f;      // How far the head kicks back
-        [SerializeField] private float recoilRecoverySpeed = 6f;    // How fast it returns to rest
-        [SerializeField] private Vector3 recoilLocalDirection = new Vector3(0f, 0f, -1f); // Tune per model orientation
+        [SerializeField] protected float recoilDistance = 0.12f;
+        [SerializeField] protected float recoilRecoverySpeed = 6f;
+        [SerializeField] protected Vector3 recoilLocalDirection =
+            new Vector3(0f, 0f, -1f);
 
-        private static readonly int ActivationID = Shader.PropertyToID("_Activation");
-        private static readonly int FireTimeID = Shader.PropertyToID("_FireTime");
+        protected float fireTimer;
+        protected IDamageable currentTarget;
+
+        private static readonly int ActivationID =
+            Shader.PropertyToID("_Activation");
+
+        private static readonly int FireTimeID =
+            Shader.PropertyToID("_FireTime");
 
         private MaterialPropertyBlock topPropBlock;
         private MaterialPropertyBlock basePropBlock;
+
         private float currentActivation;
         private float targetActivation;
 
         private Vector3 headRestLocalPos;
-        private float recoilAmount; // 0 = rest, 1 = full recoil, decays over time
+        protected float recoilAmount;
 
         private float defaultLocalX;
-
         private float defaultLocalZ;
 
+<<<<<<< Updated upstream
         private int currentHP;
         private float fireTimer;
         private IDamageable currentTarget;
@@ -73,39 +88,48 @@ namespace ProjectBreach.Core
             {
                 defaultLocalX = turretHead.localEulerAngles.x;   // 缓存 -90
                 defaultLocalZ = turretHead.localEulerAngles.z;   // 缓存 0
+=======
+        protected override void Awake()
+        {
+            base.Awake();
+
+            if (turretHead != null)
+            {
+                defaultLocalX = turretHead.localEulerAngles.x;
+                defaultLocalZ = turretHead.localEulerAngles.z;
+>>>>>>> Stashed changes
                 headRestLocalPos = turretHead.localPosition;
             }
 
             topPropBlock = new MaterialPropertyBlock();
             basePropBlock = new MaterialPropertyBlock();
 
-            // Sync visuals with whatever isActive was set to at spawn (e.g. from prefab defaults)
             targetActivation = isActive ? 1f : 0f;
             currentActivation = targetActivation;
+
             ApplyActivationVisual();
         }
 
-        private void Update()
+        protected virtual void Update()
         {
+<<<<<<< Updated upstream
             // Activation glow/grayscale and recoil recovery run regardless of active state,
             // so a turret smoothly fades out and its head settles even the instant it's turned off.
+=======
+>>>>>>> Stashed changes
             UpdateActivationVisual();
             UpdateRecoil();
 
-            // Only active turrets can shoot
-            if (!isActive || IsDead) return;
+            if (!isActive)
+                return;
 
-            // Acquire target
             AcquireTarget();
 
-            // Rotate turret head toward target (Y axis only)
             if (currentTarget != null && turretHead != null)
-            {
                 RotateTowardsTarget();
-            }
 
-            // Fire timer
             fireTimer += Time.deltaTime;
+
             if (fireTimer >= fireRate && currentTarget != null)
             {
                 fireTimer = 0f;
@@ -113,53 +137,208 @@ namespace ProjectBreach.Core
             }
         }
 
-        /// <summary>
-        /// Smoothly moves currentActivation toward targetActivation and pushes it to both
-        /// materials via MaterialPropertyBlock. Using property blocks (not renderer.material)
-        /// keeps each turret instance's shader state fully independent without leaking
-        /// per-instance material copies, and without touching the shared material asset
-        /// (which would otherwise change every turret in the scene at once).
-        /// </summary>
-        private void UpdateActivationVisual()
+        protected virtual void AcquireTarget()
         {
+<<<<<<< Updated upstream
             if (Mathf.Approximately(currentActivation, targetActivation)) return;
+=======
+            Collider[] hits =
+                Physics.OverlapSphere(transform.position, attackRange);
 
-            currentActivation = Mathf.MoveTowards(currentActivation, targetActivation, activationLerpSpeed * Time.deltaTime);
-            ApplyActivationVisual();
+            float nearestDistance = float.MaxValue;
+            IDamageable nearest = null;
+>>>>>>> Stashed changes
+
+            foreach (Collider hit in hits)
+            {
+                if (hit.gameObject == gameObject)
+                    continue;
+
+                if (hit.TryGetComponent(
+                        out IDamageable target))
+                {
+                    if (target.IsDead)
+                        continue;
+
+                    float distance =
+                        Vector3.Distance(
+                            transform.position,
+                            hit.transform.position);
+
+                    if (distance < nearestDistance)
+                    {
+                        nearestDistance = distance;
+                        nearest = target;
+                    }
+                }
+            }
+
+            currentTarget = nearest;
         }
 
-        private void ApplyActivationVisual()
+        protected virtual void Shoot()
         {
-            if (topRenderer != null)
+            if (projectilePrefab == null)
             {
-                topRenderer.GetPropertyBlock(topPropBlock);
-                topPropBlock.SetFloat(ActivationID, currentActivation);
-                topRenderer.SetPropertyBlock(topPropBlock);
+                Debug.LogWarning(
+                    $"[Turret] {name}: No projectile prefab assigned.");
+                return;
             }
+
+            if (firePoint == null)
+            {
+                Debug.LogWarning(
+                    $"[Turret] {name}: No fire point assigned.");
+                return;
+            }
+
+            if (currentTarget == null)
+                return;
+
+            GameObject projectileObject =
+                Instantiate(
+                    projectilePrefab,
+                    firePoint.position,
+                    firePoint.rotation);
+
+            if (projectileObject.TryGetComponent(
+                    out Projectile projectile))
+            {
+                projectile.Initialize(
+                    currentTarget,
+                    damage);
+            }
+
+            recoilAmount = 1f;
 
             if (baseRenderer != null)
             {
                 baseRenderer.GetPropertyBlock(basePropBlock);
-                basePropBlock.SetFloat(ActivationID, currentActivation);
-                baseRenderer.SetPropertyBlock(basePropBlock);
+
+                basePropBlock.SetFloat(
+                    FireTimeID,
+                    Time.time);
+
+                baseRenderer.SetPropertyBlock(
+                    basePropBlock);
             }
         }
 
-        /// <summary>
-        /// Kicks the turret head back along recoilLocalDirection, then eases it back to rest.
-        /// The offset is rotated by turretHead's CURRENT localRotation before being applied, so
-        /// recoil always kicks straight back along the barrel — even while the head is rotated
-        /// off-axis tracking a target — instead of sliding sideways along the parent's fixed axes.
-        /// </summary>
-        private void UpdateRecoil()
+        protected virtual void RotateTowardsTarget()
         {
-            if (turretHead == null) return;
-            if (recoilAmount <= 0f) return;
+            MonoBehaviour targetObject =
+                currentTarget as MonoBehaviour;
 
-            recoilAmount = Mathf.MoveTowards(recoilAmount, 0f, recoilRecoverySpeed * Time.deltaTime);
+            if (targetObject == null)
+                return;
 
-            Vector3 rotatedOffset = turretHead.localRotation * (recoilLocalDirection.normalized * recoilDistance * recoilAmount);
-            turretHead.localPosition = headRestLocalPos + rotatedOffset;
+            Vector3 direction =
+                targetObject.transform.position -
+                turretHead.position;
+
+            direction.y = 0f;
+
+            if (direction.sqrMagnitude < 0.0001f)
+                return;
+
+            float targetYaw =
+                Quaternion.LookRotation(direction)
+                    .eulerAngles.y;
+
+            float parentYaw =
+                turretHead.parent != null
+                    ? turretHead.parent.eulerAngles.y
+                    : 0f;
+
+            float localYaw =
+                targetYaw -
+                parentYaw +
+                rotationOffset;
+
+            Quaternion targetRotation =
+                Quaternion.Euler(
+                    defaultLocalX,
+                    localYaw,
+                    defaultLocalZ);
+
+            turretHead.localRotation =
+                Quaternion.RotateTowards(
+                    turretHead.localRotation,
+                    targetRotation,
+                    rotationSpeed * Time.deltaTime);
+        }
+
+        protected virtual void UpdateActivationVisual()
+        {
+            if (Mathf.Approximately(
+                    currentActivation,
+                    targetActivation))
+                return;
+
+            currentActivation =
+                Mathf.MoveTowards(
+                    currentActivation,
+                    targetActivation,
+                    activationLerpSpeed *
+                    Time.deltaTime);
+
+            ApplyActivationVisual();
+        }
+
+        protected virtual void ApplyActivationVisual()
+        {
+            if (topRenderer != null)
+            {
+                topRenderer.GetPropertyBlock(
+                    topPropBlock);
+
+                topPropBlock.SetFloat(
+                    ActivationID,
+                    currentActivation);
+
+                topRenderer.SetPropertyBlock(
+                    topPropBlock);
+            }
+
+            if (baseRenderer != null)
+            {
+                baseRenderer.GetPropertyBlock(
+                    basePropBlock);
+
+                basePropBlock.SetFloat(
+                    ActivationID,
+                    currentActivation);
+
+                baseRenderer.SetPropertyBlock(
+                    basePropBlock);
+            }
+        }
+
+        protected virtual void UpdateRecoil()
+        {
+            if (turretHead == null)
+                return;
+
+            if (recoilAmount <= 0f)
+                return;
+
+            recoilAmount =
+                Mathf.MoveTowards(
+                    recoilAmount,
+                    0f,
+                    recoilRecoverySpeed *
+                    Time.deltaTime);
+
+            Vector3 offset =
+                turretHead.localRotation *
+                (
+                    recoilLocalDirection.normalized *
+                    recoilDistance *
+                    recoilAmount
+                );
+
+            turretHead.localPosition =
+                headRestLocalPos + offset;
         }
 
         public override void TurnOn()
@@ -174,12 +353,16 @@ namespace ProjectBreach.Core
             targetActivation = 0f;
         }
 
-        /// <summary>
-        /// Rotate turret head to face current target (Y axis only).
-        /// Uses LookAt for simplicity, works even with offset pivots.
-        /// </summary>
-        private void RotateTowardsTarget()
+        public float Damage => damage;
+        public float FireRate => fireRate;
+        public float AttackRange => attackRange;
+
+        protected void SetStats(
+            int newDamage,
+            float newFireRate,
+            float newRange)
         {
+<<<<<<< Updated upstream
             MonoBehaviour targetMb = currentTarget as MonoBehaviour;
             if (targetMb == null) return;
 
@@ -312,6 +495,11 @@ namespace ProjectBreach.Core
         private void TestTakeDamage()
         {
             TakeDamage(10);
+=======
+            damage = newDamage;
+            fireRate = newFireRate;
+            attackRange = newRange;
+>>>>>>> Stashed changes
         }
     }
 }

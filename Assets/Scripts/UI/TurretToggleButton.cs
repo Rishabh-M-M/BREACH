@@ -6,22 +6,21 @@ using TMPro;
 namespace ProjectBreach.Core
 {
     /// <summary>
-    /// TurretToggleButton: UI button that toggles one specific turret on/off.
-    /// Turning on allocates power; turning off refunds it.
-    /// Attach one per turret slot button in the room status panel
-    /// (e.g. Turret 1 and Turret 2 buttons in the Composition scene).
+    /// UI button that toggles one specific turret on/off.
     /// </summary>
     [RequireComponent(typeof(Button))]
     public class TurretToggleButton : MonoBehaviour
     {
         [Header("References")]
-        [SerializeField] private Turret targetTurret;          // the turret this button controls
-        [SerializeField] private TextMeshProUGUI buttonText;   // optional label for state display
+        [SerializeField] private Turret targetTurret;
+        [SerializeField] private TextMeshProUGUI buttonText;
 
         [Header("Display Settings")]
         [SerializeField] private string turretDisplayName = "Turret";
-        [SerializeField] private Color activeColor = new Color(0f, 0.8f, 1f);  // cyan accent when active
-        [SerializeField] private Color inactiveColor = Color.gray;
+        [SerializeField] private Color activeColor =
+            new Color(0f, 0.8f, 1f);
+        [SerializeField] private Color inactiveColor =
+            Color.gray;
 
         [Header("Power Settings")]
         [SerializeField] private bool usePowerSystem = false;   // 暂时关闭电力依赖，等 PowerBar UI 做好再打开
@@ -43,14 +42,9 @@ namespace ProjectBreach.Core
         {
             if (targetTurret == null)
             {
-                Debug.LogWarning("[TurretToggleButton] No turret assigned!");
-                return;
-            }
+                Debug.LogWarning(
+                    "[TurretToggleButton] No turret assigned!");
 
-            // Destroyed turrets cannot be toggled
-            if (targetTurret.IsDead)
-            {
-                RefreshDisplay();
                 return;
             }
 
@@ -112,29 +106,28 @@ namespace ProjectBreach.Core
         }
 
         /// <summary>
-        /// Refresh button label and color based on turret state.
+        /// Refresh button label and colour based on turret state.
         /// </summary>
         private void RefreshDisplay()
         {
-            if (targetTurret == null) return;
-
-            if (targetTurret.IsDead)
-            {
-                if (buttonText != null)
-                {
-                    buttonText.text = $"{turretDisplayName}\nDESTROYED";
-                    buttonText.color = Color.red;
-                }
-                button.interactable = false;
+            if (targetTurret == null)
                 return;
-            }
 
             bool isOn = targetTurret.IsActive;
+
             if (buttonText != null)
             {
-                buttonText.text = $"{turretDisplayName}\n{(isOn ? "ON" : "OFF")}";
-                buttonText.color = isOn ? activeColor : inactiveColor;
+                buttonText.text =
+                    $"{turretDisplayName}\n" +
+                    $"{(isOn ? "ON" : "OFF")}";
+
+                buttonText.color =
+                    isOn
+                        ? activeColor
+                        : inactiveColor;
             }
+
+            button.interactable = true;
         }
     }
 }

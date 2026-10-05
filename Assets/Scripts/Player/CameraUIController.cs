@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class CameraUIController : MonoBehaviour
 {
@@ -6,6 +7,23 @@ public class CameraUIController : MonoBehaviour
     public GameObject mainHUD;
     public GameObject cameraScreen;
     public GameObject power;
+    public GameObject equipmentPanel;
+
+    [Header("Glitch Transition")]
+    public GameObject glitchOverlay;
+
+    [SerializeField] private float glitchDuration = 0.4f;
+
+    [Header("Glitch Shake")]
+    [SerializeField] private float glitchShakeX = 10f;
+    [SerializeField] private float glitchShakeY = 5f;
+
+    [Header("Camera Animation")]
+    [SerializeField] private float animationDuration = 0.6f;
+    [SerializeField] private float startingScale = 0.85f;
+
+    [Header("Recording UI")]
+    public CameraRecordingUI cameraRecordingUI;
 
     [Header("Cameras")]
     public Camera mainCamera;
@@ -23,83 +41,264 @@ public class CameraUIController : MonoBehaviour
     [Header("Room Camera Points")]
     public Transform room1CameraPoint;
 
+    private RectTransform cameraScreenRect;
+    private CanvasGroup cameraScreenCanvasGroup;
+    private CanvasGroup glitchCanvasGroup;
+
+    private bool isAnimating = false;
+
     void Start()
     {
-        // Normal gameplay starts with the HUD visible
-        // and the camera screen hidden.
+        if (cameraScreen != null)
+        {
+            cameraScreenRect =
+                cameraScreen.GetComponent<RectTransform>();
+
+            cameraScreenCanvasGroup =
+                cameraScreen.GetComponent<CanvasGroup>();
+
+            if (cameraScreenCanvasGroup == null)
+            {
+                cameraScreenCanvasGroup =
+                    cameraScreen.AddComponent<CanvasGroup>();
+            }
+
+            cameraScreenRect.localScale =
+                Vector3.one * startingScale;
+
+            cameraScreenCanvasGroup.alpha = 0f;
+            cameraScreenCanvasGroup.interactable = false;
+            cameraScreenCanvasGroup.blocksRaycasts = false;
+
+            cameraScreen.SetActive(false);
+        }
+
+        if (glitchOverlay != null)
+        {
+            glitchCanvasGroup =
+                glitchOverlay.GetComponent<CanvasGroup>();
+
+            if (glitchCanvasGroup == null)
+            {
+                glitchCanvasGroup =
+                    glitchOverlay.AddComponent<CanvasGroup>();
+            }
+
+            glitchCanvasGroup.alpha = 0f;
+            glitchCanvasGroup.interactable = false;
+            glitchCanvasGroup.blocksRaycasts = false;
+
+            glitchOverlay.SetActive(false);
+        }
+
         if (mainHUD != null)
             mainHUD.SetActive(true);
 
-        if (cameraScreen != null)
-            cameraScreen.SetActive(false);
-
-        // Power remains visible in both gameplay and camera mode.
         if (power != null)
             power.SetActive(true);
 
-        // Main gameplay camera starts active.
+        if (equipmentPanel != null)
+            equipmentPanel.SetActive(false);
+
         if (mainCamera != null)
             mainCamera.enabled = true;
 
-        // Security camera starts disabled and renders nothing
-        // until a room is selected.
         if (securityCamera != null)
         {
             securityCamera.enabled = false;
             securityCamera.cullingMask = 0;
         }
 
-        // The background camera is only needed while viewing cameras.
         if (backgroundCamera != null)
             backgroundCamera.enabled = false;
+
+        if (cameraRecordingUI != null)
+            cameraRecordingUI.StopRecording();
     }
 
     public void OpenCameraScreen()
     {
+        if (isAnimating)
+            return;
+
         if (mainHUD != null)
             mainHUD.SetActive(false);
 
         if (cameraScreen != null)
         {
             cameraScreen.SetActive(true);
+
             cameraScreen.transform.SetAsLastSibling();
+
+            cameraScreenRect.localScale =
+                Vector3.one * startingScale;
+
+            cameraScreenCanvasGroup.alpha = 0f;
+
+            StartCoroutine(AnimateCameraOpen());
         }
 
-        // Keep Power above the camera screen.
         if (power != null)
         {
             power.SetActive(true);
             power.transform.SetAsLastSibling();
         }
 
-        // Replace the normal gameplay camera with the camera interface.
+        if (equipmentPanel != null)
+            equipmentPanel.SetActive(false);
+
         if (mainCamera != null)
             mainCamera.enabled = false;
 
         if (securityCamera != null)
         {
             securityCamera.enabled = true;
-
-            // No room is selected initially, so don't render
-            // any 3D scene into the camera feed.
             securityCamera.cullingMask = 0;
         }
 
-        // Render the plain background while no room is selected.
         if (backgroundCamera != null)
             backgroundCamera.enabled = true;
     }
 
+    private IEnumerator AnimateCameraOpen()
+    {
+        isAnimating = true;
+
+        float timer = 0f;
+
+        cameraScreenCanvasGroup.interactable = false;
+        cameraScreenCanvasGroup.blocksRaycasts = false;
+
+        while (timer < animationDuration)
+        {
+            timer += Time.unscaledDeltaTime;
+
+            float progress =
+                Mathf.Clamp01(
+                    timer / animationDuration
+                );
+
+            float smoothProgress =
+                1f - Mathf.Pow(
+                    1f - progress,
+                    3f
+                );
+
+            float scale =
+                Mathf.Lerp(
+                    startingScale,
+                    1f,
+                    smoothProgress
+                );
+
+            float alpha =
+                Mathf.Lerp(
+                    0f,
+                    1f,
+                    smoothProgress
+                );
+
+            cameraScreenRect.localScale =
+                Vector3.one * scale;
+
+            cameraScreenCanvasGroup.alpha =
+                alpha;
+
+            yield return null;
+        }
+
+        cameraScreenRect.localScale =
+            Vector3.one;
+
+        cameraScreenCanvasGroup.alpha =
+            1f;
+
+        cameraScreenCanvasGroup.interactable =
+            true;
+
+        cameraScreenCanvasGroup.blocksRaycasts =
+            true;
+
+        isAnimating = false;
+    }
+
     public void CloseCameraScreen()
     {
+        if (isAnimating)
+            return;
+
+        if (cameraRecordingUI != null)
+            cameraRecordingUI.StopRecording();
+
+        if (equipmentPanel != null)
+            equipmentPanel.SetActive(false);
+
+        StartCoroutine(GlitchAndClose());
+    }
+
+    private IEnumerator GlitchAndClose()
+    {
+        isAnimating = true;
+
+        if (cameraScreenCanvasGroup != null)
+        {
+            cameraScreenCanvasGroup.alpha = 1f;
+            cameraScreenCanvasGroup.interactable = false;
+            cameraScreenCanvasGroup.blocksRaycasts = false;
+        }
+
+        // Remember the original UI position
+        Vector3 originalCameraScreenPosition =
+            cameraScreen.transform.localPosition;
+
+        if (glitchOverlay != null)
+        {
+            glitchOverlay.SetActive(true);
+
+            glitchCanvasGroup.alpha = 1f;
+
+            glitchOverlay.transform.SetAsLastSibling();
+
+            if (power != null)
+                power.transform.SetAsLastSibling();
+        }
+
+        float timer = 0f;
+
+        while (timer < glitchDuration)
+        {
+            timer += Time.unscaledDeltaTime;
+
+            // Shake the ENTIRE camera UI
+            if (cameraScreen != null)
+            {
+                float shakeX =
+                    Random.Range(-glitchShakeX, glitchShakeX);
+
+                float shakeY =
+                    Random.Range(-glitchShakeY, glitchShakeY);
+
+                cameraScreen.transform.localPosition =
+                    originalCameraScreenPosition +
+                    new Vector3(shakeX, shakeY, 0f);
+            }
+
+            if (glitchCanvasGroup != null)
+                glitchCanvasGroup.alpha = 1f;
+
+            yield return null;
+        }
+
+        // Reset UI position
+        if (cameraScreen != null)
+        {
+            cameraScreen.transform.localPosition =
+                originalCameraScreenPosition;
+        }
+
+        // Cut back to main room
         if (cameraScreen != null)
             cameraScreen.SetActive(false);
-
-        if (mainHUD != null)
-            mainHUD.SetActive(true);
-
-        if (power != null)
-            power.SetActive(true);
 
         if (securityCamera != null)
         {
@@ -113,13 +312,36 @@ public class CameraUIController : MonoBehaviour
         if (mainCamera != null)
             mainCamera.enabled = true;
 
-        // Return the player camera to its default orientation.
         if (cameraController != null)
             cameraController.ResetLook();
 
-        // Return to the main room when leaving the camera interface.
         if (roomCameraSwitcher != null)
             roomCameraSwitcher.GoToMainRoom();
+
+        if (glitchCanvasGroup != null)
+            glitchCanvasGroup.alpha = 0f;
+
+        if (glitchOverlay != null)
+            glitchOverlay.SetActive(false);
+
+        if (cameraScreenRect != null)
+            cameraScreenRect.localScale =
+                Vector3.one;
+
+        if (cameraScreenCanvasGroup != null)
+        {
+            cameraScreenCanvasGroup.alpha = 0f;
+            cameraScreenCanvasGroup.interactable = false;
+            cameraScreenCanvasGroup.blocksRaycasts = false;
+        }
+
+        if (mainHUD != null)
+            mainHUD.SetActive(true);
+
+        if (power != null)
+            power.SetActive(true);
+
+        isAnimating = false;
     }
 
     public void ShowRoom1()
@@ -140,16 +362,22 @@ public class CameraUIController : MonoBehaviour
             return;
         }
 
-        // Move the security camera to the selected room's viewpoint.
         securityCamera.transform.position =
             room1CameraPoint.position;
 
         securityCamera.transform.rotation =
             room1CameraPoint.rotation;
 
-        // Allow the security camera to render the room.
         securityCamera.cullingMask = -1;
 
-        Debug.Log("Showing Room 1 camera.");
+        if (equipmentPanel != null)
+            equipmentPanel.SetActive(true);
+
+        if (cameraRecordingUI != null)
+            cameraRecordingUI.StartRecording();
+
+        Debug.Log(
+            "Showing Room 1 camera."
+        );
     }
 }

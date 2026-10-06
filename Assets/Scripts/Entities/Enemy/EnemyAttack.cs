@@ -20,6 +20,7 @@ public class EnemyAttack : MonoBehaviour
         if (!mover.HasArrived) return;
 
         fireTimer += Time.deltaTime;
+
         if (fireTimer >= fireInterval)
         {
             fireTimer = 0f;
@@ -32,6 +33,15 @@ public class EnemyAttack : MonoBehaviour
         Transform aim = mover.AimPoint;
         if (aim == null) return;
 
+        // Damage shield
+        Shield shield = aim.GetComponent<Shield>();
+        if (shield != null)
+        {
+            shield.TakeDamage(damagePerShot);
+            return;
+        }
+
+        // Damage turret
         IDamageable damageable = aim.GetComponentInParent<IDamageable>();
         damageable?.TakeDamage(damagePerShot);
     }

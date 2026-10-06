@@ -92,23 +92,23 @@ public class EquipmentSlotUI : MonoBehaviour
 
         else
         {
-            if (PowerManager.Instance == null)
-            {
-                Debug.LogError("[EquipmentSlotUI] PowerManager not found!");
-                return;
-            }
+            //if (PowerManager.Instance == null)
+            //{
+            //    Debug.LogError("[EquipmentSlotUI] PowerManager not found!");
+            //    return;
+            //}
 
-            bool success = PowerManager.Instance.TryAllocate(
-                targetTurret.PowerCost
-            );
+            //bool success = PowerManager.Instance.TryAllocate(
+            //    targetTurret.PowerCost
+            //);
 
-            if (!success)
-            {
-                if (UIManager.Instance != null)
-                    UIManager.Instance.ShowMessage("Insufficient power!");
+            //if (!success)
+            //{
+            //    if (UIManager.Instance != null)
+            //        UIManager.Instance.ShowMessage("Insufficient power!");
 
-                return;
-            }
+            //    return;
+            //}
 
             targetTurret.TurnOn();
         }

@@ -6,8 +6,8 @@ using ProjectBreach.Core;
 /// Works with team components: EnemyHealth [2], EnemyMover [3], EnemyAttack [1]
 /// Uses GameManager as mediator (Indirection) to access other managers.
 /// </summary>
-[RequireComponent(typeof(EnemyMover))]   // 依赖组员的移动组件 [3]
-[RequireComponent(typeof(EnemyHealth))]  // 依赖组员的健康组件 [2]
+[RequireComponent(typeof(EnemyMover))]   // Depends on the teammate-maintained movement component [3]
+[RequireComponent(typeof(EnemyHealth))]  // Depends on the teammate-maintained health component [2]
 public class Boss : MonoBehaviour
 {
     [Header("Boss Settings")]

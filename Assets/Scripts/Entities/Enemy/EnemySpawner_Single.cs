@@ -14,14 +14,31 @@ public class EnemySpawner_Single : MonoBehaviour
     [SerializeField] private float spawnInterval = 1f;
     [SerializeField] private Transform aimPoint;
 
+    [Header("Wave System")]
+    [Tooltip("When false, this spawner waits for WaveManager to call SpawnWave(). Old demo scenes keep autoStart on.")]
+    [SerializeField] private bool autoStart = false;
+
     private void Start()
     {
-        StartCoroutine(SpawnRoutine());
+        if (autoStart)
+        {
+            StartCoroutine(SpawnRoutine(enemiesToSpawn));
+        }
     }
 
-    private IEnumerator SpawnRoutine()
+    /// <summary>
+    /// Public entry point for WaveManager. Spawns <paramref name="count"/> enemies
+    /// through the existing routine/parameters. Fire-and-forget coroutine.
+    /// </summary>
+    public void SpawnWave(int count)
     {
-        for (int i = 0; i < enemiesToSpawn; i++)
+        if (count <= 0) return;
+        StartCoroutine(SpawnRoutine(count));
+    }
+
+    private IEnumerator SpawnRoutine(int count)
+    {
+        for (int i = 0; i < count; i++)
         {
             SpawnEnemy();
             yield return new WaitForSeconds(spawnInterval);

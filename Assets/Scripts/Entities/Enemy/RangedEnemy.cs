@@ -6,7 +6,7 @@ using ProjectBreach.Core;
 /// Works with team components: EnemyHealth [2], EnemyMover [3], EnemyAttack [1]
 /// No dependency on integrated Enemy base class [7].
 /// </summary>
-[RequireComponent(typeof(EnemyMover))]   // 依赖组员的移动组件 [3]
+[RequireComponent(typeof(EnemyMover))]   // Depends on the teammate-maintained movement component [3]
 public class RangedEnemy : MonoBehaviour
 {
     [Header("Ranged Settings")]

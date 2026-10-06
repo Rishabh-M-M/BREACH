@@ -16,8 +16,8 @@ namespace ProjectBreach.Core
         [SerializeField] private int maxCoreHP = 50;
         [SerializeField] private int coreDamagePerBreach = 10;
 
-        // Added to connect the team's breach event to the custom
-        // visual effects created for the graphics component.
+        // Connects the team's breach event to the custom visual effects
+        // created for the graphics component.
         [Header("Breach Visuals")]
         [SerializeField] private BreachController breachController;
 
@@ -46,9 +46,9 @@ namespace ProjectBreach.Core
         {
             Debug.Log("[MainControlRoom] Enemy breach received.");
 
-            // Added: trigger the custom breach visual effect at the same
-            // event where the main room receives the enemy breach.
-            // This starts the screen shader, lights and camera shake.
+            // Trigger the custom breach visual effect at the same event where
+            // the main room receives the enemy breach: screen shader, lights
+            // and camera shake.
             if (breachController != null)
             {
                 breachController.StartBreach();
@@ -84,6 +84,10 @@ namespace ProjectBreach.Core
                 $"[MainControlRoom] CoreHP: " +
                 $"{currentCoreHP}/{maxCoreHP}"
             );
+
+            // HUD listens on this; without the broadcast the Core HP display
+            // never moves even though the damage logic runs fine.
+            EventRegistry.BroadcastCoreHPChanged(currentCoreHP, maxCoreHP);
 
             if (currentCoreHP <= 0)
             {

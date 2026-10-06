@@ -24,7 +24,7 @@ namespace ProjectBreach.Core
         [SerializeField] private Color inactiveColor = Color.gray;
 
         [Header("Power Settings")]
-        [SerializeField] private bool usePowerSystem = false;   // 暂时关闭电力依赖，等 PowerBar UI 做好再打开
+        [SerializeField] private bool usePowerSystem = false;   // DEPRECATED: power accounting now lives in Turret itself (per-frame reconciliation). Kept only for scene serialization compatibility.
 
         private Button button;
 
@@ -67,47 +67,22 @@ namespace ProjectBreach.Core
         }
 
         /// <summary>
-        /// Try to allocate power and activate the turret.
-        /// Shows "insufficient power" feedback if allocation fails.
+        /// Activate the turret. Power accounting is owned by the turret itself (it
+        /// reconciles IsActive with the ledger every frame), so the button only
+        /// toggles -- an insufficient-power refusal is shown by the turret.
         /// </summary>
         private void TryTurnOnTurret()
         {
-            if (usePowerSystem)
-            {
-                if (PowerManager.Instance == null)
-                {
-                    Debug.LogError("[TurretToggleButton] PowerManager not found!");
-                    return;
-                }
-
-                bool success = PowerManager.Instance.TryAllocate(targetTurret.PowerCost);
-                if (!success)
-                {
-                    if (UIManager.Instance != null)
-                    {
-                        UIManager.Instance.ShowMessage("Insufficient power!");
-                    }
-                    Debug.Log("[TurretToggleButton] Insufficient power to activate turret");
-                    return;
-                }
-            }
-
             targetTurret.TurnOn();
-            Debug.Log($"[TurretToggleButton] {turretDisplayName} activated (powerSystem={usePowerSystem})");
+            Debug.Log($"[TurretToggleButton] {turretDisplayName} activate requested");
         }
 
         /// <summary>
-        /// Deactivate the turret and refund its power cost.
+        /// Deactivate the turret. The turret refunds its power itself.
         /// </summary>
         private void TurnOffTurret()
         {
             targetTurret.TurnOff();
-
-            if (usePowerSystem && PowerManager.Instance != null)
-            {
-                PowerManager.Instance.Refund(targetTurret.PowerCost);
-            }
-
             Debug.Log($"[TurretToggleButton] {turretDisplayName} deactivated");
         }
 

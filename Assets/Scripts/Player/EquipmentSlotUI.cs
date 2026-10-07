@@ -76,27 +76,44 @@ public class EquipmentSlotUI : MonoBehaviour
         if (targetTurret == null)
             return;
 
+<<<<<<< Updated upstream
         // =========================
+=======
+        // Destroyed turret cannot be used.
+        if (targetTurret.IsDead)
+            return;
+
+        // ============================================================
+>>>>>>> Stashed changes
         // TURN OFF
-        // =========================
+        // ============================================================
 
         if (targetTurret.IsActive)
         {
+            // IMPORTANT:
+            // Turret.cs is responsible for returning its own operating
+            // power allocation through ReconcilePowerState().
+            //
+            // Do NOT call PowerManager.Refund() here.
             targetTurret.TurnOff();
+<<<<<<< Updated upstream
 
             if (PowerManager.Instance != null)
             {
                 PowerManager.Instance.Refund(
                     targetTurret.PowerCost);
             }
+=======
+>>>>>>> Stashed changes
         }
 
-        // =========================
+        // ============================================================
         // TURN ON
-        // =========================
+        // ============================================================
 
         else
         {
+<<<<<<< Updated upstream
             if (PowerManager.Instance == null)
             {
                 Debug.LogError(
@@ -120,12 +137,18 @@ public class EquipmentSlotUI : MonoBehaviour
                 return;
             }
 
+=======
+            // Turret.cs is responsible for requesting its own operating
+            // power allocation through ReconcilePowerState().
+            //
+            // Do NOT call PowerManager.TryAllocate() here.
+>>>>>>> Stashed changes
             targetTurret.TurnOn();
         }
 
         Refresh();
 
-        // Return the button to its normal visual state
+        // Return the button to its normal visual state.
         if (button != null)
             button.OnDeselect(null);
     }
@@ -153,9 +176,33 @@ public class EquipmentSlotUI : MonoBehaviour
             return;
         }
 
+<<<<<<< Updated upstream
         // =========================
         // ACTIVE
         // =========================
+=======
+        // ============================================================
+        // DESTROYED
+        // ============================================================
+
+        if (targetTurret.IsDead)
+        {
+            button.interactable = false;
+
+            if (slotText != null)
+            {
+                slotText.text =
+                    $"<color=#B0C4DE>{equipmentName}</color>\n" +
+                    "<color=#FF3333>✕ DESTROYED</color>";
+            }
+
+            return;
+        }
+>>>>>>> Stashed changes
+
+        // ============================================================
+        // ACTIVE
+        // ============================================================
 
         if (targetTurret.IsActive)
         {
@@ -172,9 +219,15 @@ public class EquipmentSlotUI : MonoBehaviour
             return;
         }
 
+<<<<<<< Updated upstream
         // =========================
         // OFF
         // =========================
+=======
+        // ============================================================
+        // OFF
+        // ============================================================
+>>>>>>> Stashed changes
 
         button.interactable = true;
 
@@ -186,4 +239,27 @@ public class EquipmentSlotUI : MonoBehaviour
                 $"<color=#55AAFF>POWER {targetTurret.PowerCost}</color>";
         }
     }
+<<<<<<< Updated upstream
+=======
+
+    /// <summary>
+    /// Assigns an actual individual turret to this UI slot.
+    /// The UI stores a reference to the scene turret itself,
+    /// not a prefab.
+    /// </summary>
+    public void SetTurret(Turret turret)
+    {
+        targetTurret = turret;
+        Refresh();
+    }
+
+    /// <summary>
+    /// Clears this slot.
+    /// </summary>
+    public void SetEmpty()
+    {
+        targetTurret = null;
+        Refresh();
+    }
+>>>>>>> Stashed changes
 }

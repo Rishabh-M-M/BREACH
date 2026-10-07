@@ -38,13 +38,51 @@ namespace ProjectBreach.Core
             this.damage = dmg;
             hasHit = false;
 
-            // Calculate initial direction toward target
+            // Normal projectiles use the existing homing behaviour.
             UpdateFlyDirection();
 
             // Safety: auto-destroy after lifetime
             Destroy(gameObject, lifeTime);
 
             Debug.Log($"[Projectile] Initialized, direction: {flyDirection}, speed: {speed}");
+        }
+
+        /// <summary>
+        /// Initialize a projectile that travels in one fixed straight line.
+        ///
+        /// This is used by the Double Barrel turret. The turret calculates
+        /// the firing direction from the midpoint between its two physical
+        /// muzzle spawners, then both projectiles use that exact direction.
+        /// The projectile therefore does NOT home toward the target.
+        /// </summary>
+        public void InitializeStraight(Vector3 direction, int dmg)
+        {
+            target = null;
+            damage = dmg;
+            hasHit = false;
+
+            if (direction.sqrMagnitude < 0.0001f)
+            {
+                direction = transform.forward;
+            }
+            else
+            {
+                direction.Normalize();
+            }
+
+            flyDirection = direction;
+            transform.forward = flyDirection;
+
+            // Safety: auto-destroy after lifetime
+            Destroy(gameObject, lifeTime);
+
+            if (verboseLogging)
+            {
+                Debug.Log(
+                    $"[Projectile] Straight initialized, " +
+                    $"direction: {flyDirection}, speed: {speed}"
+                );
+            }
         }
 
         void Update()

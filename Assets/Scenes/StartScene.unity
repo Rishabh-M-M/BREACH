@@ -967,6 +967,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 765452849}
+        m_TargetAssemblyTypeName: CameraUIController, Assembly-CSharp
+        m_MethodName: ShowRoom4
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &236115157
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1275,7 +1287,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2514169965254825925, guid: dd5f447964d740f4ab8b7365ecca6c0d, type: 3}
       propertyPath: m_Name
-      value: Turret Shadered
+      value: Room2Turret1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2185,7 +2197,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2514169965254825925, guid: dd5f447964d740f4ab8b7365ecca6c0d, type: 3}
       propertyPath: m_Name
-      value: Turret Shadered (2)
+      value: Room2Turret3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2202,6 +2214,7 @@ GameObject:
   m_Component:
   - component: {fileID: 452719720}
   - component: {fileID: 452719719}
+  - component: {fileID: 452719721}
   m_Layer: 0
   m_Name: 'RoomCameraManager '
   m_TagString: Untagged
@@ -2238,9 +2251,41 @@ Transform:
   m_LocalPosition: {x: 103.197136, y: 0, z: 65.83746}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1892818186}
+  - {fileID: 971099960}
+  - {fileID: 1137657286}
+  - {fileID: 1590315310}
+  - {fileID: 701169991}
   m_Father: {fileID: 1197867654}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &452719721
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 452719718}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58ea74c3a7bdb4fc0a89fa10d9604552, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EquipmentPanelManager
+  turretSlot1: {fileID: 2098653555}
+  turretSlot2: {fileID: 1564674817}
+  turretSlot3: {fileID: 852563087}
+  turretSlot4: {fileID: 71407504}
+  room1Turret1: {fileID: 1516003866}
+  room1Turret2: {fileID: 1724734494}
+  room2Turret1: {fileID: 897250901}
+  room2Turret2: {fileID: 975825774}
+  room2Turret3: {fileID: 2002837784}
+  room3Turret1: {fileID: 1525739544}
+  room3Turret2: {fileID: 1667249188}
+  room4Turret1: {fileID: 744622740}
+  room4Turret2: {fileID: 563369119}
+  room4Turret3: {fileID: 1049006703}
+  room4Turret4: {fileID: 1938104182}
 --- !u!1001 &461656482
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2482,6 +2527,18 @@ MonoBehaviour:
       - m_Target: {fileID: 392176935}
         m_TargetAssemblyTypeName: BreachAudioManager, Assembly-CSharp
         m_MethodName: PlayButtonClick
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 765452849}
+        m_TargetAssemblyTypeName: CameraUIController, Assembly-CSharp
+        m_MethodName: ShowRoom3
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3349,6 +3406,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 552837543}
   m_CullTransparentMesh: 1
+--- !u!114 &563369119 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5880625351469909756, guid: cd965d401276eca4a88d4c4b4553cecc, type: 3}
+  m_PrefabInstance: {fileID: 642611628}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0167454249bc16f4da614817e0690e65, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ProjectBreach.Core.Turret
 --- !u!1 &617117850
 GameObject:
   m_ObjectHideFlags: 0
@@ -3549,6 +3617,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: ServerRoomEnemySpawner
       objectReference: {fileID: 0}
+    - target: {fileID: 1718048039584802688, guid: cd965d401276eca4a88d4c4b4553cecc, type: 3}
+      propertyPath: m_Name
+      value: Room4Turret1
+      objectReference: {fileID: 0}
     - target: {fileID: 1859817851353877521, guid: cd965d401276eca4a88d4c4b4553cecc, type: 3}
       propertyPath: m_LocalPosition.x
       value: -1012
@@ -3589,6 +3661,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2068931645457688519, guid: cd965d401276eca4a88d4c4b4553cecc, type: 3}
+      propertyPath: m_Name
+      value: Room4Turret3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3048208996841008992, guid: cd965d401276eca4a88d4c4b4553cecc, type: 3}
+      propertyPath: m_Name
+      value: Room4Turret4
+      objectReference: {fileID: 0}
     - target: {fileID: 3546790606578428926, guid: cd965d401276eca4a88d4c4b4553cecc, type: 3}
       propertyPath: newTarget
       value: 
@@ -3608,6 +3688,10 @@ PrefabInstance:
     - target: {fileID: 8606589242464356319, guid: cd965d401276eca4a88d4c4b4553cecc, type: 3}
       propertyPath: m_Name
       value: RoomEServerRoom
+      objectReference: {fileID: 0}
+    - target: {fileID: 8671646584831071395, guid: cd965d401276eca4a88d4c4b4553cecc, type: 3}
+      propertyPath: m_Name
+      value: Room4Turret2
       objectReference: {fileID: 0}
     - target: {fileID: 8837142018568381089, guid: cd965d401276eca4a88d4c4b4553cecc, type: 3}
       propertyPath: targetPoints.Array.size
@@ -3724,6 +3808,37 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 665915174}
   m_Mesh: {fileID: -205828367580749765, guid: ea2299f234a384d8ba167f9ba20d54d2, type: 3}
+--- !u!1 &701169990
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 701169991}
+  m_Layer: 0
+  m_Name: Room4CameraPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &701169991
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 701169990}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.12939519, y: -0.17214282, z: 0.022815874, w: 0.97627}
+  m_LocalPosition: {x: -1136.06, y: 37.68, z: -188.61}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 452719720}
+  m_LocalEulerAnglesHint: {x: 15.1, y: -20, z: 0}
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
@@ -3841,6 +3956,17 @@ MonoBehaviour:
   roomIndex: 0
   roomName: Shop
   structures: []
+--- !u!114 &744622740 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4475582493425317343, guid: cd965d401276eca4a88d4c4b4553cecc, type: 3}
+  m_PrefabInstance: {fileID: 642611628}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0167454249bc16f4da614817e0690e65, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ProjectBreach.Core.Turret
 --- !u!1 &760777219 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5554325632973664575, guid: cd965d401276eca4a88d4c4b4553cecc, type: 3}
@@ -3921,6 +4047,7 @@ MonoBehaviour:
   cameraScreen: {fileID: 2024833314}
   power: {fileID: 1909887454}
   equipmentPanel: {fileID: 1388808759}
+  equipmentPanelManager: {fileID: 452719721}
   glitchOverlay: {fileID: 1304095357}
   glitchDuration: 0.8
   glitchShakeX: 10
@@ -3934,6 +4061,9 @@ MonoBehaviour:
   cameraController: {fileID: 1669740828}
   roomCameraSwitcher: {fileID: 452719719}
   room1CameraPoint: {fileID: 971099960}
+  room2CameraPoint: {fileID: 1137657286}
+  room3CameraPoint: {fileID: 1590315310}
+  room4CameraPoint: {fileID: 701169991}
 --- !u!114 &765452850
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4473,6 +4603,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1884031024217338423, guid: dd5f447964d740f4ab8b7365ecca6c0d, type: 3}
   m_PrefabInstance: {fileID: 279996660}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &897250901 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 806123739114161562, guid: dd5f447964d740f4ab8b7365ecca6c0d, type: 3}
+  m_PrefabInstance: {fileID: 279996660}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0167454249bc16f4da614817e0690e65, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ProjectBreach.Core.Turret
 --- !u!23 &913711411 stripped
 MeshRenderer:
   m_CorrespondingSourceObject: {fileID: 8880381618269346744, guid: e1075692a95bf154e9697480b84f7211, type: 3}
@@ -4846,7 +4987,7 @@ GameObject:
   m_Component:
   - component: {fileID: 971099960}
   m_Layer: 0
-  m_Name: OtherRoomCameraPoint
+  m_Name: Room1CameraPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4861,12 +5002,23 @@ Transform:
   m_GameObject: {fileID: 971099959}
   serializedVersion: 2
   m_LocalRotation: {x: 0.12939519, y: -0.17214282, z: 0.022815874, w: 0.97627}
-  m_LocalPosition: {x: 170.98, y: 35.1, z: -3.3}
+  m_LocalPosition: {x: 66.65, y: 33.32, z: -69.13747}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1197867654}
+  m_Father: {fileID: 452719720}
   m_LocalEulerAnglesHint: {x: 15.1, y: -20, z: 0}
+--- !u!114 &975825774 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 806123739114161562, guid: dd5f447964d740f4ab8b7365ecca6c0d, type: 3}
+  m_PrefabInstance: {fileID: 1568533230}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0167454249bc16f4da614817e0690e65, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ProjectBreach.Core.Turret
 --- !u!1001 &988436115
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4878,6 +5030,10 @@ PrefabInstance:
     - target: {fileID: 1177508780101574162, guid: 85d001ea16328ac4c8eae5a499789764, type: 3}
       propertyPath: m_Name
       value: ShopEnemySpawnerB
+      objectReference: {fileID: 0}
+    - target: {fileID: 2499692895339864713, guid: 85d001ea16328ac4c8eae5a499789764, type: 3}
+      propertyPath: m_Name
+      value: Room3Turret2
       objectReference: {fileID: 0}
     - target: {fileID: 3324703362610993359, guid: 85d001ea16328ac4c8eae5a499789764, type: 3}
       propertyPath: enemyPrefab
@@ -4907,6 +5063,10 @@ PrefabInstance:
       propertyPath: destinationPoint
       value: 
       objectReference: {fileID: 800765704}
+    - target: {fileID: 5672385372392223647, guid: 85d001ea16328ac4c8eae5a499789764, type: 3}
+      propertyPath: m_Name
+      value: Room3Turret1
+      objectReference: {fileID: 0}
     - target: {fileID: 5728555210687986248, guid: 85d001ea16328ac4c8eae5a499789764, type: 3}
       propertyPath: m_LocalPosition.x
       value: 11.315308
@@ -5132,6 +5292,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38f47a40c0faa04459c5a5a142b41b52, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyTargetPoint
+--- !u!114 &1049006703 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3854412060582573464, guid: cd965d401276eca4a88d4c4b4553cecc, type: 3}
+  m_PrefabInstance: {fileID: 642611628}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0167454249bc16f4da614817e0690e65, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ProjectBreach.Core.Turret
 --- !u!1 &1056904146 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3195904491339712407, guid: 85d001ea16328ac4c8eae5a499789764, type: 3}
@@ -5553,6 +5724,37 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1128553186}
   m_CullTransparentMesh: 1
+--- !u!1 &1137657285
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1137657286}
+  m_Layer: 0
+  m_Name: Room2CameraPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1137657286
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1137657285}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.12939519, y: -0.17214282, z: 0.022815874, w: 0.97627}
+  m_LocalPosition: {x: -490.31714, y: 32.27, z: -116.10747}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 452719720}
+  m_LocalEulerAnglesHint: {x: 15.1, y: -20, z: 0}
 --- !u!1 &1149264650
 GameObject:
   m_ObjectHideFlags: 0
@@ -6076,8 +6278,6 @@ Transform:
   m_Children:
   - {fileID: 452719720}
   - {fileID: 1166868065}
-  - {fileID: 1892818186}
-  - {fileID: 971099960}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1215416264 stripped
@@ -7341,6 +7541,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0167454249bc16f4da614817e0690e65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ProjectBreach.Core.Turret
+--- !u!114 &1525739544 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6091546098158995043, guid: 85d001ea16328ac4c8eae5a499789764, type: 3}
+  m_PrefabInstance: {fileID: 988436115}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0167454249bc16f4da614817e0690e65, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ProjectBreach.Core.Turret
 --- !u!1 &1536244850
 GameObject:
   m_ObjectHideFlags: 0
@@ -7569,7 +7780,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2514169965254825925, guid: dd5f447964d740f4ab8b7365ecca6c0d, type: 3}
       propertyPath: m_Name
-      value: Turret Shadered (1)
+      value: Room2Turret2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -7718,6 +7929,37 @@ MeshRenderer:
   m_CorrespondingSourceObject: {fileID: 8880381618269346744, guid: e1075692a95bf154e9697480b84f7211, type: 3}
   m_PrefabInstance: {fileID: 43787224}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1590315309
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1590315310}
+  m_Layer: 0
+  m_Name: Room3CameraPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1590315310
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1590315309}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.08715578, y: 0, z: 0, w: 0.9961947}
+  m_LocalPosition: {x: -856.4871, y: 19.05, z: -84.66}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 452719720}
+  m_LocalEulerAnglesHint: {x: 10, y: 0, z: 0}
 --- !u!1 &1600050105
 GameObject:
   m_ObjectHideFlags: 0
@@ -8183,6 +8425,17 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1665675157}
   m_Mesh: {fileID: 5903174955808974656, guid: ea2299f234a384d8ba167f9ba20d54d2, type: 3}
+--- !u!114 &1667249188 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 229508439323349747, guid: 85d001ea16328ac4c8eae5a499789764, type: 3}
+  m_PrefabInstance: {fileID: 988436115}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0167454249bc16f4da614817e0690e65, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ProjectBreach.Core.Turret
 --- !u!1 &1669740827
 GameObject:
   m_ObjectHideFlags: 0
@@ -8459,7 +8712,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: d0346bf27a9a34a408ca004506347408, type: 2}
     - target: {fileID: 6107000518402757180, guid: e1075692a95bf154e9697480b84f7211, type: 3}
       propertyPath: m_Name
-      value: Turret (2)
+      value: Room1Turret2
       objectReference: {fileID: 0}
     - target: {fileID: 7686708083798087453, guid: e1075692a95bf154e9697480b84f7211, type: 3}
       propertyPath: isActive
@@ -8782,7 +9035,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 765452849}
         m_TargetAssemblyTypeName: CameraUIController, Assembly-CSharp
-        m_MethodName: ShowRoom1
+        m_MethodName: ShowRoom2
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -9443,11 +9696,11 @@ Transform:
   m_GameObject: {fileID: 1892818185}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -81.58571, y: 18.4, z: 49.708633}
+  m_LocalPosition: {x: -184.78284, y: 18.4, z: -16.12883}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1197867654}
+  m_Father: {fileID: 452719720}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1897957172
 GameObject:
@@ -9902,6 +10155,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1909887454}
   m_CullTransparentMesh: 1
+--- !u!114 &1938104182 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 254071749372230975, guid: cd965d401276eca4a88d4c4b4553cecc, type: 3}
+  m_PrefabInstance: {fileID: 642611628}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0167454249bc16f4da614817e0690e65, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ProjectBreach.Core.Turret
 --- !u!1 &1957092639
 GameObject:
   m_ObjectHideFlags: 0
@@ -10186,6 +10450,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1884031024217338423, guid: dd5f447964d740f4ab8b7365ecca6c0d, type: 3}
   m_PrefabInstance: {fileID: 449638871}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &2002837784 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 806123739114161562, guid: dd5f447964d740f4ab8b7365ecca6c0d, type: 3}
+  m_PrefabInstance: {fileID: 449638871}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0167454249bc16f4da614817e0690e65, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ProjectBreach.Core.Turret
 --- !u!1 &2021908591
 GameObject:
   m_ObjectHideFlags: 0
@@ -11160,7 +11435,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: d0346bf27a9a34a408ca004506347408, type: 2}
     - target: {fileID: 6107000518402757180, guid: e1075692a95bf154e9697480b84f7211, type: 3}
       propertyPath: m_Name
-      value: Turret (1)
+      value: Room1Turret1
       objectReference: {fileID: 0}
     - target: {fileID: 7686708083798087453, guid: e1075692a95bf154e9697480b84f7211, type: 3}
       propertyPath: isActive

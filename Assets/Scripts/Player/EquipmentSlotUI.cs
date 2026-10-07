@@ -119,10 +119,15 @@ public class EquipmentSlotUI : MonoBehaviour
         if (button != null)
             button.OnDeselect(null);
     }
+
     public void Refresh()
     {
         if (button == null)
             return;
+
+        // =========================
+        // EMPTY
+        // =========================
 
         if (targetTurret == null)
         {
@@ -138,6 +143,10 @@ public class EquipmentSlotUI : MonoBehaviour
             return;
         }
 
+        // =========================
+        // DESTROYED
+        // =========================
+
         if (targetTurret.IsDead)
         {
             button.interactable = false;
@@ -151,6 +160,10 @@ public class EquipmentSlotUI : MonoBehaviour
 
             return;
         }
+
+        // =========================
+        // ACTIVE
+        // =========================
 
         if (targetTurret.IsActive)
         {
@@ -167,6 +180,10 @@ public class EquipmentSlotUI : MonoBehaviour
             return;
         }
 
+        // =========================
+        // OFF
+        // =========================
+
         button.interactable = true;
 
         if (slotText != null)
@@ -176,19 +193,5 @@ public class EquipmentSlotUI : MonoBehaviour
                 "<color=#FF3333>○ OFF</color>\n" +
                 $"<color=#55AAFF>POWER {targetTurret.PowerCost}</color>";
         }
-    }
-
-    // Allows the Equipment Panel Manager to assign a turret to this slot.
-    public void SetTurret(Turret turret)
-    {
-        targetTurret = turret;
-        Refresh();
-    }
-
-    // Clears this slot and makes it display EMPTY.
-    public void SetEmpty()
-    {
-        targetTurret = null;
-        Refresh();
     }
 }

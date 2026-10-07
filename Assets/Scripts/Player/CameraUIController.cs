@@ -9,6 +9,9 @@ public class CameraUIController : MonoBehaviour
     public GameObject power;
     public GameObject equipmentPanel;
 
+    [Header("Equipment Panel")]
+    public EquipmentPanelManager equipmentPanelManager;
+
     [Header("Glitch Transition")]
     public GameObject glitchOverlay;
 
@@ -40,6 +43,9 @@ public class CameraUIController : MonoBehaviour
 
     [Header("Room Camera Points")]
     public Transform room1CameraPoint;
+    public Transform room2CameraPoint;
+    public Transform room3CameraPoint;
+    public Transform room4CameraPoint;
 
     private RectTransform cameraScreenRect;
     private CanvasGroup cameraScreenCanvasGroup;
@@ -247,7 +253,6 @@ public class CameraUIController : MonoBehaviour
             cameraScreenCanvasGroup.blocksRaycasts = false;
         }
 
-        // Remember the original UI position
         Vector3 originalCameraScreenPosition =
             cameraScreen.transform.localPosition;
 
@@ -269,7 +274,6 @@ public class CameraUIController : MonoBehaviour
         {
             timer += Time.unscaledDeltaTime;
 
-            // Shake the ENTIRE camera UI
             if (cameraScreen != null)
             {
                 float shakeX =
@@ -289,14 +293,12 @@ public class CameraUIController : MonoBehaviour
             yield return null;
         }
 
-        // Reset UI position
         if (cameraScreen != null)
         {
             cameraScreen.transform.localPosition =
                 originalCameraScreenPosition;
         }
 
-        // Cut back to main room
         if (cameraScreen != null)
             cameraScreen.SetActive(false);
 
@@ -344,29 +346,98 @@ public class CameraUIController : MonoBehaviour
         isAnimating = false;
     }
 
+    // =========================================================
+    // ROOM 1
+    // =========================================================
+
     public void ShowRoom1()
+    {
+        ShowRoom(
+            room1CameraPoint,
+            "Room 1"
+        );
+
+        if (equipmentPanelManager != null)
+            equipmentPanelManager.ShowRoom1();
+    }
+
+    // =========================================================
+    // ROOM 2
+    // =========================================================
+
+    public void ShowRoom2()
+    {
+        ShowRoom(
+            room2CameraPoint,
+            "Room 2"
+        );
+
+        if (equipmentPanelManager != null)
+            equipmentPanelManager.ShowRoom2();
+    }
+
+    // =========================================================
+    // ROOM 3
+    // =========================================================
+
+    public void ShowRoom3()
+    {
+        ShowRoom(
+            room3CameraPoint,
+            "Room 3"
+        );
+
+        if (equipmentPanelManager != null)
+            equipmentPanelManager.ShowRoom3();
+    }
+
+    // =========================================================
+    // ROOM 4
+    // =========================================================
+
+    public void ShowRoom4()
+    {
+        ShowRoom(
+            room4CameraPoint,
+            "Room 4"
+        );
+
+        if (equipmentPanelManager != null)
+            equipmentPanelManager.ShowRoom4();
+    }
+
+    // =========================================================
+    // COMMON ROOM CAMERA FUNCTION
+    // =========================================================
+
+    private void ShowRoom(
+        Transform roomCameraPoint,
+        string roomName)
     {
         if (securityCamera == null)
         {
             Debug.LogWarning(
                 "Security Camera is not assigned."
             );
+
             return;
         }
 
-        if (room1CameraPoint == null)
+        if (roomCameraPoint == null)
         {
             Debug.LogWarning(
-                "Room 1 Camera Point is not assigned."
+                roomName +
+                " Camera Point is not assigned."
             );
+
             return;
         }
 
         securityCamera.transform.position =
-            room1CameraPoint.position;
+            roomCameraPoint.position;
 
         securityCamera.transform.rotation =
-            room1CameraPoint.rotation;
+            roomCameraPoint.rotation;
 
         securityCamera.cullingMask = -1;
 
@@ -377,7 +448,9 @@ public class CameraUIController : MonoBehaviour
             cameraRecordingUI.StartRecording();
 
         Debug.Log(
-            "Showing Room 1 camera."
+            "Showing " +
+            roomName +
+            " camera."
         );
     }
 }

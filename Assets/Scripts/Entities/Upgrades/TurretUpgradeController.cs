@@ -221,6 +221,24 @@ namespace ProjectBreach.Core
             return GetActiveUpgrade() != null;
         }
 
+        public AudioClip GetActiveFireSound()
+        {
+            TurretUpgrade upgrade = GetActiveUpgrade();
+
+            return upgrade != null
+                ? upgrade.GetFireSound()
+                : null;
+        }
+
+        public AudioClip GetActiveRotationSound()
+        {
+            TurretUpgrade upgrade = GetActiveUpgrade();
+
+            return upgrade != null
+                ? upgrade.GetRotationSound()
+                : null;
+        }
+
         public int GetProjectileDamage(int baseDamage)
         {
             TurretUpgrade upgrade = GetActiveUpgrade();

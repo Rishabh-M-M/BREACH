@@ -55,6 +55,32 @@ namespace ProjectBreach.Core
         [SerializeField] private float rotationOffset = -90f;
         [SerializeField] private bool lockXRotation = true;
 
+        // ============================================================
+        // AUDIO
+        // ============================================================
+
+        [Header("Turret Audio")]
+        [Tooltip("Base turret firing sound. Upgrades use their own fire sound.")]
+        [SerializeField] private AudioClip baseFireSound;
+
+        [Tooltip("Base turret rotation sound. Upgrades use their own rotation sound.")]
+        [SerializeField] private AudioClip baseRotationSound;
+
+        [Tooltip("AudioSource used for one-shot firing sounds. If empty, one is created automatically.")]
+        [SerializeField] private AudioSource fireAudioSource;
+
+        [Tooltip("AudioSource used for the looping turret rotation sound. If empty, one is created automatically.")]
+        [SerializeField] private AudioSource rotationAudioSource;
+
+        [Tooltip("Minimum head rotation angle per frame before the rotation sound starts.")]
+        [SerializeField] private float rotationAudioThreshold = 0.05f;
+
+        [Tooltip("Volume of turret firing sounds.")]
+        [SerializeField, Range(0f, 5f)] private float fireVolume = 2f;
+
+        [Tooltip("Volume of turret rotation sound.")]
+        [SerializeField, Range(0f, 4f)] private float rotationVolume = 0.8f;
+
         // Base references. Upgrade-specific transforms are supplied by
         // TurretUpgradeController.
         private Transform baseTurretHead;
@@ -192,6 +218,8 @@ namespace ProjectBreach.Core
         {
             base.Awake();
 
+            SetupAudioSources();
+
             currentHP = maxHP;
 
             if (upgradeController == null)
@@ -304,7 +332,10 @@ namespace ProjectBreach.Core
             // --------------------------------------------------------
 
             if (!isActive || IsDead)
+            {
+                StopRotationSound();
                 return;
+            }
 
             AcquireTarget();
 
@@ -312,6 +343,10 @@ namespace ProjectBreach.Core
                 turretHead != null)
             {
                 RotateTowardsTarget();
+            }
+            else
+            {
+                StopRotationSound();
             }
 
             fireTimer += Time.deltaTime;
@@ -636,6 +671,8 @@ namespace ProjectBreach.Core
                     );
             }
 
+            Quaternion previousRotation = turretHead.localRotation;
+
             turretHead.localRotation =
                 Quaternion.RotateTowards(
                     turretHead.localRotation,
@@ -643,6 +680,134 @@ namespace ProjectBreach.Core
                     rotationSpeed *
                     Time.deltaTime
                 );
+
+            float rotationDelta =
+                Quaternion.Angle(
+                    previousRotation,
+                    turretHead.localRotation
+                );
+
+            UpdateRotationSound(rotationDelta);
+        }
+
+        // ============================================================
+        // AUDIO
+        // ============================================================
+
+        private void SetupAudioSources()
+        {
+            if (fireAudioSource == null)
+            {
+                fireAudioSource = gameObject.AddComponent<AudioSource>();
+            }
+
+            if (rotationAudioSource == null)
+            {
+                rotationAudioSource = gameObject.AddComponent<AudioSource>();
+            }
+
+            ConfigureAudioSource(fireAudioSource, false);
+            ConfigureAudioSource(rotationAudioSource, true);
+        }
+
+        private void ConfigureAudioSource(
+            AudioSource source,
+            bool looping
+        )
+        {
+            if (source == null)
+                return;
+
+            source.playOnAwake = false;
+            source.loop = looping;
+            source.spatialBlend = 1f;
+            source.volume = looping
+                ? rotationVolume
+                : fireVolume;
+        }
+
+        private AudioClip GetCurrentFireSound()
+        {
+            if (upgradeController != null &&
+                upgradeController.HasActiveUpgrade())
+            {
+                AudioClip upgradeSound =
+                    upgradeController.GetActiveFireSound();
+
+                if (upgradeSound != null)
+                    return upgradeSound;
+            }
+
+            return baseFireSound;
+        }
+
+        private AudioClip GetCurrentRotationSound()
+        {
+            if (upgradeController != null &&
+                upgradeController.HasActiveUpgrade())
+            {
+                AudioClip upgradeSound =
+                    upgradeController.GetActiveRotationSound();
+
+                if (upgradeSound != null)
+                    return upgradeSound;
+            }
+
+            return baseRotationSound;
+        }
+
+        private void PlayFireSound()
+        {
+            if (fireAudioSource == null)
+                return;
+
+            AudioClip clip = GetCurrentFireSound();
+
+            if (clip == null)
+                return;
+
+            fireAudioSource.volume = fireVolume;
+            fireAudioSource.PlayOneShot(clip);
+        }
+
+        private void UpdateRotationSound(float rotationDelta)
+        {
+            if (rotationAudioSource == null)
+                return;
+
+            AudioClip clip = GetCurrentRotationSound();
+
+            if (clip == null || rotationDelta < rotationAudioThreshold)
+            {
+                StopRotationSound();
+                return;
+            }
+
+            if (rotationAudioSource.clip != clip)
+            {
+                rotationAudioSource.Stop();
+                rotationAudioSource.clip = clip;
+            }
+
+            rotationAudioSource.volume = rotationVolume;
+            rotationAudioSource.loop = true;
+
+            if (!rotationAudioSource.isPlaying)
+                rotationAudioSource.Play();
+        }
+
+        private void StopRotationSound()
+        {
+            if (rotationAudioSource == null)
+                return;
+
+            if (rotationAudioSource.isPlaying)
+                rotationAudioSource.Stop();
+        }
+
+        private void OnDisable()
+        {
+            StopRotationSound();
         }
 
         // ============================================================
@@ -693,6 +858,8 @@ namespace ProjectBreach.Core
                     currentDamage
                 );
             }
+
+            PlayFireSound();
 
             recoilAmount = 1f;
             ApplyFireEffect();
@@ -1118,10 +1285,10 @@ namespace ProjectBreach.Core
                     Time.deltaTime
                 );
 
-            // Recoil directions are authored in the same local space used by
-            // turretHead.localPosition (the head parent's local axes).
-            // Base turret: (0, -1, 0) = downward.
-            // Sharpshooter overrides this with (0, -1, -1) = down + backward.
+            // Recoil directions are deliberately expressed in the turret head's
+            // PARENT local space, because turretHead.localPosition uses that space.
+            // This avoids the model/head rotation (including the SS -90 degree
+            // authoring rotation) turning vertical recoil into sideways movement.
             Vector3 recoilOffset =
                 currentRecoilDirection.normalized *
                 currentRecoilDistance *

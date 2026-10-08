@@ -75,7 +75,7 @@ namespace ProjectBreach.Core
         [Tooltip(
             "How quickly the ON/OFF shader transitions."
         )]
-        [SerializeField] private float activationLerpSpeed = 4f;
+        [SerializeField] private float activationLerpSpeed = 8f;
 
         // ============================================================
         // RECOIL
@@ -86,7 +86,7 @@ namespace ProjectBreach.Core
         [SerializeField] private float recoilRecoverySpeed = 6f;
 
         [SerializeField] private Vector3 recoilLocalDirection =
-            new Vector3(0f, 0f, -1f);
+            new Vector3(0f, -1f, 0f);
 
         // ============================================================
         // UPGRADE
@@ -506,10 +506,16 @@ namespace ProjectBreach.Core
                     targetMask
                 );
 
-            float nearestDistance =
-                float.MaxValue;
+            bool preferFurthest =
+                upgradeController != null &&
+                upgradeController.PrefersFurthestTarget();
 
-            IDamageable nearestTarget =
+            float selectedDistance =
+                preferFurthest
+                    ? float.MinValue
+                    : float.MaxValue;
+
+            IDamageable selectedTarget =
                 null;
 
             foreach (Collider hit in hits)
@@ -548,15 +554,20 @@ namespace ProjectBreach.Core
                 if (distance > currentRange)
                     continue;
 
-                if (distance < nearestDistance)
+                bool isBetterTarget =
+                    preferFurthest
+                        ? distance > selectedDistance
+                        : distance < selectedDistance;
+
+                if (isBetterTarget)
                 {
-                    nearestDistance = distance;
-                    nearestTarget = target;
+                    selectedDistance = distance;
+                    selectedTarget = target;
                 }
             }
 
             currentTarget =
-                nearestTarget;
+                selectedTarget;
         }
 
         // ============================================================
@@ -661,9 +672,10 @@ namespace ProjectBreach.Core
 
             int currentDamage = GetCurrentDamage();
 
-            // Upgrade-specific firing belongs to the upgrade component.
+            // Upgrade-specific firing belongs to the active upgrade.
+            // Base Turret keeps the original homing projectile.
             if (upgradeController != null &&
-                upgradeController.FiresTwoProjectiles())
+                upgradeController.HasActiveUpgrade())
             {
                 if (!upgradeController.TryFireUpgrade(
                         this,
@@ -719,6 +731,58 @@ namespace ProjectBreach.Core
                     Debug.Log(
                         $"[Turret] Double Barrel straight projectile fired. " +
                         $"Damage = {projectileDamage}"
+                    );
+                }
+            }
+            else
+            {
+                Debug.LogError(
+                    $"[Turret] {name}: Projectile prefab does not " +
+                    "have a Projectile component."
+                );
+            }
+        }
+
+        // ============================================================
+        // SHARPSHOOTER PROJECTILE
+        // ============================================================
+
+        public void FireSharpshooterProjectile(
+            Vector3 position,
+            Vector3 direction,
+            int baseDamage,
+            float projectileSpeed,
+            float damagePerMetre,
+            int maxDamage
+        )
+        {
+            GameObject projectileObject =
+                Instantiate(
+                    projectilePrefab,
+                    position,
+                    Quaternion.LookRotation(direction)
+                );
+
+            if (projectileObject == null)
+                return;
+
+            if (projectileObject.TryGetComponent(
+                    out Projectile projectile))
+            {
+                projectile.InitializeSharpshooter(
+                    direction,
+                    baseDamage,
+                    projectileSpeed,
+                    damagePerMetre,
+                    maxDamage
+                );
+
+                if (verboseLogging)
+                {
+                    Debug.Log(
+                        $"[Turret] Sharpshooter projectile fired. " +
+                        $"Base Damage = {baseDamage}, " +
+                        $"Speed = {projectileSpeed}"
                     );
                 }
             }
@@ -861,10 +925,16 @@ namespace ProjectBreach.Core
 
         private float GetCurrentAttackRange()
         {
-            // The Turret Inspector value is the authoritative attack
-            // range for this turret. This prevents the Double Barrel
-            // upgrade's old hard-coded range from overriding a value such
-            // as 80 or 240 set on the actual turret.
+            // Base turret uses its Inspector range. Upgrades may override
+            // the range through TurretUpgradeController.
+            if (upgradeController != null)
+            {
+                return Mathf.Max(
+                    0f,
+                    upgradeController.GetAttackRange(attackRange)
+                );
+            }
+
             return Mathf.Max(0f, attackRange);
         }
 
@@ -1019,21 +1089,43 @@ namespace ProjectBreach.Core
             if (recoilAmount <= 0f)
                 return;
 
+            float currentRecoilDistance =
+                upgradeController != null
+                    ? upgradeController.GetRecoilDistance(
+                        recoilDistance
+                    )
+                    : recoilDistance;
+
+            float currentRecoilRecoverySpeed =
+                upgradeController != null
+                    ? upgradeController.GetRecoilRecoverySpeed(
+                        recoilRecoverySpeed
+                    )
+                    : recoilRecoverySpeed;
+
+            Vector3 currentRecoilDirection =
+                upgradeController != null
+                    ? upgradeController.GetRecoilLocalDirection(
+                        recoilLocalDirection
+                    )
+                    : recoilLocalDirection;
+
             recoilAmount =
                 Mathf.MoveTowards(
                     recoilAmount,
                     0f,
-                    recoilRecoverySpeed *
+                    currentRecoilRecoverySpeed *
                     Time.deltaTime
                 );
 
+            // Recoil directions are authored in the same local space used by
+            // turretHead.localPosition (the head parent's local axes).
+            // Base turret: (0, -1, 0) = downward.
+            // Sharpshooter overrides this with (0, -1, -1) = down + backward.
             Vector3 recoilOffset =
-                turretHead.localRotation *
-                (
-                    recoilLocalDirection.normalized *
-                    recoilDistance *
-                    recoilAmount
-                );
+                currentRecoilDirection.normalized *
+                currentRecoilDistance *
+                recoilAmount;
 
             turretHead.localPosition =
                 headRestLocalPos +

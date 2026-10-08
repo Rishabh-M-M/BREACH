@@ -34,6 +34,26 @@ namespace ProjectBreach.Core
             return baseFirePoint;
         }
 
+        public virtual bool PrefersFurthestTarget()
+        {
+            return false;
+        }
+
+        public virtual float GetRecoilDistance(float baseDistance)
+        {
+            return baseDistance;
+        }
+
+        public virtual float GetRecoilRecoverySpeed(float baseRecoverySpeed)
+        {
+            return baseRecoverySpeed;
+        }
+
+        public virtual Vector3 GetRecoilLocalDirection(Vector3 baseDirection)
+        {
+            return baseDirection;
+        }
+
         public virtual void SetVisualActive(bool active)
         {
         }

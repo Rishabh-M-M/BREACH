@@ -4,56 +4,178 @@ using ProjectBreach.Core;
 namespace ProjectBreach.Core
 {
     /// <summary>
-    /// PowerManager (Mock simplified version, to be replaced when the player team delivers the official version).
-    /// Demo: MaxPower 50, Turret PowerCost 40 (second turret must trigger "insufficient power").
+    /// Central power resource for the game.
+    ///
+    /// Permanent power:
+    /// - Used when a permanent turret upgrade is purchased.
+    /// - Never refunded.
+    ///
+    /// Operating power:
+    /// - Temporarily allocated while a powered structure is ON.
+    /// - Refunded when that structure turns OFF or is destroyed.
     /// </summary>
     public class PowerManager : Singleton<PowerManager>
     {
         [Header("Power Settings")]
         [SerializeField] private int maxPower = 100;
-        [SerializeField] private int currentLoad = 0;
+
+        // Power permanently committed to upgrades.
+        private int permanentLoad = 0;
+
+        // Power temporarily consumed by currently operating structures.
+        private int operatingLoad = 0;
 
         public int MaxPower => maxPower;
-        public int CurrentLoad => currentLoad;
-        public int AvailablePower => maxPower - currentLoad;
 
         /// <summary>
-        /// Attempts to allocate power. Returns true if successful, false if insufficient.
-        /// Called when activating a turret.
+        /// Total power currently committed.
+        /// </summary>
+        public int CurrentLoad =>
+            permanentLoad + operatingLoad;
+
+        public int PermanentLoad =>
+            permanentLoad;
+
+        public int OperatingLoad =>
+            operatingLoad;
+
+        /// <summary>
+        /// Power capacity still available for either a permanent
+        /// upgrade or temporary operation.
+        /// </summary>
+        public int AvailablePower =>
+            Mathf.Max(0, maxPower - CurrentLoad);
+
+        /// <summary>
+        /// Attempts to allocate temporary operating power.
         /// </summary>
         public bool TryAllocate(int cost)
         {
-            if (currentLoad + cost > maxPower)
+            if (cost < 0)
             {
-                Debug.Log($"[PowerManager] Insufficient power! Required: {cost}, Available: {AvailablePower}");
+                Debug.LogError(
+                    "[PowerManager] Cannot allocate negative power."
+                );
+
                 return false;
             }
 
-            currentLoad += cost;
-            EventRegistry.BroadcastPowerChanged(currentLoad, maxPower);
-            Debug.Log($"[PowerManager] Allocated {cost} power, current {currentLoad}/{maxPower}");
+            if (CurrentLoad + cost > maxPower)
+            {
+                Debug.Log(
+                    $"[PowerManager] Insufficient operating power! " +
+                    $"Required: {cost}, Available: {AvailablePower}"
+                );
+
+                return false;
+            }
+
+            operatingLoad += cost;
+
+            BroadcastPowerChanged();
+
+            Debug.Log(
+                $"[PowerManager] Operating power allocated: {cost}. " +
+                $"Permanent: {permanentLoad}, " +
+                $"Operating: {operatingLoad}, " +
+                $"Total: {CurrentLoad}/{maxPower}"
+            );
+
             return true;
         }
 
         /// <summary>
-        /// Refunds power (called when turret is destroyed or manually disabled).
+        /// Refunds temporary operating power.
+        ///
+        /// This NEVER refunds permanent upgrade power.
         /// </summary>
         public void Refund(int cost)
         {
-            currentLoad = Mathf.Max(0, currentLoad - cost);
-            EventRegistry.BroadcastPowerChanged(currentLoad, maxPower);
-            Debug.Log($"[PowerManager] Refunded {cost} power, current {currentLoad}/{maxPower}");
+            if (cost < 0)
+            {
+                Debug.LogError(
+                    "[PowerManager] Cannot refund negative power."
+                );
+
+                return;
+            }
+
+            operatingLoad =
+                Mathf.Max(0, operatingLoad - cost);
+
+            BroadcastPowerChanged();
+
+            Debug.Log(
+                $"[PowerManager] Operating power refunded: {cost}. " +
+                $"Permanent: {permanentLoad}, " +
+                $"Operating: {operatingLoad}, " +
+                $"Total: {CurrentLoad}/{maxPower}"
+            );
         }
 
         /// <summary>
-        /// Test helper: Resets power (for debugging).
+        /// Permanently commits power for an upgrade.
+        ///
+        /// This allocation is not refundable.
+        /// </summary>
+        public bool TryAllocatePermanent(int cost)
+        {
+            if (cost < 0)
+            {
+                Debug.LogError(
+                    "[PowerManager] Cannot allocate negative permanent power."
+                );
+
+                return false;
+            }
+
+            if (CurrentLoad + cost > maxPower)
+            {
+                Debug.Log(
+                    $"[PowerManager] Insufficient permanent power capacity! " +
+                    $"Required: {cost}, Available: {AvailablePower}"
+                );
+
+                return false;
+            }
+
+            permanentLoad += cost;
+
+            BroadcastPowerChanged();
+
+            Debug.Log(
+                $"[PowerManager] Permanent power committed: {cost}. " +
+                $"Permanent: {permanentLoad}, " +
+                $"Operating: {operatingLoad}, " +
+                $"Total: {CurrentLoad}/{maxPower}"
+            );
+
+            return true;
+        }
+
+        private void BroadcastPowerChanged()
+        {
+            EventRegistry.BroadcastPowerChanged(
+                CurrentLoad,
+                maxPower
+            );
+        }
+
+        /// <summary>
+        /// Test helper: resets both permanent and operating power.
         /// </summary>
         [ContextMenu("Test - Reset Power")]
         private void TestResetPower()
         {
-            currentLoad = 0;
-            EventRegistry.BroadcastPowerChanged(currentLoad, maxPower);
-            Debug.Log("[PowerManager] Power reset.");
+            permanentLoad = 0;
+            operatingLoad = 0;
+
+            BroadcastPowerChanged();
+
+            Debug.Log(
+                "[PowerManager] Power reset. " +
+                $"Total: {CurrentLoad}/{maxPower}"
+            );
         }
     }
 }

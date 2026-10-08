@@ -37,12 +37,6 @@ namespace ProjectBreach.Core
         [SerializeField] private int permanentPowerCost = 20;
         [SerializeField] private int operatingPowerCost = 20;
 
-        [Header("Sharpshooter Audio")]
-        [Tooltip("Sound played when the Sharpshooter fires.")]
-        [SerializeField] private AudioClip fireSound;
-
-        [Tooltip("Looping mechanical sound while the Sharpshooter head is rotating.")]
-        [SerializeField] private AudioClip rotationSound;
 
         [Header("Sharpshooter Visual")]
         [Tooltip("The complete Sharpshooter model/visual. Do not put another Turret component on it.")]
@@ -69,15 +63,6 @@ namespace ProjectBreach.Core
         public int PermanentPowerCost => permanentPowerCost;
         public int OperatingPowerCost => operatingPowerCost;
 
-        public override AudioClip GetFireSound()
-        {
-            return fireSound;
-        }
-
-        public override AudioClip GetRotationSound()
-        {
-            return rotationSound;
-        }
 
         private void Awake()
         {

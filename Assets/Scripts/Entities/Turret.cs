@@ -57,29 +57,12 @@ namespace ProjectBreach.Core
 
         // ============================================================
         // AUDIO
-        // ============================================================
+        // Audio clips/settings are shared by ALL turrets through
+        // TurretAudioController. Each turret still owns its local
+        // AudioSources so 3D spatial audio remains correct.
 
-        [Header("Turret Audio")]
-        [Tooltip("Base turret firing sound. Upgrades use their own fire sound.")]
-        [SerializeField] private AudioClip baseFireSound;
-
-        [Tooltip("Base turret rotation sound. Upgrades use their own rotation sound.")]
-        [SerializeField] private AudioClip baseRotationSound;
-
-        [Tooltip("AudioSource used for one-shot firing sounds. If empty, one is created automatically.")]
-        [SerializeField] private AudioSource fireAudioSource;
-
-        [Tooltip("AudioSource used for the looping turret rotation sound. If empty, one is created automatically.")]
-        [SerializeField] private AudioSource rotationAudioSource;
-
-        [Tooltip("Minimum head rotation angle per frame before the rotation sound starts.")]
-        [SerializeField] private float rotationAudioThreshold = 0.05f;
-
-        [Tooltip("Volume of turret firing sounds.")]
-        [SerializeField, Range(0f, 5f)] private float fireVolume = 2f;
-
-        [Tooltip("Volume of turret rotation sound.")]
-        [SerializeField, Range(0f, 4f)] private float rotationVolume = 0.8f;
+        private AudioSource fireAudioSource;
+        private AudioSource rotationAudioSource;
 
         // Base references. Upgrade-specific transforms are supplied by
         // TurretUpgradeController.
@@ -385,12 +368,14 @@ namespace ProjectBreach.Core
                      * PowerManager isn't present.
                      */
                     holdingPower = true;
+                    PlayPowerOnSound();
                     return;
                 }
 
                 if (PowerManager.Instance.TryAllocate(powerCost))
                 {
                     holdingPower = true;
+                    PlayPowerOnSound();
                 }
                 else
                 {
@@ -417,6 +402,7 @@ namespace ProjectBreach.Core
                 }
 
                 holdingPower = false;
+                PlayPowerOffSound();
             }
         }
 
@@ -720,64 +706,74 @@ namespace ProjectBreach.Core
 
             source.playOnAwake = false;
             source.loop = looping;
-            source.spatialBlend = 1f;
-            source.volume = looping
-                ? rotationVolume
-                : fireVolume;
+            source.spatialBlend = 0f;
         }
 
-        private AudioClip GetCurrentFireSound()
+        private TurretAudioController GetAudioController()
         {
-            if (upgradeController != null &&
-                upgradeController.HasActiveUpgrade())
-            {
-                AudioClip upgradeSound =
-                    upgradeController.GetActiveFireSound();
-
-                if (upgradeSound != null)
-                    return upgradeSound;
-            }
-
-            return baseFireSound;
-        }
-
-        private AudioClip GetCurrentRotationSound()
-        {
-            if (upgradeController != null &&
-                upgradeController.HasActiveUpgrade())
-            {
-                AudioClip upgradeSound =
-                    upgradeController.GetActiveRotationSound();
-
-                if (upgradeSound != null)
-                    return upgradeSound;
-            }
-
-            return baseRotationSound;
+            return TurretAudioController.Instance;
         }
 
         private void PlayFireSound()
         {
-            if (fireAudioSource == null)
+            TurretAudioController audio = GetAudioController();
+
+            if (fireAudioSource == null || audio == null ||
+                !audio.IsRoomAudioAudible(this))
                 return;
 
-            AudioClip clip = GetCurrentFireSound();
+            TurretVariant variant = TurretVariant.Base;
+
+            if (upgradeController != null)
+                variant = upgradeController.CurrentVariant;
+
+            AudioClip clip = audio.GetFireSound(variant);
 
             if (clip == null)
                 return;
 
-            fireAudioSource.volume = fireVolume;
+            fireAudioSource.volume = audio.FireVolume;
             fireAudioSource.PlayOneShot(clip);
+        }
+
+        private void PlayPowerOnSound()
+        {
+            TurretAudioController audio = GetAudioController();
+
+            if (fireAudioSource == null || audio == null ||
+                audio.PowerOnSound == null ||
+                !audio.IsRoomAudioAudible(this))
+                return;
+
+            fireAudioSource.volume = audio.PowerVolume;
+            fireAudioSource.PlayOneShot(audio.PowerOnSound);
+        }
+
+        private void PlayPowerOffSound()
+        {
+            TurretAudioController audio = GetAudioController();
+
+            if (fireAudioSource == null || audio == null ||
+                audio.PowerOffSound == null ||
+                !audio.IsRoomAudioAudible(this))
+                return;
+
+            fireAudioSource.volume = audio.PowerVolume;
+            fireAudioSource.PlayOneShot(audio.PowerOffSound);
         }
 
         private void UpdateRotationSound(float rotationDelta)
         {
-            if (rotationAudioSource == null)
+            TurretAudioController audio = GetAudioController();
+
+            if (rotationAudioSource == null || audio == null)
                 return;
 
-            AudioClip clip = GetCurrentRotationSound();
+            AudioClip clip = audio.RotationSound;
+            float threshold = audio.RotationAudioThreshold;
 
-            if (clip == null || rotationDelta < rotationAudioThreshold)
+            if (!audio.IsRoomAudioAudible(this) ||
+                clip == null || rotationDelta < threshold)
             {
                 StopRotationSound();
                 return;
@@ -789,7 +785,7 @@ namespace ProjectBreach.Core
                 rotationAudioSource.clip = clip;
             }
 
-            rotationAudioSource.volume = rotationVolume;
+            rotationAudioSource.volume = audio.RotationVolume;
             rotationAudioSource.loop = true;
 
             if (!rotationAudioSource.isPlaying)

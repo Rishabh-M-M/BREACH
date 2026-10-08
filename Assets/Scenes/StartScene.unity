@@ -5548,6 +5548,61 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1076036237}
   m_CullTransparentMesh: 1
+--- !u!1 &1078086767
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1078086769}
+  - component: {fileID: 1078086768}
+  m_Layer: 0
+  m_Name: TurretAudioManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1078086768
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1078086767}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c7a332ded864f4468a70f7a67bd1cdde, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ProjectBreach.Core.TurretAudioController
+  baseFireSound: {fileID: 8300000, guid: 0d757b7e5c31c41c69ba876b296cfc0b, type: 3}
+  doubleBarrelFireSound: {fileID: 8300000, guid: 6ed48dd759b0d4fc2819f0af3e6ebb06, type: 3}
+  sharpshooterFireSound: {fileID: 8300000, guid: da926daff4c72423b8764f9ad56e27b3, type: 3}
+  machineLaserFireSound: {fileID: 8300000, guid: da926daff4c72423b8764f9ad56e27b3, type: 3}
+  rotationSound: {fileID: 8300000, guid: dfc8e02a652bd43b29605c1b79937c61, type: 3}
+  powerOnSound: {fileID: 8300000, guid: 945fc4d746947416e822e21d831ef7bd, type: 3}
+  powerOffSound: {fileID: 8300000, guid: f5e893e2518334f60a2138ff234001c8, type: 3}
+  fireVolume: 1
+  rotationVolume: 1
+  powerVolume: 1
+  rotationAudioThreshold: 0.05
+--- !u!4 &1078086769
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1078086767}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 300, y: 300, z: 300}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1095211868
 GameObject:
   m_ObjectHideFlags: 0
@@ -11680,3 +11735,4 @@ SceneRoots:
   - {fileID: 2022107839}
   - {fileID: 988436115}
   - {fileID: 642611628}
+  - {fileID: 1078086769}

@@ -59,6 +59,8 @@ namespace ProjectBreach.Core
             return null;
         }
 
+        // Rotation audio is shared by all turret variants and is handled by Turret.cs.
+        // Kept for compatibility with existing upgrade components.
         public virtual AudioClip GetRotationSound()
         {
             return null;

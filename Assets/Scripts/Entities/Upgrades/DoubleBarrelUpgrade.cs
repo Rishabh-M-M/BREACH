@@ -19,12 +19,6 @@ namespace ProjectBreach.Core
         [SerializeField] private int permanentPowerCost = 30;
         [SerializeField] private int operatingPowerCost = 50;
 
-        [Header("Double Barrel Audio")]
-        [Tooltip("Sound played when the Double Barrel fires.")]
-        [SerializeField] private AudioClip fireSound;
-
-        [Tooltip("Looping mechanical sound while the Double Barrel head is rotating.")]
-        [SerializeField] private AudioClip rotationSound;
 
         [Header("Double Barrel Visual")]
         [Tooltip("The Double Barrel model/visual only. Do not put another Turret component on it.")]
@@ -43,15 +37,6 @@ namespace ProjectBreach.Core
         public int PermanentPowerCost => permanentPowerCost;
         public int OperatingPowerCost => operatingPowerCost;
 
-        public override AudioClip GetFireSound()
-        {
-            return fireSound;
-        }
-
-        public override AudioClip GetRotationSound()
-        {
-            return rotationSound;
-        }
 
         private void Awake()
         {

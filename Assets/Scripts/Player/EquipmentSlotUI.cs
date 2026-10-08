@@ -80,10 +80,9 @@ public class EquipmentSlotUI : MonoBehaviour
 
         if (targetTurret.IsActive)
         {
+            // Turret.TurnOff() is responsible for releasing the operating
+            // power owned by this specific turret.
             targetTurret.TurnOff();
-
-            if (PowerManager.Instance != null)
-                PowerManager.Instance.Refund(targetTurret.PowerCost);
         }
 
         // =========================

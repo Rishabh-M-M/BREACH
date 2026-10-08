@@ -3715,6 +3715,17 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 760777221}
   m_SourcePrefab: {fileID: 100100000, guid: cd965d401276eca4a88d4c4b4553cecc, type: 3}
+--- !u!114 &642611629 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8837142018568381089, guid: cd965d401276eca4a88d4c4b4553cecc, type: 3}
+  m_PrefabInstance: {fileID: 642611628}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e277c8cd9de1c8447a286f52ec12ed2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner_Single
 --- !u!1 &665915174
 GameObject:
   m_ObjectHideFlags: 0
@@ -4862,12 +4873,45 @@ MonoBehaviour:
   waves:
   - groups:
     - spawner: {fileID: 1957467141}
-      count: 3
+      count: 5
       startDelay: 0
+  - groups:
+    - spawner: {fileID: 1957467141}
+      count: 4
+      startDelay: 0
+    - spawner: {fileID: 642611629}
+      count: 4
+      startDelay: 8
   - groups:
     - spawner: {fileID: 1057884029}
       count: 6
+      startDelay: 0
+    - spawner: {fileID: 988436116}
+      count: 6
+      startDelay: 12
+  - groups:
+    - spawner: {fileID: 642611629}
+      count: 5
       startDelay: 10
+    - spawner: {fileID: 1957467141}
+      count: 8
+      startDelay: 10
+    - spawner: {fileID: 988436116}
+      count: 5
+      startDelay: 16
+  - groups:
+    - spawner: {fileID: 1057884029}
+      count: 5
+      startDelay: 10
+    - spawner: {fileID: 1957467141}
+      count: 5
+      startDelay: 6
+    - spawner: {fileID: 988436116}
+      count: 5
+      startDelay: 12
+    - spawner: {fileID: 642611629}
+      count: 5
+      startDelay: 18
 --- !u!4 &934213408
 Transform:
   m_ObjectHideFlags: 0
@@ -5124,6 +5168,17 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 1056904148}
   m_SourcePrefab: {fileID: 100100000, guid: 85d001ea16328ac4c8eae5a499789764, type: 3}
+--- !u!114 &988436116 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4296829643758447981, guid: 85d001ea16328ac4c8eae5a499789764, type: 3}
+  m_PrefabInstance: {fileID: 988436115}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e277c8cd9de1c8447a286f52ec12ed2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner_Single
 --- !u!1 &1006878718
 GameObject:
   m_ObjectHideFlags: 0

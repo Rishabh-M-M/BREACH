@@ -37,6 +37,13 @@ namespace ProjectBreach.Core
         [SerializeField] private int permanentPowerCost = 20;
         [SerializeField] private int operatingPowerCost = 20;
 
+        [Header("Sharpshooter Audio")]
+        [Tooltip("Sound played when the Sharpshooter fires.")]
+        [SerializeField] private AudioClip fireSound;
+
+        [Tooltip("Looping mechanical sound while the Sharpshooter head is rotating.")]
+        [SerializeField] private AudioClip rotationSound;
+
         [Header("Sharpshooter Visual")]
         [Tooltip("The complete Sharpshooter model/visual. Do not put another Turret component on it.")]
         [SerializeField] private GameObject visual;
@@ -55,12 +62,22 @@ namespace ProjectBreach.Core
         [Tooltip("How quickly SS returns from recoil.")]
         [SerializeField] private float recoilRecoverySpeed = 8f;
 
-        [Tooltip("Local recoil direction. Sharpshooter recoils downward and backward.")]
+        [Tooltip("Recoil direction in the turret head parent space. SS moves downward and backward.")]
         [SerializeField] private Vector3 recoilLocalDirection =
             new Vector3(0f, -1f, -1f);
 
         public int PermanentPowerCost => permanentPowerCost;
         public int OperatingPowerCost => operatingPowerCost;
+
+        public override AudioClip GetFireSound()
+        {
+            return fireSound;
+        }
+
+        public override AudioClip GetRotationSound()
+        {
+            return rotationSound;
+        }
 
         private void Awake()
         {

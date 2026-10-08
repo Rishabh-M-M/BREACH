@@ -573,7 +573,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7671043729590362889}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.7071069, y: -0, z: 0, w: -0.70710677}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2.35, y: 0.0379181, z: -0.014984714}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -833,6 +833,13 @@ MonoBehaviour:
   rotationSpeed: 90
   rotationOffset: -90
   lockXRotation: 1
+  baseFireSound: {fileID: 8300000, guid: 0d757b7e5c31c41c69ba876b296cfc0b, type: 3}
+  baseRotationSound: {fileID: 8300000, guid: dfc8e02a652bd43b29605c1b79937c61, type: 3}
+  fireAudioSource: {fileID: 0}
+  rotationAudioSource: {fileID: 0}
+  rotationAudioThreshold: 0.05
+  fireVolume: 4
+  rotationVolume: 3
   activationShaderProperty: _Activation
   activationLerpSpeed: 4
   recoilDistance: 0.12
@@ -889,6 +896,8 @@ MonoBehaviour:
   fireRate: 1.1
   permanentPowerCost: 30
   operatingPowerCost: 50
+  fireSound: {fileID: 8300000, guid: 6ed48dd759b0d4fc2819f0af3e6ebb06, type: 3}
+  rotationSound: {fileID: 8300000, guid: dfc8e02a652bd43b29605c1b79937c61, type: 3}
   visual: {fileID: 6270746894612495119}
   turretHead: {fileID: 331182984135913966}
   leftSpawner: {fileID: 5003098197020768513}
@@ -905,14 +914,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 920373b7473fd4109bf43e2622a1db17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ProjectBreach.Core.SharpshooterUpgrade
-  damage: 10
-  fireRate: 3.5
-  projectileSpeed: 45
+  damage: 1
+  fireRate: 5
+  projectileSpeed: 160
   attackRange: 160
-  damagePerMetre: 2
-  maxDamage: 80
+  damagePerMetre: 0.5
+  maxDamage: 10
   permanentPowerCost: 20
   operatingPowerCost: 20
+  fireSound: {fileID: 8300000, guid: da926daff4c72423b8764f9ad56e27b3, type: 3}
+  rotationSound: {fileID: 8300000, guid: dfc8e02a652bd43b29605c1b79937c61, type: 3}
   visual: {fileID: 7837904096900477045}
   turretHead: {fileID: 2423976249126374751}
   firePoint: {fileID: 5269987802235469374}

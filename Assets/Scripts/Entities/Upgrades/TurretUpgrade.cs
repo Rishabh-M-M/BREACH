@@ -54,6 +54,16 @@ namespace ProjectBreach.Core
             return baseDirection;
         }
 
+        public virtual AudioClip GetFireSound()
+        {
+            return null;
+        }
+
+        public virtual AudioClip GetRotationSound()
+        {
+            return null;
+        }
+
         public virtual void SetVisualActive(bool active)
         {
         }

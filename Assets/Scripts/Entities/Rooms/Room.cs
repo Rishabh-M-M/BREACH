@@ -12,6 +12,10 @@ namespace ProjectBreach.Core
     {
         [SerializeField] private int roomIndex;
         [SerializeField] private string roomName;
+        [Header("Room Shield") ]
+        [SerializeField] private Shield roomShield;
+        [SerializeField] private bool isMainRoom;
+        private bool permanentlyDisabled;
         [SerializeField]
         private List<DefensiveStructure> structures
             = new List<DefensiveStructure>();
@@ -19,6 +23,30 @@ namespace ProjectBreach.Core
         public RoomState State { get; private set; } = RoomState.Active;
         public int RoomIndex => roomIndex;
         public string RoomName => roomName;
+        public bool IsPermanentlyDisabled => permanentlyDisabled;
+
+        private void Awake()
+        {
+            if (roomShield == null) roomShield = GetComponentInChildren<Shield>(true);
+        }
+
+        public void OnShieldBroken(Shield shield)
+        {
+            if (shield != roomShield || permanentlyDisabled) return;
+            if (isMainRoom)
+            {
+                Debug.LogError($"[Room {roomName}] Main room shield broken. GAME OVER.");
+                if (GameManager.Instance != null) GameManager.Instance.RegisterCoreDestroyed();
+                return;
+            }
+            permanentlyDisabled = true;
+            State = RoomState.Fallen;
+            foreach (var structure in structures)
+            {
+                if (structure is Turret turret) turret.PermanentlyDisableFromRoom();
+            }
+            Debug.LogWarning($"[Room {roomName}] Shield broken. All room turrets permanently disabled.");
+        }
 
         // ========== Registration ==========
         public void RegisterStructure(DefensiveStructure s)
@@ -50,7 +78,7 @@ namespace ProjectBreach.Core
 
             foreach (var s in structures)
             {
-                if (s is Turret turret && !turret.IsDead)
+                if (s is Turret turret && !turret.IsDead && turret.gameObject.activeInHierarchy)
                     return;  // Still have alive turrets, not fallen
             }
 

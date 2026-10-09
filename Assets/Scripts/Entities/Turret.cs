@@ -19,7 +19,6 @@ namespace ProjectBreach.Core
         // ============================================================
 
         [Header("Turret Combat Settings")]
-        [SerializeField] private int maxHP = 30;
         [SerializeField] private int damage = 5;
         [SerializeField] private float fireRate = 1f;
         [SerializeField] private float attackRange = 8f;
@@ -166,7 +165,6 @@ namespace ProjectBreach.Core
         // COMBAT STATE
         // ============================================================
 
-        private int currentHP;
         private float fireTimer;
 
         private IDamageable currentTarget;
@@ -190,11 +188,10 @@ namespace ProjectBreach.Core
         // IDAMAGEABLE
         // ============================================================
 
-        public int MaxHP => maxHP;
-
-        public int CurrentHP => currentHP;
-
-        public bool IsDead => currentHP <= 0;
+        // Turrets no longer have health; they are disabled only by room shield failure.
+        public int MaxHP => int.MaxValue;
+        public int CurrentHP => int.MaxValue;
+        public bool IsDead => false;
 
         // ============================================================
         // AWAKE
@@ -206,7 +203,6 @@ namespace ProjectBreach.Core
 
             SetupAudioSources();
 
-            currentHP = maxHP;
 
             if (upgradeController == null)
             {
@@ -317,7 +313,7 @@ namespace ProjectBreach.Core
             // Combat
             // --------------------------------------------------------
 
-            if (!isActive || IsDead)
+            if (!isActive || (OwnerRoom != null && OwnerRoom.IsPermanentlyDisabled))
             {
                 StopRotationSound();
                 if (upgradeController != null && upgradeController.ActiveHeliosIncinerator != null)
@@ -373,7 +369,7 @@ namespace ProjectBreach.Core
 
         private void ReconcilePowerState()
         {
-            if (IsDead)
+            if (OwnerRoom != null && OwnerRoom.IsPermanentlyDisabled)
                 return;
 
             // --------------------------------------------------------
@@ -431,8 +427,20 @@ namespace ProjectBreach.Core
         // TURN ON
         // ============================================================
 
+        public void PermanentlyDisableFromRoom()
+        {
+            base.TurnOff();
+            ReconcilePowerState();
+            targetActivation = 0f;
+            currentActivation = 0f;
+            RefreshActiveVisualRenderers();
+            ApplyActivationVisual();
+            enabled = false;
+        }
+
         public override void TurnOn()
         {
+            if (OwnerRoom != null && OwnerRoom.IsPermanentlyDisabled) return;
             base.TurnOn();
 
             targetActivation = 1f;
@@ -1320,27 +1328,8 @@ namespace ProjectBreach.Core
         // DAMAGE
         // ============================================================
 
-        public void TakeDamage(int amount)
-        {
-            if (IsDead)
-                return;
-
-            currentHP -= amount;
-
-            if (verboseLogging)
-            {
-                Debug.Log(
-                    $"[Turret] Took {amount} damage. " +
-                    $"HP = {currentHP}/{maxHP}"
-                );
-            }
-
-            if (currentHP <= 0)
-            {
-                currentHP = 0;
-                Die();
-            }
-        }
+        // Legacy IDamageable compatibility: turret health has been removed.
+        public void TakeDamage(int amount) { }
 
         // ============================================================
         // DIE

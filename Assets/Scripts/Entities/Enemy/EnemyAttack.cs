@@ -33,16 +33,9 @@ public class EnemyAttack : MonoBehaviour
         Transform aim = mover.AimPoint;
         if (aim == null) return;
 
-        // Damage shield
-        Shield shield = aim.GetComponent<Shield>();
-        if (shield != null)
-        {
-            shield.TakeDamage(damagePerShot);
-            return;
-        }
-
-        // Damage turret
-        IDamageable damageable = aim.GetComponentInParent<IDamageable>();
-        damageable?.TakeDamage(damagePerShot);
+        // Enemies damage shields by physically colliding with them.
+        // Turrets no longer have health and are never damaged by this attack.
+        Shield shield = aim.GetComponentInParent<Shield>();
+        if (shield != null) return;
     }
 }

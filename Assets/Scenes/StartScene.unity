@@ -960,6 +960,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1408627005}
   - component: {fileID: 1408627006}
+  - component: {fileID: 1408627008}
+  - component: {fileID: 1408627007}
   m_Layer: 0
   m_Name: Turret (1)
   m_TagString: Untagged
@@ -5493,7 +5495,7 @@ MonoBehaviour:
   sharpshooterUpgrade: {fileID: 829887172}
   heliosIncineratorUpgrade: {fileID: 829887173}
   currentVariant: 0
-  baseOperatingPowerCost: 30
+  baseOperatingPowerCost: 0
   baseVisual: {fileID: 745097457}
 --- !u!1 &852053105
 GameObject:
@@ -9140,6 +9142,43 @@ MonoBehaviour:
   recoilRecoverySpeed: 6
   recoilLocalDirection: {x: 0, y: 0, z: -1}
   upgradeController: {fileID: 829887174}
+--- !u!114 &1408627007
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 205444317}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d4adff8f7827481e89484c78825491c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MainRoomTurretUpgradeHotkeys
+  upgradeController: {fileID: 829887174}
+  mainRoom: {fileID: 1384470684}
+  doubleBarrelKey: 49
+  sharpshooterKey: 50
+  heliosKey: 51
+  requireMainRoomAssignment: 1
+--- !u!114 &1408627008
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 205444317}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cefe8896bd7c74d9b90b968da6e68fec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ProjectBreach.Core.TurretUpgradeController
+  turret: {fileID: 0}
+  doubleBarrelUpgrade: {fileID: 0}
+  sharpshooterUpgrade: {fileID: 0}
+  heliosIncineratorUpgrade: {fileID: 0}
+  currentVariant: 0
+  baseOperatingPowerCost: 30
+  baseVisual: {fileID: 0}
 --- !u!1 &1424213196
 GameObject:
   m_ObjectHideFlags: 0

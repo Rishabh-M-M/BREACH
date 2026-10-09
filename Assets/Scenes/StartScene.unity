@@ -10600,6 +10600,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1330230100005544817, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
+      propertyPath: m_Range
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 1389397422870993626, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
+      propertyPath: m_Range
+      value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: 4737208648179676500, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
+      propertyPath: m_Range
+      value: 100
+      objectReference: {fileID: 0}
     - target: {fileID: 4870754984315837510, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
       propertyPath: m_LocalPosition.x
       value: -835.4
@@ -10640,6 +10652,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4936737334805640003, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
+      propertyPath: m_Range
+      value: 100
+      objectReference: {fileID: 0}
     - target: {fileID: 5005220005414479839, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
       propertyPath: m_Name
       value: RoomBAirLock
@@ -10660,13 +10676,29 @@ PrefabInstance:
       propertyPath: destinationPoint
       value: 
       objectReference: {fileID: 800765704}
+    - target: {fileID: 5140888519034256280, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
+      propertyPath: m_Range
+      value: 200
+      objectReference: {fileID: 0}
     - target: {fileID: 5550726445210166776, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
       propertyPath: m_Name
       value: AirLockEnemySpawnerA
       objectReference: {fileID: 0}
+    - target: {fileID: 5760519657625354312, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
+      propertyPath: m_Range
+      value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: 6177627039277658738, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
+      propertyPath: m_Range
+      value: 200
+      objectReference: {fileID: 0}
     - target: {fileID: 6850429488697665182, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
       propertyPath: m_Name
       value: AirLockEnemySpawnerB
+      objectReference: {fileID: 0}
+    - target: {fileID: 7041902507893135168, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
+      propertyPath: m_Range
+      value: 200
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:

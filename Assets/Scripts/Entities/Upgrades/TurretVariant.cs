@@ -5,6 +5,6 @@ namespace ProjectBreach.Core
         Base,
         DoubleBarrel,
         Sharpshooter,
-        MachineLaser
+        HeliosIncinerator
     }
 }

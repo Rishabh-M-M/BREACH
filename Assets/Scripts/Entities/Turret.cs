@@ -177,6 +177,9 @@ namespace ProjectBreach.Core
         /// </summary>
         public IDamageable CurrentTarget => currentTarget;
 
+        // Exposed to continuous-fire upgrades without changing normal targeting.
+        public Transform ActiveFirePoint => firePoint;
+
         // ============================================================
         // DEBUG
         // ============================================================
@@ -317,6 +320,28 @@ namespace ProjectBreach.Core
             if (!isActive || IsDead)
             {
                 StopRotationSound();
+                if (upgradeController != null && upgradeController.ActiveHeliosIncinerator != null)
+                    upgradeController.ActiveHeliosIncinerator.StopForTurretOff();
+                return;
+            }
+
+            // Helios Incinerator owns its target lock, continuous DPS ramp, and
+            // overheat cycle. Keep the existing projectile path untouched for
+            // Base, Double Barrel, and Sharpshooter.
+            if (upgradeController != null && upgradeController.IsHeliosIncinerator)
+            {
+                HeliosIncineratorUpgrade laser = upgradeController.ActiveHeliosIncinerator;
+                if (laser != null)
+                {
+                    laser.Tick(this, Time.deltaTime);
+                    currentTarget = laser.LockedTarget;
+                }
+
+                if (currentTarget != null && turretHead != null)
+                    RotateTowardsTarget();
+                else
+                    StopRotationSound();
+
                 return;
             }
 
@@ -334,14 +359,10 @@ namespace ProjectBreach.Core
 
             fireTimer += Time.deltaTime;
 
-            float currentFireRate =
-                GetCurrentFireRate();
-
-            if (fireTimer >= currentFireRate &&
-                currentTarget != null)
+            float currentFireRate = GetCurrentFireRate();
+            if (fireTimer >= currentFireRate && currentTarget != null)
             {
                 fireTimer = 0f;
-
                 Shoot();
             }
         }

@@ -2938,7 +2938,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 717973167318073675, guid: bb1452abf6eabf640be3c3cad8b37672, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.5000305
+      value: -0.50006104
       objectReference: {fileID: 0}
     - target: {fileID: 717973167318073675, guid: bb1452abf6eabf640be3c3cad8b37672, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -5252,7 +5252,7 @@ Transform:
   m_GameObject: {fileID: 829369668}
   serializedVersion: 2
   m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071067}
-  m_LocalPosition: {x: -2.085106, y: -0.2, z: -0.007857514}
+  m_LocalPosition: {x: -2.070872, y: -0.2, z: -0.007857514}
   m_LocalScale: {x: -100, y: -100, z: -100}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -8248,7 +8248,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: d355c9429de944cfe921b2e5c78db056, type: 2}
+  - {fileID: 2100000, guid: 0def6286201d9704b9deff0af6e58e60, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -8445,6 +8445,63 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1302054753}
   m_Mesh: {fileID: -205828367580749765, guid: ea2299f234a384d8ba167f9ba20d54d2, type: 3}
+--- !u!1001 &1303428871
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 151440504080599394, guid: eda01660e8a4f411ea8f9cf3b4973d32, type: 3}
+      propertyPath: m_Name
+      value: TrapGroup
+      objectReference: {fileID: 0}
+    - target: {fileID: 1143066685975412680, guid: eda01660e8a4f411ea8f9cf3b4973d32, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 182.3201
+      objectReference: {fileID: 0}
+    - target: {fileID: 1143066685975412680, guid: eda01660e8a4f411ea8f9cf3b4973d32, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 3.8985116
+      objectReference: {fileID: 0}
+    - target: {fileID: 1143066685975412680, guid: eda01660e8a4f411ea8f9cf3b4973d32, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -138.1734
+      objectReference: {fileID: 0}
+    - target: {fileID: 1143066685975412680, guid: eda01660e8a4f411ea8f9cf3b4973d32, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1143066685975412680, guid: eda01660e8a4f411ea8f9cf3b4973d32, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1143066685975412680, guid: eda01660e8a4f411ea8f9cf3b4973d32, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1143066685975412680, guid: eda01660e8a4f411ea8f9cf3b4973d32, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1143066685975412680, guid: eda01660e8a4f411ea8f9cf3b4973d32, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1143066685975412680, guid: eda01660e8a4f411ea8f9cf3b4973d32, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1143066685975412680, guid: eda01660e8a4f411ea8f9cf3b4973d32, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: eda01660e8a4f411ea8f9cf3b4973d32, type: 3}
 --- !u!1 &1304095357
 GameObject:
   m_ObjectHideFlags: 0
@@ -9154,12 +9211,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d4adff8f7827481e89484c78825491c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MainRoomTurretUpgradeHotkeys
+  turret: {fileID: 0}
   upgradeController: {fileID: 829887174}
   mainRoom: {fileID: 1384470684}
   doubleBarrelKey: 49
   sharpshooterKey: 50
   heliosKey: 51
-  requireMainRoomAssignment: 1
+  operatingPowerCost: 0
 --- !u!114 &1408627008
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14253,3 +14311,4 @@ SceneRoots:
   - {fileID: 1493124734}
   - {fileID: 71182510}
   - {fileID: 989783518}
+  - {fileID: 1303428871}

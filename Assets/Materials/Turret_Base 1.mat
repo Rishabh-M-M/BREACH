@@ -81,10 +81,12 @@ Material:
     - _Parallax: 0.02
     - _PulseAmount: 0.2
     - _PulseSpeed: 2
+    - _ShadowBrightness: 0.18
     - _Shininess: 40
     - _Smoothness: 0.35
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
+    - _SpecularStrength: 0.25
     - _SrcBlend: 1
     - _UVSec: 0
     - _ZWrite: 1

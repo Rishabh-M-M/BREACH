@@ -26,6 +26,11 @@ namespace ProjectBreach.Core
         [SerializeField] private LineRenderer beamRenderer;
         [Tooltip("Optional beam origin. Uses the active turret fire point if empty.")]
         [SerializeField] private Transform beamStart;
+
+        [Header("Laser Audio")]
+        [Tooltip("Optional AudioSource. If empty, one is created automatically. The clip is taken from TurretAudioController.")]
+        [SerializeField] private AudioSource laserAudioSource;
+
         [SerializeField, Min(0.001f)] private float beamWidth = 0.08f;
         [SerializeField, Min(0.001f)] private float maximumBeamWidth = 0.24f;
 
@@ -58,6 +63,7 @@ namespace ProjectBreach.Core
         private void Awake()
         {
             ResolveTurretHead();
+            EnsureLaserAudioSource();
 
             if (beamRenderer != null)
             {
@@ -74,6 +80,56 @@ namespace ProjectBreach.Core
         private void OnValidate()
         {
             maximumBeamWidth = Mathf.Max(beamWidth, maximumBeamWidth);
+        }
+
+        private void EnsureLaserAudioSource()
+        {
+            if (laserAudioSource == null)
+                laserAudioSource = GetComponent<AudioSource>();
+
+            if (laserAudioSource == null)
+                laserAudioSource = gameObject.AddComponent<AudioSource>();
+
+            laserAudioSource.playOnAwake = false;
+            laserAudioSource.loop = true;
+            laserAudioSource.spatialBlend = 0f;
+            laserAudioSource.Stop();
+        }
+
+        private void UpdateLaserAudio(Turret turret, bool shouldPlay)
+        {
+            if (laserAudioSource == null)
+                EnsureLaserAudioSource();
+
+            if (laserAudioSource == null)
+                return;
+
+            AudioClip sharedLaserClip = TurretAudioController.Instance != null
+                ? TurretAudioController.Instance.GetFireSound(TurretVariant.HeliosIncinerator)
+                : null;
+
+            if (laserAudioSource.clip != sharedLaserClip)
+                laserAudioSource.clip = sharedLaserClip;
+
+            bool roomAudible = TurretAudioController.Instance == null ||
+                               TurretAudioController.Instance.IsRoomAudioAudible(turret);
+
+            if (TurretAudioController.Instance != null)
+                laserAudioSource.volume = TurretAudioController.Instance.FireVolume;
+            else
+                laserAudioSource.volume = 1f;
+
+            laserAudioSource.mute = !roomAudible;
+
+            if (shouldPlay && sharedLaserClip != null)
+            {
+                if (!laserAudioSource.isPlaying)
+                    laserAudioSource.Play();
+            }
+            else if (laserAudioSource.isPlaying)
+            {
+                laserAudioSource.Stop();
+            }
         }
 
         private void ResolveTurretHead()
@@ -131,6 +187,7 @@ namespace ProjectBreach.Core
             if (turret == null || !turret.IsActive || turret.IsDead)
             {
                 StopBeam();
+                UpdateLaserAudio(turret, false);
                 return;
             }
 
@@ -138,6 +195,7 @@ namespace ProjectBreach.Core
             {
                 cooldownTimer -= deltaTime;
                 StopBeam();
+                UpdateLaserAudio(turret, false);
                 if (cooldownTimer <= 0f)
                 {
                     coolingDown = false;
@@ -168,6 +226,7 @@ namespace ProjectBreach.Core
             if (lockedTarget == null)
             {
                 StopBeam();
+                UpdateLaserAudio(turret, false);
                 return;
             }
 
@@ -185,6 +244,7 @@ namespace ProjectBreach.Core
             }
 
             UpdateBeam(turret, lockedTarget);
+            UpdateLaserAudio(turret, true);
 
             // Reaching max DPS causes an overheat cycle. Clear the target
             // during cooldown so the next cycle performs a fresh HP ranking.
@@ -199,6 +259,7 @@ namespace ProjectBreach.Core
         private void BeginCooldown()
         {
             coolingDown = true;
+            UpdateLaserAudio(null, false);
             cooldownTimer = cooldownDuration;
             lockedTarget = null;
             fractionalDamage = 0f;
@@ -259,6 +320,7 @@ namespace ProjectBreach.Core
         public void StopForTurretOff()
         {
             StopBeam();
+            UpdateLaserAudio(null, false);
             lockedTarget = null;
             rampTimer = 0f;
             cooldownTimer = 0f;
@@ -293,6 +355,7 @@ namespace ProjectBreach.Core
         private void OnDisable()
         {
             StopBeam();
+            UpdateLaserAudio(null, false);
             lockedTarget = null;
             coolingDown = false;
             rampTimer = 0f;

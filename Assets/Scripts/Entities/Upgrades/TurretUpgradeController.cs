@@ -8,6 +8,7 @@ namespace ProjectBreach.Core
         [SerializeField] private Turret turret;
         [SerializeField] private DoubleBarrelUpgrade doubleBarrelUpgrade;
         [SerializeField] private SharpshooterUpgrade sharpshooterUpgrade;
+        [SerializeField] private HeliosIncineratorUpgrade heliosIncineratorUpgrade;
 
         [Header("Current Variant")]
         [SerializeField] private TurretVariant currentVariant = TurretVariant.Base;
@@ -22,6 +23,8 @@ namespace ProjectBreach.Core
         public bool IsBase => currentVariant == TurretVariant.Base;
         public bool IsDoubleBarrel => currentVariant == TurretVariant.DoubleBarrel;
         public bool IsSharpshooter => currentVariant == TurretVariant.Sharpshooter;
+        public bool IsHeliosIncinerator => currentVariant == TurretVariant.HeliosIncinerator;
+        public HeliosIncineratorUpgrade ActiveHeliosIncinerator => heliosIncineratorUpgrade;
 
         public string DisplayName
         {
@@ -35,8 +38,8 @@ namespace ProjectBreach.Core
                     case TurretVariant.Sharpshooter:
                         return "Sharpshooter (SS)";
 
-                    case TurretVariant.MachineLaser:
-                        return "Machine Laser";
+                    case TurretVariant.HeliosIncinerator:
+                        return "Helios Incinerator";
 
                     default:
                         return "Base Turret";
@@ -54,6 +57,9 @@ namespace ProjectBreach.Core
 
             if (sharpshooterUpgrade == null)
                 sharpshooterUpgrade = GetComponent<SharpshooterUpgrade>();
+
+            if (heliosIncineratorUpgrade == null)
+                heliosIncineratorUpgrade = GetComponent<HeliosIncineratorUpgrade>();
 
             if (turret == null)
             {
@@ -78,9 +84,12 @@ namespace ProjectBreach.Core
 
                 case TurretVariant.Sharpshooter:
                     if (sharpshooterUpgrade != null)
-                        turret.SetPowerCost(
-                            sharpshooterUpgrade.OperatingPowerCost
-                        );
+                        turret.SetPowerCost(sharpshooterUpgrade.OperatingPowerCost);
+                    break;
+
+                case TurretVariant.HeliosIncinerator:
+                    if (heliosIncineratorUpgrade != null)
+                        turret.SetPowerCost(heliosIncineratorUpgrade.OperatingPowerCost);
                     break;
             }
 
@@ -198,6 +207,33 @@ namespace ProjectBreach.Core
         }
 
         // ============================================================
+        // MACHINE LASER PURCHASE
+        // ============================================================
+
+        public bool TryUpgradeToHeliosIncinerator()
+        {
+            if (turret == null || heliosIncineratorUpgrade == null ||
+                currentVariant != TurretVariant.Base || PowerManager.Instance == null)
+                return false;
+
+            if (!PowerManager.Instance.TryAllocatePermanent(heliosIncineratorUpgrade.PermanentPowerCost))
+            {
+                UIManager.Instance?.ShowMessage("Insufficient power capacity!");
+                return false;
+            }
+
+            if (turret.IsActive)
+                turret.TurnOff();
+
+            currentVariant = TurretVariant.HeliosIncinerator;
+            turret.SetPowerCost(heliosIncineratorUpgrade.OperatingPowerCost);
+            ApplyVisuals();
+            turret.RefreshActiveVisuals();
+            UIManager.Instance?.ShowMessage("Helios Incinerator upgrade installed!");
+            return true;
+        }
+
+        // ============================================================
         // ACTIVE UPGRADE
         // ============================================================
 
@@ -210,6 +246,9 @@ namespace ProjectBreach.Core
 
                 case TurretVariant.Sharpshooter:
                     return sharpshooterUpgrade;
+
+                case TurretVariant.HeliosIncinerator:
+                    return heliosIncineratorUpgrade;
 
                 default:
                     return null;
@@ -375,10 +414,12 @@ namespace ProjectBreach.Core
             if (sharpshooterUpgrade != null)
             {
                 sharpshooterUpgrade.SetVisualActive(
-                    currentVariant ==
-                    TurretVariant.Sharpshooter
+                    currentVariant == TurretVariant.Sharpshooter
                 );
             }
+
+            if (heliosIncineratorUpgrade != null)
+                heliosIncineratorUpgrade.SetVisualActive(currentVariant == TurretVariant.HeliosIncinerator);
         }
 
         public void DrawGizmos(Turret turretInstance)
@@ -398,6 +439,12 @@ namespace ProjectBreach.Core
         private void TestBuySharpshooter()
         {
             TryUpgradeToSharpshooter();
+        }
+
+        [ContextMenu("TEST - Buy Helios Incinerator")]
+        private void TestBuyHeliosIncinerator()
+        {
+            TryUpgradeToHeliosIncinerator();
         }
     }
 }

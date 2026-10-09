@@ -22,8 +22,8 @@ namespace ProjectBreach.Core
         [Tooltip("Sharpshooter upgrade firing sound.")]
         [SerializeField] private AudioClip sharpshooterFireSound;
 
-        [Tooltip("Machine Laser upgrade firing sound. Assign when the upgrade is implemented.")]
-        [SerializeField] private AudioClip machineLaserFireSound;
+        [Tooltip("Helios Incinerator laser sound. This clip loops while the beam fires and stops on cooldown; use a seamless loop if possible.")]
+        [SerializeField] private AudioClip heliosIncineratorFireSound;
 
         [Tooltip("Shared looping sound used whenever a turret head is rotating.")]
         [SerializeField] private AudioClip rotationSound;
@@ -53,8 +53,8 @@ namespace ProjectBreach.Core
                 case TurretVariant.Sharpshooter:
                     return sharpshooterFireSound;
 
-                case TurretVariant.MachineLaser:
-                    return machineLaserFireSound;
+                case TurretVariant.HeliosIncinerator:
+                    return heliosIncineratorFireSound;
 
                 default:
                     return baseFireSound;

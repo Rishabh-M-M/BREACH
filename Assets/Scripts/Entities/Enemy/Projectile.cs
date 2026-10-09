@@ -24,6 +24,13 @@ namespace ProjectBreach.Core
         private bool hasHit = false;
         private Vector3 flyDirection;
 
+        // Sharpshooter projectile state.
+        private bool isSharpshooterProjectile;
+        private float sharpshooterSpeed;
+        private float sharpshooterDamagePerMetre;
+        private int sharpshooterMaxDamage;
+        private Vector3 projectileStartPosition;
+
         // Verbose logging is a WebGL performance tax (console I/O on every spawn/hit).
         private static bool verboseLogging = false;
 
@@ -41,7 +48,13 @@ namespace ProjectBreach.Core
             this.damage = dmg;
             hasHit = false;
 
-            // Calculate initial direction toward target
+            isSharpshooterProjectile = false;
+            sharpshooterSpeed = 0f;
+            sharpshooterDamagePerMetre = 0f;
+            sharpshooterMaxDamage = 0;
+            projectileStartPosition = transform.position;
+
+            // Normal projectiles use the existing homing behaviour.
             UpdateFlyDirection();
 
             // Safety: auto-destroy after lifetime
@@ -50,9 +63,104 @@ namespace ProjectBreach.Core
             if (verboseLogging) Debug.Log($"[Projectile] Initialized, direction: {flyDirection}, speed: {speed}");
         }
 
+        /// <summary>
+        /// Initialize a projectile that travels in one fixed straight line.
+        ///
+        /// This is used by the Double Barrel turret. The turret calculates
+        /// the firing direction from the midpoint between its two physical
+        /// muzzle spawners, then both projectiles use that exact direction.
+        /// The projectile therefore does NOT home toward the target.
+        /// </summary>
+        public void InitializeStraight(Vector3 direction, int dmg)
+        {
+            target = null;
+            damage = dmg;
+            hasHit = false;
+
+            isSharpshooterProjectile = false;
+            sharpshooterSpeed = 0f;
+            sharpshooterDamagePerMetre = 0f;
+            sharpshooterMaxDamage = 0;
+            projectileStartPosition = transform.position;
+
+            if (direction.sqrMagnitude < 0.0001f)
+            {
+                direction = transform.forward;
+            }
+            else
+            {
+                direction.Normalize();
+            }
+
+            flyDirection = direction;
+            transform.forward = flyDirection;
+
+            // Safety: auto-destroy after lifetime
+            Destroy(gameObject, lifeTime);
+
+            if (verboseLogging)
+            {
+                Debug.Log(
+                    $"[Projectile] Straight initialized, " +
+                    $"direction: {flyDirection}, speed: {speed}"
+                );
+            }
+        }
+
+        /// <summary>
+        /// Initialize the Sharpshooter projectile.
+        /// It travels in one fixed direction at a much higher speed than
+        /// the normal projectile. Its damage is calculated from the
+        /// distance it actually travelled before impact.
+        /// </summary>
+        public void InitializeSharpshooter(
+            Vector3 direction,
+            int baseDamage,
+            float projectileSpeed,
+            float damagePerMetre,
+            int maxDamage
+        )
+        {
+            target = null;
+            damage = baseDamage;
+            hasHit = false;
+
+            isSharpshooterProjectile = true;
+            sharpshooterSpeed = Mathf.Max(0f, projectileSpeed);
+            sharpshooterDamagePerMetre = Mathf.Max(0f, damagePerMetre);
+            sharpshooterMaxDamage = Mathf.Max(baseDamage, maxDamage);
+            projectileStartPosition = transform.position;
+
+            if (direction.sqrMagnitude < 0.0001f)
+                direction = transform.forward;
+            else
+                direction.Normalize();
+
+            flyDirection = direction;
+            transform.forward = flyDirection;
+
+            Destroy(gameObject, lifeTime);
+
+            if (verboseLogging)
+            {
+                Debug.Log(
+                    $"[Projectile] Sharpshooter initialized. " +
+                    $"Speed = {sharpshooterSpeed}, " +
+                    $"Base Damage = {baseDamage}, " +
+                    $"Damage/Metre = {sharpshooterDamagePerMetre}"
+                );
+            }
+        }
+
         void Update()
         {
             if (hasHit) return;
+
+            if (isSharpshooterProjectile)
+            {
+                ContinueFlyingSharpshooter();
+                return;
+            }
 
             // Check if target is valid and alive
             bool targetValid = target != null && !target.IsDead;
@@ -67,6 +175,47 @@ namespace ProjectBreach.Core
                 // Target lost/dead - continue flying straight
                 ContinueFlyingStraight();
             }
+        }
+
+        private void ContinueFlyingSharpshooter()
+        {
+            if (flyDirection == Vector3.zero)
+                flyDirection = transform.forward;
+
+            if (TryGetComponent(out Rigidbody rb) && !rb.isKinematic)
+            {
+                rb.linearVelocity =
+                    flyDirection * sharpshooterSpeed;
+            }
+            else
+            {
+                transform.position +=
+                    flyDirection *
+                    sharpshooterSpeed *
+                    Time.deltaTime;
+            }
+
+            transform.forward = flyDirection;
+        }
+
+        private int GetSharpshooterDamage()
+        {
+            float distanceTravelled =
+                Vector3.Distance(
+                    projectileStartPosition,
+                    transform.position
+                );
+
+            float scaledDamage =
+                damage +
+                distanceTravelled *
+                sharpshooterDamagePerMetre;
+
+            return Mathf.Clamp(
+                Mathf.RoundToInt(scaledDamage),
+                damage,
+                sharpshooterMaxDamage
+            );
         }
 
         /// <summary>
@@ -197,8 +346,19 @@ namespace ProjectBreach.Core
 
             if (!damageable.IsDead)
             {
-                damageable.TakeDamage(damage);
-                if (verboseLogging) Debug.Log($"[Projectile] Hit target for {damage} damage");
+                int damageToDeal =
+                    isSharpshooterProjectile
+                        ? GetSharpshooterDamage()
+                        : damage;
+
+                damageable.TakeDamage(damageToDeal);
+
+                if (verboseLogging)
+                {
+                    Debug.Log(
+                        $"[Projectile] Hit target for {damageToDeal} damage"
+                    );
+                }
             }
             else
             {

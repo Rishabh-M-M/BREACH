@@ -5,372 +5,1392 @@ namespace ProjectBreach.Core
 {
     /// <summary>
     /// Turret: Defensive structure that automatically acquires and shoots enemies.
-    /// Implements IDamageable (can be destroyed), IUpgradable (W6).
-    /// Demo values: HP 30, Damage 5, FireRate 1s, Range 80m, PowerCost 40.
+    ///
+    /// Responsibilities:
+    /// - Base turret combat, targeting and rotation
+    /// - Operating power allocation/refund
+    /// - Activation shader and recoil
+    /// - Delegation of upgrade-specific behaviour to upgrade components
     /// </summary>
-    public class Turret : DefensiveStructure, IDamageable  // IUpgradable removed for W2 Demo
+    public class Turret : DefensiveStructure, IDamageable
     {
+        // ============================================================
+        // TURRET COMBAT SETTINGS
+        // ============================================================
+
         [Header("Turret Combat Settings")]
         [SerializeField] private int maxHP = 30;
         [SerializeField] private int damage = 5;
-        [SerializeField] private float fireRate = 1f;      // Seconds between shots
+        [SerializeField] private float fireRate = 1f;
         [SerializeField] private float attackRange = 8f;
 
+        // ============================================================
+        // TARGETING
+        // ============================================================
+
         [Header("Target Filtering")]
-        [Tooltip("Collider layers considered for targeting. Left as Everything on purpose: the EnemyHealth guard in AcquireTarget is what blocks friendly fire, so an unconfigured mask cannot silently disarm the turret.")]
+        [Tooltip("Collider layers considered for targeting.")]
         [SerializeField] private LayerMask targetMask = ~0;
 
-        [Header("References")]
+        // ============================================================
+        // PROJECTILE
+        // ============================================================
+
+        [Header("Projectile")]
         [SerializeField] private GameObject projectilePrefab;
+
+        [Tooltip(
+            "Main firing point. Double Barrel uses this same point " +
+            "and creates two projectiles with an adjustable horizontal gap."
+        )]
         [SerializeField] private Transform firePoint;
 
+        // ============================================================
+        // TURRET ROTATION
+        // ============================================================
+
         [Header("Turret Rotation")]
-        [SerializeField] private Transform turretHead;    // The rotating part (turret_4)
-        [SerializeField] private float rotationSpeed = 90f; // Degrees per second
-        [SerializeField] private float rotationOffset = 0f;  // Fix model forward direction (0/90/180/270)
+        [SerializeField] private Transform turretHead;
+        [SerializeField] private float rotationSpeed = 90f;
+        [SerializeField] private float rotationOffset = -90f;
         [SerializeField] private bool lockXRotation = true;
 
-        [Header("Activation Visuals")]
-        [SerializeField] private Renderer topRenderer;     // turret_1_high_turret_1_0 (uses TurretTop shader)
-        [SerializeField] private Renderer baseRenderer;    // bottom_1_high_bottom_1_0 (uses TurretBase shader)
-        [SerializeField] private float activationLerpSpeed = 4f; // How fast _Activation animates toward its target
+        // ============================================================
+        // AUDIO
+        // Audio clips/settings are shared by ALL turrets through
+        // TurretAudioController. Each turret still owns its local
+        // AudioSources so 3D spatial audio remains correct.
+
+        private AudioSource fireAudioSource;
+        private AudioSource rotationAudioSource;
+
+        // Base references. Upgrade-specific transforms are supplied by
+        // TurretUpgradeController.
+        private Transform baseTurretHead;
+        private Transform baseFirePoint;
+        private Transform activeVariantHead;
+
+        // ============================================================
+        // ACTIVATION SHADER
+        // ============================================================
+
+        [Header("Activation Shader")]
+        [Tooltip(
+            "Shader property used to control turret ON/OFF appearance."
+        )]
+        [SerializeField] private string activationShaderProperty =
+            "_Activation";
+
+        [Tooltip(
+            "How quickly the ON/OFF shader transitions."
+        )]
+        [SerializeField] private float activationLerpSpeed = 8f;
+
+        // ============================================================
+        // RECOIL
+        // ============================================================
 
         [Header("Shooting Recoil")]
-        [SerializeField] private float recoilDistance = 0.12f;      // How far the head kicks back
-        [SerializeField] private float recoilRecoverySpeed = 6f;    // How fast it returns to rest
-        [SerializeField] private Vector3 recoilLocalDirection = new Vector3(0f, 0f, -1f); // Tune per model orientation
+        [SerializeField] private float recoilDistance = 0.12f;
+        [SerializeField] private float recoilRecoverySpeed = 6f;
 
-        private static readonly int ActivationID = Shader.PropertyToID("_Activation");
-        private static readonly int FireTimeID = Shader.PropertyToID("_FireTime");
+        [SerializeField] private Vector3 recoilLocalDirection =
+            new Vector3(0f, -1f, 0f);
 
-        private MaterialPropertyBlock topPropBlock;
-        private MaterialPropertyBlock basePropBlock;
+        // ============================================================
+        // UPGRADE
+        // ============================================================
+
+        [Header("Upgrade")]
+        [SerializeField] private TurretUpgradeController upgradeController;
+
+        // ============================================================
+        // SHADER
+        // ============================================================
+
+        private int activationShaderID;
+        private static readonly int FireTimeID =
+            Shader.PropertyToID("_FireTime");
+
+        private Renderer[] activeVisualRenderers;
+        private MaterialPropertyBlock activationPropertyBlock;
+        private MaterialPropertyBlock firePropertyBlock;
+
         private float currentActivation;
         private float targetActivation;
 
+        // ============================================================
+        // RECOIL
+        // ============================================================
+
         private Vector3 headRestLocalPos;
-        private float recoilAmount; // 0 = rest, 1 = full recoil, decays over time
+        private float recoilAmount;
 
         private float defaultLocalX;
-
+        private float defaultLocalY;
         private float defaultLocalZ;
 
-        // Verbose combat logging is a WebGL performance tax (console I/O every shot).
-        private static bool verboseLogging = false;
-
-        // Whether THIS turret currently holds a power allocation. Tracked per-turret so
-        // the ledger never depends on which code path toggled the turret (button,
-        // Inspector, EMP, future systems) -- see ReconcilePowerState().
-        private bool holdingPower;
+        // ============================================================
+        // POWER
+        // ============================================================
 
         /// <summary>
-        /// Keeps the power ledger in sync with the actual IsActive state, every frame.
-        /// Any activation path (UI button, direct Inspector toggle, scripted enable)
-        /// allocates exactly once; any deactivation refunds exactly once. If power is
-        /// insufficient the turret is forced back off and the player is notified, so
-        /// there is no such thing as a free activation.
+        /// Operating power cost for this individual turret.
+        /// The value is changed by TurretUpgradeController when an
+        /// upgrade changes the turret's operating cost.
         /// </summary>
-        private void ReconcilePowerState()
-        {
-            if (IsDead) return;
+        public int PowerCost => powerCost;
 
-            if (isActive && !holdingPower)
+        /// <summary>
+        /// Changes this turret's operating power cost.
+        /// This only changes the stored cost; it does not allocate or
+        /// refund power. Turret.TurnOn/TurnOff owns operating power.
+        /// </summary>
+        public void SetPowerCost(int newPowerCost)
+        {
+            if (newPowerCost < 0)
             {
-                if (PowerManager.Instance == null || PowerManager.Instance.TryAllocate(powerCost))
-                {
-                    // No PowerManager in a test scene: activate for free rather than brick the turret.
-                    holdingPower = true;
-                }
-                else
-                {
-                    isActive = false;
-                    UIManager.Instance?.ShowMessage("Insufficient power!");
-                }
+                Debug.LogError(
+                    "[Turret] Power cost cannot be negative."
+                );
+                return;
             }
-            else if (!isActive && holdingPower)
-            {
-                PowerManager.Instance?.Refund(powerCost);
-                holdingPower = false;
-            }
+
+            powerCost = newPowerCost;
         }
+
+        // True when THIS turret currently owns its operating power.
+        private bool holdingPower;
+
+        // ============================================================
+        // COMBAT STATE
+        // ============================================================
 
         private int currentHP;
         private float fireTimer;
-        private IDamageable currentTarget;
-        private int level = 1;
 
-        // IDamageable implementation
+        private IDamageable currentTarget;
+
+        /// <summary>
+        /// Current target selected by this turret.
+        /// Exposed so upgrade components can use the same target.
+        /// </summary>
+        public IDamageable CurrentTarget => currentTarget;
+
+        // ============================================================
+        // DEBUG
+        // ============================================================
+
+        private static bool verboseLogging = false;
+
+        // ============================================================
+        // IDAMAGEABLE
+        // ============================================================
+
         public int MaxHP => maxHP;
+
         public int CurrentHP => currentHP;
+
         public bool IsDead => currentHP <= 0;
 
-        // IUpgradable implementation (W6, commented out for Demo)
-        // public int Level => level
+        // ============================================================
+        // AWAKE
+        // ============================================================
 
         protected override void Awake()
         {
             base.Awake();
+
+            SetupAudioSources();
+
             currentHP = maxHP;
 
-            // Safety net: a zero mask silently disarms this turret (OverlapSphere returns
-            // nothing) whenever the Enemy layer has not been configured yet. Fall back to
-            // Everything; the EnemyHealth guard in AcquireTarget still blocks friendly fire.
+            if (upgradeController == null)
+            {
+                upgradeController =
+                    GetComponent<TurretUpgradeController>();
+            }
+
             if (targetMask.value == 0)
             {
                 targetMask = ~0;
             }
 
+            // --------------------------------------------------------
+            // Save the Inspector-assigned base references and find the
+            // Double Barrel head automatically.
+            // --------------------------------------------------------
+
+            baseTurretHead = turretHead;
+            baseFirePoint = firePoint;
+
+            ApplyVariantTransforms();
+
+            // --------------------------------------------------------
+            // Rotation setup
+            // --------------------------------------------------------
+
             if (turretHead != null)
             {
-                defaultLocalX = turretHead.localEulerAngles.x;   // Cache the authored rest pose
-                defaultLocalZ = turretHead.localEulerAngles.z;   // Cache the authored rest pose
-                headRestLocalPos = turretHead.localPosition;
+                defaultLocalX =
+                    turretHead.localEulerAngles.x;
+
+                defaultLocalY =
+                    turretHead.localEulerAngles.y;
+
+                defaultLocalZ =
+                    turretHead.localEulerAngles.z;
+
+                headRestLocalPos =
+                    turretHead.localPosition;
             }
 
-            topPropBlock = new MaterialPropertyBlock();
-            basePropBlock = new MaterialPropertyBlock();
+            // --------------------------------------------------------
+            // Shader setup
+            // --------------------------------------------------------
 
-            // Sync visuals with whatever isActive was set to at spawn (e.g. from prefab defaults)
-            targetActivation = isActive ? 1f : 0f;
-            currentActivation = targetActivation;
+            activationShaderID =
+                Shader.PropertyToID(
+                    activationShaderProperty
+                );
+
+            activationPropertyBlock =
+                new MaterialPropertyBlock();
+
+            firePropertyBlock =
+                new MaterialPropertyBlock();
+
+            // --------------------------------------------------------
+            // Initial activation state
+            // --------------------------------------------------------
+
+            targetActivation =
+                isActive ? 1f : 0f;
+
+            currentActivation =
+                targetActivation;
+        }
+
+        // ============================================================
+        // START
+        // ============================================================
+
+        private void Start()
+        {
+            /*
+             * Start runs after all Awake calls.
+             *
+             * This is important because TurretUpgradeController also
+             * switches the Def / DB visual in Awake().
+             */
+
+            RefreshActiveVisualRenderers();
+
             ApplyActivationVisual();
         }
 
+        // ============================================================
+        // UPDATE
+        // ============================================================
+
         private void Update()
         {
-            // Activation glow/grayscale and recoil recovery run regardless of active state,
-            // so a turret smoothly fades out and its head settles even the instant it's turned off.
+            // --------------------------------------------------------
+            // Power
+            // --------------------------------------------------------
+
             ReconcilePowerState();
+
+            // --------------------------------------------------------
+            // Visuals
+            // --------------------------------------------------------
+
+            ApplyVariantTransforms();
             UpdateActivationVisual();
+
             UpdateRecoil();
 
-            // Only active turrets can shoot
-            if (!isActive || IsDead) return;
+            // --------------------------------------------------------
+            // Combat
+            // --------------------------------------------------------
 
-            // Acquire target
+            if (!isActive || IsDead)
+            {
+                StopRotationSound();
+                return;
+            }
+
             AcquireTarget();
 
-            // Rotate turret head toward target (Y axis only)
-            if (currentTarget != null && turretHead != null)
+            if (currentTarget != null &&
+                turretHead != null)
             {
                 RotateTowardsTarget();
             }
+            else
+            {
+                StopRotationSound();
+            }
 
-            // Fire timer
             fireTimer += Time.deltaTime;
-            if (fireTimer >= fireRate && currentTarget != null)
+
+            float currentFireRate =
+                GetCurrentFireRate();
+
+            if (fireTimer >= currentFireRate &&
+                currentTarget != null)
             {
                 fireTimer = 0f;
+
                 Shoot();
             }
         }
 
-        /// <summary>
-        /// Smoothly moves currentActivation toward targetActivation and pushes it to both
-        /// materials via MaterialPropertyBlock. Using property blocks (not renderer.material)
-        /// keeps each turret instance's shader state fully independent without leaking
-        /// per-instance material copies, and without touching the shared material asset
-        /// (which would otherwise change every turret in the scene at once).
-        /// </summary>
-        private void UpdateActivationVisual()
+        // ============================================================
+        // POWER
+        // ============================================================
+
+        private void ReconcilePowerState()
         {
-            // Derive the visual target from the source of truth (isActive) every frame,
-            // so edits made straight in the Inspector (or any system that flips isActive
-            // without calling TurnOn/TurnOff, e.g. a power cut) are reflected too.
-            targetActivation = isActive ? 1f : 0f;
+            if (IsDead)
+                return;
 
-            if (Mathf.Approximately(currentActivation, targetActivation)) return;
+            // --------------------------------------------------------
+            // Turret ON
+            // --------------------------------------------------------
 
-            currentActivation = Mathf.MoveTowards(currentActivation, targetActivation, activationLerpSpeed * Time.deltaTime);
-            ApplyActivationVisual();
-        }
-
-        private void ApplyActivationVisual()
-        {
-            if (topRenderer != null)
+            if (isActive && !holdingPower)
             {
-                topRenderer.GetPropertyBlock(topPropBlock);
-                topPropBlock.SetFloat(ActivationID, currentActivation);
-                topRenderer.SetPropertyBlock(topPropBlock);
+                if (PowerManager.Instance == null)
+                {
+                    /*
+                     * Allows turret testing in scenes where the
+                     * PowerManager isn't present.
+                     */
+                    holdingPower = true;
+                    PlayPowerOnSound();
+                    return;
+                }
+
+                if (PowerManager.Instance.TryAllocate(powerCost))
+                {
+                    holdingPower = true;
+                    PlayPowerOnSound();
+                }
+                else
+                {
+                    // Not enough operating power.
+                    isActive = false;
+
+                    UIManager.Instance?.ShowMessage(
+                        "Insufficient power!"
+                    );
+                }
             }
 
-            if (baseRenderer != null)
+            // --------------------------------------------------------
+            // Turret OFF
+            // --------------------------------------------------------
+
+            else if (!isActive && holdingPower)
             {
-                baseRenderer.GetPropertyBlock(basePropBlock);
-                basePropBlock.SetFloat(ActivationID, currentActivation);
-                baseRenderer.SetPropertyBlock(basePropBlock);
+                if (PowerManager.Instance != null)
+                {
+                    PowerManager.Instance.Refund(
+                        powerCost
+                    );
+                }
+
+                holdingPower = false;
+                PlayPowerOffSound();
             }
         }
 
-        /// <summary>
-        /// Kicks the turret head back along recoilLocalDirection, then eases it back to rest.
-        /// The offset is rotated by turretHead's CURRENT localRotation before being applied, so
-        /// recoil always kicks straight back along the barrel — even while the head is rotated
-        /// off-axis tracking a target — instead of sliding sideways along the parent's fixed axes.
-        /// </summary>
-        private void UpdateRecoil()
-        {
-            if (turretHead == null) return;
-            if (recoilAmount <= 0f) return;
-
-            recoilAmount = Mathf.MoveTowards(recoilAmount, 0f, recoilRecoverySpeed * Time.deltaTime);
-
-            Vector3 rotatedOffset = turretHead.localRotation * (recoilLocalDirection.normalized * recoilDistance * recoilAmount);
-            turretHead.localPosition = headRestLocalPos + rotatedOffset;
-        }
+        // ============================================================
+        // TURN ON
+        // ============================================================
 
         public override void TurnOn()
         {
             base.TurnOn();
+
             targetActivation = 1f;
+            RefreshActiveVisualRenderers();
+
+            // Ensure the active Def/DB model is immediately in its
+            // powered-on visual state. Update() will continue to keep
+            // it synchronized afterwards.
+            currentActivation = 1f;
+            ApplyActivationVisual();
         }
+
+        // ============================================================
+        // TURN OFF
+        // ============================================================
 
         public override void TurnOff()
         {
+            /*
+             * VERY IMPORTANT:
+             *
+             * If the turret is Base:
+             *
+             *     Operating cost = 30
+             *
+             * After upgrade:
+             *
+             *     Operating cost = 50
+             *
+             * We MUST refund the currently held cost BEFORE the
+             * upgrade controller changes PowerCost from 30 -> 50.
+             *
+             * base.TurnOff() changes isActive to false.
+             * ReconcilePowerState() then refunds the old cost.
+             */
+
             base.TurnOff();
+
+            ReconcilePowerState();
+
             targetActivation = 0f;
+
+            RefreshActiveVisualRenderers();
         }
 
-        /// <summary>
-        /// Rotate turret head to face current target (Y axis only).
-        /// Uses LookAt for simplicity, works even with offset pivots.
-        /// </summary>
-        private void RotateTowardsTarget()
+        // ============================================================
+        // ACTIVE VARIANT TRANSFORMS
+        // ============================================================
+
+        private void ApplyVariantTransforms()
         {
-            MonoBehaviour targetMb = currentTarget as MonoBehaviour;
-            if (targetMb == null) return;
+            Transform desiredHead = baseTurretHead;
+            Transform desiredFirePoint = baseFirePoint;
 
-            Vector3 toTarget = targetMb.transform.position - turretHead.position;
-            toTarget.y = 0f;
-            if (toTarget.sqrMagnitude < 0.0001f) return;
+            if (upgradeController != null)
+            {
+                desiredHead =
+                    upgradeController.GetActiveTurretHead(
+                        baseTurretHead
+                    );
 
-            float targetYaw = Quaternion.LookRotation(toTarget).eulerAngles.y;
-            float parentYaw = turretHead.parent != null ? turretHead.parent.eulerAngles.y : 0f;
-            float localYaw = targetYaw - parentYaw + rotationOffset;
+                desiredFirePoint =
+                    upgradeController.GetActiveFirePoint(
+                        baseFirePoint
+                    );
+            }
 
+            if (desiredHead == null)
+                return;
 
-            Quaternion targetLocalRotation = Quaternion.Euler(defaultLocalX, localYaw, defaultLocalZ);
+            bool headChanged =
+                activeVariantHead != desiredHead;
 
+            turretHead = desiredHead;
+            firePoint =
+                desiredFirePoint != null
+                    ? desiredFirePoint
+                    : desiredHead;
 
-            turretHead.localRotation = Quaternion.RotateTowards(
-                turretHead.localRotation,
-                targetLocalRotation,
-                rotationSpeed * Time.deltaTime
-            );
+            // Only recache the authored rest transform when switching
+            // between turret variants. Never reset the head every frame.
+            if (headChanged)
+            {
+                activeVariantHead = desiredHead;
+
+                defaultLocalX =
+                    turretHead.localEulerAngles.x;
+
+                defaultLocalY =
+                    turretHead.localEulerAngles.y;
+
+                defaultLocalZ =
+                    turretHead.localEulerAngles.z;
+
+                headRestLocalPos =
+                    turretHead.localPosition;
+            }
         }
 
-        /// <summary>
-        /// Find nearest alive enemy within attack range.
-        /// Uses OverlapSphere for Demo simplicity.
-        /// </summary>
+        // ============================================================
+        // TARGET ACQUISITION
+        // ============================================================
+
         private void AcquireTarget()
         {
-            Collider[] hits = Physics.OverlapSphere(transform.position, attackRange);
-            float nearestDist = float.MaxValue;
-            IDamageable nearest = null;
+            float currentRange =
+                GetCurrentAttackRange();
 
-            foreach (var hit in hits)
+            Collider[] hits =
+                Physics.OverlapSphere(
+                    transform.position,
+                    currentRange,
+                    targetMask
+                );
+
+            bool preferFurthest =
+                upgradeController != null &&
+                upgradeController.PrefersFurthestTarget();
+
+            float selectedDistance =
+                preferFurthest
+                    ? float.MinValue
+                    : float.MaxValue;
+
+            IDamageable selectedTarget =
+                null;
+
+            foreach (Collider hit in hits)
             {
-                if (hit.gameObject == this.gameObject) continue;
+                if (hit == null)
+                    continue;
 
-                // Friendly-fire guard: turrets and the MainControlRoom are IDamageable too,
-                // so the interface alone cannot tell friend from foe. Only colliders with an
-                // EnemyHealth in their hierarchy are valid targets.
-                if (hit.GetComponentInParent<EnemyHealth>() == null) continue;
-
-                if (hit.TryGetComponent(out IDamageable target) && !target.IsDead)
+                // Never target any collider belonging to this turret.
+                if (hit.transform == transform ||
+                    hit.transform.IsChildOf(transform))
                 {
+                    continue;
+                }
 
-                    float dist = Vector3.Distance(transform.position, hit.transform.position);
-                    if (dist < nearestDist)
-                    {
-                        nearestDist = dist;
-                        nearest = target;
-                    }
+                // Enemy colliders can be children of the EnemyHealth
+                // object, so resolve the enemy from the collider's parent.
+                EnemyHealth enemy =
+                    hit.GetComponentInParent<EnemyHealth>();
+
+                if (enemy == null)
+                    continue;
+
+                IDamageable target = enemy;
+
+                if (target.IsDead)
+                    continue;
+
+                // Measure range from the turret to the enemy root, not
+                // to an arbitrary child collider.
+                float distance =
+                    Vector3.Distance(
+                        transform.position,
+                        enemy.transform.position
+                    );
+
+                if (distance > currentRange)
+                    continue;
+
+                bool isBetterTarget =
+                    preferFurthest
+                        ? distance > selectedDistance
+                        : distance < selectedDistance;
+
+                if (isBetterTarget)
+                {
+                    selectedDistance = distance;
+                    selectedTarget = target;
                 }
             }
 
-            currentTarget = nearest;
+            currentTarget =
+                selectedTarget;
         }
 
-        /// <summary>
-        /// Fire a projectile at the current target.
-        /// </summary>
+        // ============================================================
+        // ROTATION
+        // ============================================================
+
+        private void RotateTowardsTarget()
+        {
+            MonoBehaviour targetBehaviour =
+                currentTarget as MonoBehaviour;
+
+            if (targetBehaviour == null)
+                return;
+
+            Vector3 direction =
+                GetTargetAimPoint(currentTarget) -
+                turretHead.position;
+
+            if (lockXRotation)
+            {
+                direction.y = 0f;
+            }
+
+            if (direction.sqrMagnitude < 0.0001f)
+                return;
+
+            Quaternion targetWorldRotation =
+                Quaternion.LookRotation(direction);
+
+            float targetYaw =
+                targetWorldRotation.eulerAngles.y;
+
+            float parentYaw =
+                turretHead.parent != null
+                    ? turretHead.parent.eulerAngles.y
+                    : 0f;
+
+            // Preserve the active head's authored local Y orientation.
+            // The DB head can have a different model-forward orientation
+            // from the base head; discarding that authored Y rotation is
+            // what caused the DB model to snap by 90 degrees.
+            float localYaw =
+                targetYaw -
+                parentYaw +
+                rotationOffset +
+                defaultLocalY;
+
+            Quaternion targetLocalRotation;
+
+            if (lockXRotation)
+            {
+                targetLocalRotation =
+                    Quaternion.Euler(
+                        defaultLocalX,
+                        localYaw,
+                        defaultLocalZ
+                    );
+            }
+            else
+            {
+                targetLocalRotation =
+                    Quaternion.Euler(
+                        0f,
+                        localYaw,
+                        0f
+                    );
+            }
+
+            Quaternion previousRotation = turretHead.localRotation;
+
+            turretHead.localRotation =
+                Quaternion.RotateTowards(
+                    turretHead.localRotation,
+                    targetLocalRotation,
+                    rotationSpeed *
+                    Time.deltaTime
+                );
+
+            float rotationDelta =
+                Quaternion.Angle(
+                    previousRotation,
+                    turretHead.localRotation
+                );
+
+            UpdateRotationSound(rotationDelta);
+        }
+
+        // ============================================================
+        // AUDIO
+        // ============================================================
+
+        private void SetupAudioSources()
+        {
+            if (fireAudioSource == null)
+            {
+                fireAudioSource = gameObject.AddComponent<AudioSource>();
+            }
+
+            if (rotationAudioSource == null)
+            {
+                rotationAudioSource = gameObject.AddComponent<AudioSource>();
+            }
+
+            ConfigureAudioSource(fireAudioSource, false);
+            ConfigureAudioSource(rotationAudioSource, true);
+        }
+
+        private void ConfigureAudioSource(
+            AudioSource source,
+            bool looping
+        )
+        {
+            if (source == null)
+                return;
+
+            source.playOnAwake = false;
+            source.loop = looping;
+            source.spatialBlend = 0f;
+        }
+
+        private TurretAudioController GetAudioController()
+        {
+            return TurretAudioController.Instance;
+        }
+
+        private void PlayFireSound()
+        {
+            TurretAudioController audio = GetAudioController();
+
+            if (fireAudioSource == null || audio == null ||
+                !audio.IsRoomAudioAudible(this))
+                return;
+
+            TurretVariant variant = TurretVariant.Base;
+
+            if (upgradeController != null)
+                variant = upgradeController.CurrentVariant;
+
+            AudioClip clip = audio.GetFireSound(variant);
+
+            if (clip == null)
+                return;
+
+            fireAudioSource.volume = audio.FireVolume;
+            fireAudioSource.PlayOneShot(clip);
+        }
+
+        private void PlayPowerOnSound()
+        {
+            TurretAudioController audio = GetAudioController();
+
+            if (fireAudioSource == null || audio == null ||
+                audio.PowerOnSound == null ||
+                !audio.IsRoomAudioAudible(this))
+                return;
+
+            fireAudioSource.volume = audio.PowerVolume;
+            fireAudioSource.PlayOneShot(audio.PowerOnSound);
+        }
+
+        private void PlayPowerOffSound()
+        {
+            TurretAudioController audio = GetAudioController();
+
+            if (fireAudioSource == null || audio == null ||
+                audio.PowerOffSound == null ||
+                !audio.IsRoomAudioAudible(this))
+                return;
+
+            fireAudioSource.volume = audio.PowerVolume;
+            fireAudioSource.PlayOneShot(audio.PowerOffSound);
+        }
+
+        private void UpdateRotationSound(float rotationDelta)
+        {
+            TurretAudioController audio = GetAudioController();
+
+            if (rotationAudioSource == null || audio == null)
+                return;
+
+            AudioClip clip = audio.RotationSound;
+            float threshold = audio.RotationAudioThreshold;
+
+            if (!audio.IsRoomAudioAudible(this) ||
+                clip == null || rotationDelta < threshold)
+            {
+                StopRotationSound();
+                return;
+            }
+
+            if (rotationAudioSource.clip != clip)
+            {
+                rotationAudioSource.Stop();
+                rotationAudioSource.clip = clip;
+            }
+
+            rotationAudioSource.volume = audio.RotationVolume;
+            rotationAudioSource.loop = true;
+
+            if (!rotationAudioSource.isPlaying)
+                rotationAudioSource.Play();
+        }
+
+        private void StopRotationSound()
+        {
+            if (rotationAudioSource == null)
+                return;
+
+            if (rotationAudioSource.isPlaying)
+                rotationAudioSource.Stop();
+        }
+
+        private void OnDisable()
+        {
+            StopRotationSound();
+        }
+
+        // ============================================================
+        // SHOOT
+        // ============================================================
+
         private void Shoot()
         {
             if (projectilePrefab == null)
             {
-                Debug.LogWarning("[Turret] No projectile prefab assigned!");
+                Debug.LogWarning(
+                    "[Turret] No projectile prefab assigned!"
+                );
                 return;
             }
 
             if (firePoint == null)
             {
-                Debug.LogWarning("[Turret] No fire point assigned!");
+                Debug.LogWarning(
+                    "[Turret] No Fire Point assigned!"
+                );
                 return;
             }
 
-            if (currentTarget == null) return;
+            if (currentTarget == null)
+                return;
 
-            GameObject projObj = Instantiate(projectilePrefab, firePoint.position, firePoint.rotation);
-            if (projObj.TryGetComponent(out Projectile proj))
+            int currentDamage = GetCurrentDamage();
+
+            // Upgrade-specific firing belongs to the active upgrade.
+            // Base Turret keeps the original homing projectile.
+            if (upgradeController != null &&
+                upgradeController.HasActiveUpgrade())
             {
-                proj.Initialize(currentTarget, damage);  // Use Initialize, not Init
-                if (verboseLogging) Debug.Log($"[Turret] Fired at target, damage: {damage}");
+                if (!upgradeController.TryFireUpgrade(
+                        this,
+                        currentTarget,
+                        currentDamage))
+                {
+                    return;
+                }
+            }
+            else
+            {
+                FireProjectile(
+                    firePoint.position,
+                    firePoint.rotation,
+                    currentDamage
+                );
             }
 
-            recoilAmount = 1f; // UpdateRecoil() eases this back to 0 every frame
+            PlayFireSound();
 
-            // Trigger the base's fire ripple: the shader expands a ring outward from
-            // (Time.time - _FireTime), so we just need to stamp "now" on each shot.
-            if (baseRenderer != null)
+            recoilAmount = 1f;
+            ApplyFireEffect();
+        }
+
+        // ============================================================
+        // STRAIGHT DOUBLE BARREL PROJECTILE
+        // ============================================================
+
+        public void FireStraightProjectile(
+            Vector3 position,
+            Vector3 direction,
+            int projectileDamage
+        )
+        {
+            GameObject projectileObject =
+                Instantiate(
+                    projectilePrefab,
+                    position,
+                    Quaternion.LookRotation(direction)
+                );
+
+            if (projectileObject == null)
+                return;
+
+            if (projectileObject.TryGetComponent(
+                    out Projectile projectile))
             {
-                baseRenderer.GetPropertyBlock(basePropBlock);
-                basePropBlock.SetFloat(FireTimeID, Time.time);
-                baseRenderer.SetPropertyBlock(basePropBlock);
+                projectile.InitializeStraight(
+                    direction,
+                    projectileDamage
+                );
+
+                if (verboseLogging)
+                {
+                    Debug.Log(
+                        $"[Turret] Double Barrel straight projectile fired. " +
+                        $"Damage = {projectileDamage}"
+                    );
+                }
+            }
+            else
+            {
+                Debug.LogError(
+                    $"[Turret] {name}: Projectile prefab does not " +
+                    "have a Projectile component."
+                );
             }
         }
 
+        // ============================================================
+        // SHARPSHOOTER PROJECTILE
+        // ============================================================
+
+        public void FireSharpshooterProjectile(
+            Vector3 position,
+            Vector3 direction,
+            int baseDamage,
+            float projectileSpeed,
+            float damagePerMetre,
+            int maxDamage
+        )
+        {
+            GameObject projectileObject =
+                Instantiate(
+                    projectilePrefab,
+                    position,
+                    Quaternion.LookRotation(direction)
+                );
+
+            if (projectileObject == null)
+                return;
+
+            if (projectileObject.TryGetComponent(
+                    out Projectile projectile))
+            {
+                projectile.InitializeSharpshooter(
+                    direction,
+                    baseDamage,
+                    projectileSpeed,
+                    damagePerMetre,
+                    maxDamage
+                );
+
+                if (verboseLogging)
+                {
+                    Debug.Log(
+                        $"[Turret] Sharpshooter projectile fired. " +
+                        $"Base Damage = {baseDamage}, " +
+                        $"Speed = {projectileSpeed}"
+                    );
+                }
+            }
+            else
+            {
+                Debug.LogError(
+                    $"[Turret] {name}: Projectile prefab does not " +
+                    "have a Projectile component."
+                );
+            }
+        }
+
+        // ============================================================
+        // TARGET AIM POINT FOR DOUBLE BARREL CENTER LINE
+        // ============================================================
+
+        public Vector3 GetTargetAimPoint(IDamageable target)
+        {
+            MonoBehaviour targetBehaviour =
+                target as MonoBehaviour;
+
+            if (targetBehaviour == null)
+            {
+                return turretHead != null
+                    ? turretHead.position + turretHead.forward
+                    : transform.position + transform.forward;
+            }
+
+            // The IDamageable is normally EnemyHealth on the enemy root,
+            // while the collider may be on a child. Find the actual enemy
+            // collider so the centre-line aims at the enemy body.
+            Collider targetCollider =
+                targetBehaviour.GetComponentInChildren<Collider>();
+
+            if (targetCollider != null)
+            {
+                return targetCollider.bounds.center;
+            }
+
+            return targetBehaviour.transform.position;
+        }
+
+        // ============================================================
+        // FIRE PROJECTILE
+        // ============================================================
+
+        private void FireProjectile(
+            Vector3 position,
+            Quaternion rotation,
+            int projectileDamage
+        )
+        {
+            GameObject projectileObject =
+                Instantiate(
+                    projectilePrefab,
+                    position,
+                    rotation
+                );
+
+            if (projectileObject.TryGetComponent(
+                    out Projectile projectile))
+            {
+                projectile.Initialize(
+                    currentTarget,
+                    projectileDamage
+                );
+
+                if (verboseLogging)
+                {
+                    Debug.Log(
+                        $"[Turret] Projectile fired. " +
+                        $"Damage = {projectileDamage}"
+                    );
+                }
+            }
+        }
+
+        // ============================================================
+        // FIRE SHADER EFFECT
+        // ============================================================
+
+        private void ApplyFireEffect()
+        {
+            /*
+             * Only affect the currently active visual.
+             *
+             * Each visual keeps its own material and texture.
+             */
+
+            if (activeVisualRenderers == null)
+                return;
+
+            foreach (Renderer renderer in activeVisualRenderers)
+            {
+                if (renderer == null)
+                    continue;
+
+                renderer.GetPropertyBlock(
+                    firePropertyBlock
+                );
+
+                firePropertyBlock.SetFloat(
+                    FireTimeID,
+                    Time.time
+                );
+
+                renderer.SetPropertyBlock(
+                    firePropertyBlock
+                );
+            }
+        }
+
+        // ============================================================
+        // UPGRADE STATS
+        // ============================================================
+
+        private int GetCurrentDamage()
+        {
+            if (upgradeController != null)
+            {
+                return upgradeController.GetProjectileDamage(
+                    damage
+                );
+            }
+
+            return damage;
+        }
+
+        private float GetCurrentFireRate()
+        {
+            if (upgradeController != null)
+            {
+                return upgradeController.GetFireRate(
+                    fireRate
+                );
+            }
+
+            return fireRate;
+        }
+
+        private float GetCurrentAttackRange()
+        {
+            // Base turret uses its Inspector range. Upgrades may override
+            // the range through TurretUpgradeController.
+            if (upgradeController != null)
+            {
+                return Mathf.Max(
+                    0f,
+                    upgradeController.GetAttackRange(attackRange)
+                );
+            }
+
+            return Mathf.Max(0f, attackRange);
+        }
+
+        // ============================================================
+        // ACTIVE VISUAL RENDERERS
+        // ============================================================
+
+        /// <summary>
+        /// Refreshes the renderer list used by the activation and fire
+        /// effects after the active turret visual changes.
+        /// </summary>
+        public void RefreshActiveVisuals()
+        {
+            RefreshActiveVisualRenderers();
+        }
+
+        private void RefreshActiveVisualRenderers()
+        {
+            /*
+             * We deliberately DON'T assign specific Def/DB renderers
+             * in the Inspector.
+             *
+             * TurretUpgradeController switches:
+             *
+             *     Def
+             *     OR
+             *     DB
+             *
+             * on/off.
+             *
+             * We then find the renderers that are actually active.
+             *
+             * This means Def and DB can use completely different
+             * materials and textures.
+             */
+
+            Renderer[] allRenderers =
+                GetComponentsInChildren<Renderer>(
+                    true
+                );
+
+            int activeCount = 0;
+
+            foreach (Renderer renderer in allRenderers)
+            {
+                if (renderer == null)
+                    continue;
+
+                if (renderer.gameObject.activeInHierarchy)
+                {
+                    activeCount++;
+                }
+            }
+
+            activeVisualRenderers =
+                new Renderer[activeCount];
+
+            int index = 0;
+
+            foreach (Renderer renderer in allRenderers)
+            {
+                if (renderer == null)
+                    continue;
+
+                if (!renderer.gameObject.activeInHierarchy)
+                    continue;
+
+                activeVisualRenderers[index] =
+                    renderer;
+
+                index++;
+            }
+        }
+
+        // ============================================================
+        // ACTIVATION SHADER
+        // ============================================================
+
+        private void UpdateActivationVisual()
+        {
+            targetActivation =
+                isActive ? 1f : 0f;
+
+            currentActivation =
+                Mathf.MoveTowards(
+                    currentActivation,
+                    targetActivation,
+                    activationLerpSpeed *
+                    Time.deltaTime
+                );
+
+            ApplyActivationVisual();
+        }
+
+        private void ApplyActivationVisual()
+        {
+            if (activeVisualRenderers == null)
+                return;
+
+            foreach (Renderer renderer in activeVisualRenderers)
+            {
+                if (renderer == null)
+                    continue;
+
+                /*
+                 * IMPORTANT:
+                 *
+                 * GetPropertyBlock() starts from the renderer's
+                 * existing material properties.
+                 *
+                 * We only change _Activation.
+                 *
+                 * Therefore:
+                 *
+                 * Def material + Def texture stay intact.
+                 * DB material + DB texture stay intact.
+                 */
+
+                Material sharedMaterial =
+                    renderer.sharedMaterial;
+
+                if (sharedMaterial == null ||
+                    !sharedMaterial.HasProperty(activationShaderID))
+                {
+                    continue;
+                }
+
+                renderer.GetPropertyBlock(
+                    activationPropertyBlock
+                );
+
+                activationPropertyBlock.SetFloat(
+                    activationShaderID,
+                    currentActivation
+                );
+
+                renderer.SetPropertyBlock(
+                    activationPropertyBlock
+                );
+            }
+        }
+
+        // ============================================================
+        // RECOIL
+        // ============================================================
+
+        private void UpdateRecoil()
+        {
+            if (turretHead == null)
+                return;
+
+            if (recoilAmount <= 0f)
+                return;
+
+            float currentRecoilDistance =
+                upgradeController != null
+                    ? upgradeController.GetRecoilDistance(
+                        recoilDistance
+                    )
+                    : recoilDistance;
+
+            float currentRecoilRecoverySpeed =
+                upgradeController != null
+                    ? upgradeController.GetRecoilRecoverySpeed(
+                        recoilRecoverySpeed
+                    )
+                    : recoilRecoverySpeed;
+
+            Vector3 currentRecoilDirection =
+                upgradeController != null
+                    ? upgradeController.GetRecoilLocalDirection(
+                        recoilLocalDirection
+                    )
+                    : recoilLocalDirection;
+
+            recoilAmount =
+                Mathf.MoveTowards(
+                    recoilAmount,
+                    0f,
+                    currentRecoilRecoverySpeed *
+                    Time.deltaTime
+                );
+
+            // Recoil directions are deliberately expressed in the turret head's
+            // PARENT local space, because turretHead.localPosition uses that space.
+            // This avoids the model/head rotation (including the SS -90 degree
+            // authoring rotation) turning vertical recoil into sideways movement.
+            Vector3 recoilOffset =
+                currentRecoilDirection.normalized *
+                currentRecoilDistance *
+                recoilAmount;
+
+            turretHead.localPosition =
+                headRestLocalPos +
+                recoilOffset;
+        }
+
+        // ============================================================
+        // DAMAGE
+        // ============================================================
+
         public void TakeDamage(int amount)
         {
-            if (IsDead) return;
+            if (IsDead)
+                return;
 
             currentHP -= amount;
-            if (verboseLogging) Debug.Log($"[Turret] Took {amount} damage, HP: {currentHP}/{maxHP}");
+
+            if (verboseLogging)
+            {
+                Debug.Log(
+                    $"[Turret] Took {amount} damage. " +
+                    $"HP = {currentHP}/{maxHP}"
+                );
+            }
 
             if (currentHP <= 0)
             {
+                currentHP = 0;
                 Die();
             }
         }
 
+        // ============================================================
+        // DIE
+        // ============================================================
+
         public void Die()
         {
-            Debug.Log("[Turret] Destroyed!");
+            if (holdingPower)
+            {
+                ReconcilePowerState();
+            }
 
-            // Power refund is owned by Room.NotifyStructureDestroyed (Indirection), which
-            // refunds only when this turret was active. Refunding here as well double-pays
-            // the player and silently inflates the power budget.
-            // Notify owner room
-            OwnerRoom?.NotifyStructureDestroyed(this);
+            Debug.Log(
+                $"[Turret] {name} destroyed."
+            );
 
-            // Destroy self
+            OwnerRoom?.NotifyStructureDestroyed(
+                this
+            );
+
             Destroy(gameObject);
         }
 
-        // W6 content, commented out for Demo
-        // public void ApplyUpgrade(UpgradeData data)
-        // {
-        //     level++;
-        // }
+        // ============================================================
+        // DEBUG
+        // ============================================================
 
-        /// <summary>
-        /// Test helper: Right-click component in Inspector to test damage.
-        /// </summary>
         [ContextMenu("Test - Take 10 Damage")]
         private void TestTakeDamage()
         {
             TakeDamage(10);
+        }
+
+        [ContextMenu("Test - Refresh Visual Renderers")]
+        private void TestRefreshVisualRenderers()
+        {
+            RefreshActiveVisualRenderers();
+
+            ApplyActivationVisual();
+
+            Debug.Log(
+                $"[Turret] Active visual renderers: " +
+                $"{activeVisualRenderers?.Length ?? 0}"
+            );
+        }
+
+        // ============================================================
+        // GIZMOS
+        // ============================================================
+
+        private void OnDrawGizmosSelected()
+        {
+            float range =
+                Mathf.Max(0f, attackRange);
+
+            Gizmos.color =
+                Color.red;
+
+            Gizmos.DrawWireSphere(
+                transform.position,
+                range
+            );
+
+            if (currentTarget != null &&
+                turretHead != null)
+            {
+                Gizmos.DrawLine(
+                    turretHead.position,
+                    GetTargetAimPoint(currentTarget)
+                );
+            }
         }
     }
 }

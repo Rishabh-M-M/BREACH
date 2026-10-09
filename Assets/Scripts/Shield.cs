@@ -4,6 +4,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using ProjectBreach.Core;
 
+/// <summary>
+/// Room shield. Enemy contact damages the shield, never the enemy.
+/// Normal room shield break permanently disables the room.
+/// Main room shield break triggers Game Over.
+/// </summary>
 public class Shield : MonoBehaviour
 {
     [Header("Shield Health")]
@@ -21,12 +26,8 @@ public class Shield : MonoBehaviour
     [SerializeField] private float fadeSpeed = 1.5f;
 
     [Header("Room Assignment")]
-    [Tooltip("Assign the Room component for this shield's room. " +
-             "If empty, the script searches parent objects.")]
     [SerializeField] private Room assignedRoom;
-
-    [Tooltip("Assign this for the main room shield if MainControlRoom " +
-             "is not on the same object or a parent.")]
+    [SerializeField] private bool isMainRoomShield;
     [SerializeField] private MainControlRoom mainControlRoom;
 
     private Material shieldMaterial;
@@ -46,16 +47,14 @@ public class Shield : MonoBehaviour
         maxHealth = Mathf.Max(1, maxHealth);
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
 
-        Renderer shieldRenderer = GetComponent<Renderer>();
+        Renderer r = GetComponent<Renderer>();
+        if (r == null)
+            r = GetComponentInChildren<Renderer>();
 
-        if (shieldRenderer == null)
-            shieldRenderer = GetComponentInChildren<Renderer>();
-
-        if (shieldRenderer != null)
-            shieldMaterial = shieldRenderer.material;
+        if (r != null)
+            shieldMaterial = r.material;
 
         shieldCollider = GetComponent<Collider>();
-
         if (shieldCollider == null)
             shieldCollider = GetComponentInChildren<Collider>();
 
@@ -63,19 +62,13 @@ public class Shield : MonoBehaviour
             assignedRoom = GetComponentInParent<Room>();
 
         if (mainControlRoom == null)
-            mainControlRoom = GetComponentInParent<MainControlRoom>();
+            mainControlRoom = FindObjectOfType<MainControlRoom>();
 
+        destroyed = currentHealth <= 0;
         UpdateShieldVisual();
 
-        if (currentHealth <= 0)
-        {
+        if (destroyed)
             BreakShield();
-        }
-        else
-        {
-            destroyed = false;
-            breakHandled = false;
-        }
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -103,29 +96,28 @@ public class Shield : MonoBehaviour
         if (destroyed || other == null)
             return;
 
-        // EnemyHealth is the existing enemy component in this project.
-        // Resolve it from the collider's parent because enemy colliders
-        // may be attached to child objects.
         EnemyHealth enemy =
             other.GetComponentInParent<EnemyHealth>();
 
         if (enemy == null || enemy.IsDead)
             return;
 
-        // Each enemy has its own attack cooldown.
-        int enemyId = enemy.GetInstanceID();
+        int id = enemy.GetInstanceID();
 
-        if (nextDamageTime.TryGetValue(enemyId, out float nextTime) &&
-            Time.time < nextTime)
+        if (nextDamageTime.TryGetValue(id, out float next) &&
+            Time.time < next)
         {
             return;
         }
 
-        nextDamageTime[enemyId] =
+        nextDamageTime[id] =
             Time.time + Mathf.Max(0.05f, damageInterval);
 
-        // Damage the shield only. Enemy collision causes no damage
-        // to the enemy itself.
+        // Trigger breach visuals when the main shield is damaged.
+        if (isMainRoomShield && mainControlRoom != null)
+            mainControlRoom.NotifyMainShieldDamaged();
+
+        // Only the shield takes damage.
         TakeDamage(damagePerHit);
     }
 
@@ -135,19 +127,10 @@ public class Shield : MonoBehaviour
             return;
 
         currentHealth = Mathf.Max(0, currentHealth - damage);
-
         UpdateShieldVisual();
 
         if (shieldMaterial != null)
-        {
-            StopCoroutineIfRunning(nameof(HitFlash));
             StartCoroutine(HitFlash());
-        }
-
-        Debug.Log(
-            $"[Shield] {gameObject.name}: " +
-            $"{currentHealth}/{maxHealth} HP"
-        );
 
         if (currentHealth <= 0)
             BreakShield();
@@ -158,14 +141,19 @@ public class Shield : MonoBehaviour
         if (shieldMaterial == null)
             return;
 
-        float healthRatio =
+        float ratio =
             (float)currentHealth / Mathf.Max(1, maxHealth);
 
-        shieldMaterial.SetFloat("_Health", healthRatio);
-        shieldMaterial.SetFloat(
-            "_Opacity",
-            destroyed ? 0f : baseOpacity
-        );
+        if (shieldMaterial.HasProperty("_Health"))
+            shieldMaterial.SetFloat("_Health", ratio);
+
+        if (shieldMaterial.HasProperty("_Opacity"))
+        {
+            shieldMaterial.SetFloat(
+                "_Opacity",
+                destroyed ? 0f : baseOpacity
+            );
+        }
     }
 
     private void BreakShield()
@@ -179,76 +167,69 @@ public class Shield : MonoBehaviour
 
         UpdateShieldVisual();
 
-        Debug.LogWarning(
-            $"[Shield] {gameObject.name} has been destroyed!"
-        );
-
-        // Stop enemies from continuing to attack this shield.
         if (shieldCollider != null)
             shieldCollider.enabled = false;
 
-        // Main room shield failure ends the game.
-        if (mainControlRoom != null)
+        if (isMainRoomShield)
         {
-            Debug.LogError(
-                "[Shield] MAIN ROOM SHIELD BROKEN. GAME OVER."
-            );
-
-            if (GameManager.Instance != null)
+            // Preserve the existing main-room Game Over flow.
+            if (mainControlRoom != null)
+            {
+                mainControlRoom.MainShieldBroken();
+            }
+            else if (GameManager.Instance != null)
+            {
                 GameManager.Instance.RegisterCoreDestroyed();
+            }
             else
+            {
                 Debug.LogError(
-                    "[Shield] GameManager.Instance is missing."
+                    "[Shield] Main shield broke, but no " +
+                    "MainControlRoom/GameManager was found."
                 );
-
-            StartCoroutine(FadeOut());
-            return;
+            }
         }
+        else
+        {
+            if (assignedRoom == null)
+                assignedRoom = GetComponentInParent<Room>();
 
-        // A normal room loses all its turrets permanently.
-        DisableRoomTurrets();
+            if (assignedRoom != null)
+            {
+                // Mark the room permanently disabled.
+                assignedRoom.PermanentlyDisableRoom();
+
+                Turret[] turrets =
+                    assignedRoom.GetComponentsInChildren<Turret>(true);
+
+                foreach (Turret turret in turrets)
+                {
+                    if (turret == null)
+                        continue;
+
+                    // Start the existing OFF shader animation.
+                    turret.TurnOff();
+
+                    // Do NOT disable the component here.
+                    // Turret.Update() must remain active so that
+                    // the shader animation can finish.
+                }
+
+                Debug.LogWarning(
+                    $"[Shield] Room '{assignedRoom.RoomName}' " +
+                    "has fallen. Its turrets are switched off."
+                );
+            }
+            else
+            {
+                Debug.LogError(
+                    $"[Shield] No Room assigned to {name}; " +
+                    "room turrets were not disabled."
+                );
+            }
+        }
 
         StartCoroutine(FadeOut());
-    }
-
-    private void DisableRoomTurrets()
-    {
-        if (assignedRoom == null)
-            assignedRoom = GetComponentInParent<Room>();
-
-        if (assignedRoom == null)
-        {
-            Debug.LogError(
-                $"[Shield] No Room assigned to {gameObject.name}. " +
-                "Assign the correct Room in the Inspector."
-            );
-            return;
-        }
-
-        // Include inactive turrets so none can remain operational.
-        Turret[] turrets =
-            assignedRoom.GetComponentsInChildren<Turret>(true);
-
-        foreach (Turret turret in turrets)
-        {
-            if (turret == null)
-                continue;
-
-            // Turn off first so normal shutdown logic runs.
-            turret.TurnOff();
-
-            // Prevent normal Update-based behaviour from restarting it.
-            turret.enabled = false;
-
-            Debug.LogWarning(
-                $"[Shield] Permanently disabled turret: {turret.name}"
-            );
-        }
-
-        Debug.LogWarning(
-            $"[Shield] Room '{assignedRoom.RoomName}' has fallen. " +
-            "Its turrets are disabled."
-        );
     }
 
     private IEnumerator HitFlash()
@@ -256,24 +237,16 @@ public class Shield : MonoBehaviour
         if (shieldMaterial == null)
             yield break;
 
-        shieldMaterial.SetFloat("_HitFlash", 1f);
+        if (shieldMaterial.HasProperty("_HitFlash"))
+            shieldMaterial.SetFloat("_HitFlash", 1f);
 
-        float elapsed = 0f;
-        const float flashDuration = 0.12f;
+        yield return new WaitForSeconds(0.12f);
 
-        while (elapsed < flashDuration)
+        if (shieldMaterial != null &&
+            shieldMaterial.HasProperty("_HitFlash"))
         {
-            elapsed += Time.deltaTime;
-
-            shieldMaterial.SetFloat(
-                "_HitFlash",
-                1f - Mathf.Clamp01(elapsed / flashDuration)
-            );
-
-            yield return null;
+            shieldMaterial.SetFloat("_HitFlash", 0f);
         }
-
-        shieldMaterial.SetFloat("_HitFlash", 0f);
     }
 
     private IEnumerator FadeOut()
@@ -293,19 +266,12 @@ public class Shield : MonoBehaviour
                 opacity - Time.deltaTime * fadeSpeed
             );
 
-            shieldMaterial.SetFloat("_Opacity", opacity);
+            if (shieldMaterial.HasProperty("_Opacity"))
+                shieldMaterial.SetFloat("_Opacity", opacity);
 
             yield return null;
         }
 
         gameObject.SetActive(false);
     }
-
-    private void StopCoroutineIfRunning(string coroutineName)
-    {
-        StopCoroutine(coroutineName);
-    }
-
-    // Deliberately no automatic shield restoration. Once broken,
-    // a shield remains broken for the rest of the run.
 }

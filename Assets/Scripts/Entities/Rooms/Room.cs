@@ -1,85 +1,104 @@
+
 using System.Collections.Generic;
 using UnityEngine;
-using ProjectBreach.Core;
 
 namespace ProjectBreach.Core
 {
     /// <summary>
-    /// Room (GRASP: Information Expert + Indirection)
-    /// Fallen check only counts Turret, this is the hard rule from GDD
+    /// Room management:
+    /// Tracks defensive structures, room state, and permanent shutdown.
     /// </summary>
     public class Room : MonoBehaviour
     {
+        [Header("Room Settings")]
         [SerializeField] private int roomIndex;
         [SerializeField] private string roomName;
-        [Header("Room Shield") ]
-        [SerializeField] private Shield roomShield;
-        [SerializeField] private bool isMainRoom;
-        private bool permanentlyDisabled;
+
+        [Header("Defensive Structures")]
         [SerializeField]
-        private List<DefensiveStructure> structures
-            = new List<DefensiveStructure>();
+        private List<DefensiveStructure> structures =
+            new List<DefensiveStructure>();
 
         public RoomState State { get; private set; } = RoomState.Active;
+
         public int RoomIndex => roomIndex;
         public string RoomName => roomName;
-        public bool IsPermanentlyDisabled => permanentlyDisabled;
 
-        private void Awake()
-        {
-            if (roomShield == null) roomShield = GetComponentInChildren<Shield>(true);
-        }
+        // Once disabled by a broken shield, this remains true
+        // for the rest of the current run.
+        public bool IsPermanentlyDisabled { get; private set; } = false;
 
-        public void OnShieldBroken(Shield shield)
+        // ============================================================
+        // STRUCTURE REGISTRATION
+        // ============================================================
+
+        public void RegisterStructure(DefensiveStructure structure)
         {
-            if (shield != roomShield || permanentlyDisabled) return;
-            if (isMainRoom)
-            {
-                Debug.LogError($"[Room {roomName}] Main room shield broken. GAME OVER.");
-                if (GameManager.Instance != null) GameManager.Instance.RegisterCoreDestroyed();
+            if (structure == null)
                 return;
+
+            if (!structures.Contains(structure))
+            {
+                structures.Add(structure);
+
+                Debug.Log(
+                    $"[Room {roomName}] Registered structure: " +
+                    structure.name
+                );
             }
-            permanentlyDisabled = true;
+        }
+
+        // ============================================================
+        // PERMANENT ROOM SHUTDOWN
+        // ============================================================
+
+        public void PermanentlyDisableRoom()
+        {
+            if (IsPermanentlyDisabled)
+                return;
+
+            IsPermanentlyDisabled = true;
             State = RoomState.Fallen;
-            foreach (var structure in structures)
-            {
-                if (structure is Turret turret) turret.PermanentlyDisableFromRoom();
-            }
-            Debug.LogWarning($"[Room {roomName}] Shield broken. All room turrets permanently disabled.");
+
+            Debug.LogWarning(
+                $"[Room {roomName}] Permanently disabled: " +
+                "the room's shield has been destroyed."
+            );
         }
 
-        // ========== Registration ==========
-        public void RegisterStructure(DefensiveStructure s)
-        {
-            if (!structures.Contains(s))
-            {
-                structures.Add(s);
-                Debug.Log($"[Room {roomName}] Registered structure: {s.name}");
-            }
-        }
+        // ============================================================
+        // STRUCTURE DESTROYED NOTIFICATION
+        // ============================================================
 
-        // ========== Indirection: structure destroyed notification ==========
-        public void NotifyStructureDestroyed(DefensiveStructure s)
+        public void NotifyStructureDestroyed(DefensiveStructure structure)
         {
-            // Replace Turret to notify PowerManager (Low Coupling)
-            if (s is IPowerable powerable && s.IsActive)
+            if (structure == null)
+                return;
+
+            if (structure is IPowerable powerable && structure.IsActive)
             {
-                // TODO W2: PowerManager.Instance.Refund(powerable);
-                Debug.Log($"[Room {roomName}] Structure destroyed, should refund power {s.PowerCost}");
+                Debug.Log(
+                    $"[Room {roomName}] Structure destroyed. " +
+                    $"Power refund may be required: {structure.PowerCost}"
+                );
             }
 
             CheckFallen();
         }
 
-        // ========== Fallen check (Turret only) ==========
+        // ============================================================
+        // FALLEN CHECK
+        // ============================================================
+
         private void CheckFallen()
         {
-            if (State == RoomState.Fallen) return;
+            if (State == RoomState.Fallen || IsPermanentlyDisabled)
+                return;
 
-            foreach (var s in structures)
+            foreach (DefensiveStructure structure in structures)
             {
-                if (s is Turret turret && !turret.IsDead && turret.gameObject.activeInHierarchy)
-                    return;  // Still have alive turrets, not fallen
+                if (structure is Turret turret && !turret.IsDead)
+                    return;
             }
 
             SetFallen();
@@ -87,10 +106,17 @@ namespace ProjectBreach.Core
 
         private void SetFallen()
         {
-            State = RoomState.Fallen;
-            Debug.LogWarning($"[Room {roomName}] Room fallen!");
+            if (State == RoomState.Fallen)
+                return;
 
-            // EventRegistry.BroadcastRoomFallen(this);
+            State = RoomState.Fallen;
+
+            Debug.LogWarning(
+                $"[Room {roomName}] Room fallen!"
+            );
+
+            // Keep your existing room-fallen event integration here
+            // if another script is responsible for broadcasting it.
         }
     }
 }

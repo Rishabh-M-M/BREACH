@@ -895,17 +895,6 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
---- !u!114 &104569866 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7070064369690845650, guid: 6660178a26c884a81ad690c59e83d18c, type: 3}
-  m_PrefabInstance: {fileID: 71182510}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c02b6d49a94514bb58eab71a6ab0ee67, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: '::'
 --- !u!114 &112473599 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 120650249508454600, guid: cd965d401276eca4a88d4c4b4553cecc, type: 3}
@@ -978,17 +967,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &214218048 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7070064369690845650, guid: 6660178a26c884a81ad690c59e83d18c, type: 3}
-  m_PrefabInstance: {fileID: 1932898712}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c02b6d49a94514bb58eab71a6ab0ee67, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: '::'
 --- !u!1 &215656290
 GameObject:
   m_ObjectHideFlags: 0
@@ -1787,8 +1765,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ProjectBreach.Core.Room
   roomIndex: 1
   roomName: 
-  roomShield: {fileID: 214218048}
-  isMainRoom: 0
   structures:
   - {fileID: 133458113}
   - {fileID: 787803243}
@@ -2239,8 +2215,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ProjectBreach.Core.Room
   roomIndex: 0
   roomName: ServerRoom
-  roomShield: {fileID: 104569866}
-  isMainRoom: 0
   structures:
   - {fileID: 744622740}
   - {fileID: 563369119}
@@ -2962,7 +2936,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 717973167318073675, guid: bb1452abf6eabf640be3c3cad8b37672, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.5
+      value: -0.5000305
       objectReference: {fileID: 0}
     - target: {fileID: 717973167318073675, guid: bb1452abf6eabf640be3c3cad8b37672, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -4107,17 +4081,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cefe8896bd7c74d9b90b968da6e68fec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ProjectBreach.Core.TurretUpgradeController
---- !u!114 &609609225 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7070064369690845650, guid: 6660178a26c884a81ad690c59e83d18c, type: 3}
-  m_PrefabInstance: {fileID: 1493124734}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c02b6d49a94514bb58eab71a6ab0ee67, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: '::'
 --- !u!1 &617117850
 GameObject:
   m_ObjectHideFlags: 0
@@ -4812,8 +4775,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ProjectBreach.Core.Room
   roomIndex: 0
   roomName: Shop
-  roomShield: {fileID: 609609225}
-  isMainRoom: 0
   structures:
   - {fileID: 685640740}
   - {fileID: 1929238496}
@@ -6437,9 +6398,17 @@ PrefabInstance:
       value: Shield (4)
       objectReference: {fileID: 0}
     - target: {fileID: 7070064369690845650, guid: 6660178a26c884a81ad690c59e83d18c, type: 3}
+      propertyPath: assignedRoom
+      value: 
+      objectReference: {fileID: 1384470684}
+    - target: {fileID: 7070064369690845650, guid: 6660178a26c884a81ad690c59e83d18c, type: 3}
       propertyPath: mainControlRoom
       value: 
       objectReference: {fileID: 1384470682}
+    - target: {fileID: 7070064369690845650, guid: 6660178a26c884a81ad690c59e83d18c, type: 3}
+      propertyPath: isMainRoomShield
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -8372,8 +8341,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ProjectBreach.Core.Room
   roomIndex: 0
   roomName: Air Lock
-  roomShield: {fileID: 1386440581}
-  isMainRoom: 0
   structures:
   - {fileID: 897250901}
   - {fileID: 975825774}
@@ -8853,21 +8820,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ProjectBreach.Core.Room
   roomIndex: 0
   roomName: 
-  roomShield: {fileID: 2060890498}
-  isMainRoom: 1
   structures:
   - {fileID: 1408627006}
---- !u!114 &1386440581 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7070064369690845650, guid: 6660178a26c884a81ad690c59e83d18c, type: 3}
-  m_PrefabInstance: {fileID: 820563227}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c02b6d49a94514bb58eab71a6ab0ee67, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: '::'
 --- !u!1 &1388808759
 GameObject:
   m_ObjectHideFlags: 0
@@ -13250,17 +13204,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2024833314}
   m_CullTransparentMesh: 1
---- !u!114 &2060890498 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7070064369690845650, guid: 6660178a26c884a81ad690c59e83d18c, type: 3}
-  m_PrefabInstance: {fileID: 989783518}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c02b6d49a94514bb58eab71a6ab0ee67, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: '::'
 --- !u!1 &2086674603
 GameObject:
   m_ObjectHideFlags: 0

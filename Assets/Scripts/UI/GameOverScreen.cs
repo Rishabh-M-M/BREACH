@@ -86,7 +86,13 @@ namespace ProjectBreach.Core
 
             // Wiring clicks in code keeps scene setup to plain reference drags
             // and keeps the click behavior readable in one place.
-            if (restartButton != null) restartButton.onClick.AddListener(Restart);
+            if (restartButton != null)
+            {
+                restartButton.onClick.AddListener(Restart);
+                // Keep the existing restart flow but present it as the requested retry action.
+                TMP_Text restartLabel = restartButton.GetComponentInChildren<TMP_Text>(true);
+                if (restartLabel != null) restartLabel.text = "TRY AGAIN";
+            }
             if (mainMenuButton != null) mainMenuButton.onClick.AddListener(ReturnToMainMenu);
         }
 

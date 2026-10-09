@@ -66,7 +66,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: d355c9429de944cfe921b2e5c78db056, type: 2}
+  - {fileID: 2100000, guid: 0def6286201d9704b9deff0af6e58e60, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1023,7 +1023,6 @@ MonoBehaviour:
   visual: {fileID: 535775475171486829}
   beamRenderer: {fileID: 6659666863038376329}
   beamStart: {fileID: 4469968609445932344}
-  laserLoopSound: {fileID: 8300000, guid: 278d324ce2e1c4d0fafed3800d0b66d8, type: 3}
   laserAudioSource: {fileID: 0}
   beamWidth: 0.05
   maximumBeamWidth: 3

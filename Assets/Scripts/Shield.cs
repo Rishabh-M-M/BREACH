@@ -1,4 +1,3 @@
-
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,7 +8,7 @@ using ProjectBreach.Core;
 /// Normal room shield break permanently disables the room.
 /// Main room shield break triggers Game Over.
 /// </summary>
-public class Shield : MonoBehaviour
+public class Shield : MonoBehaviour, IDamageable
 {
     [Header("Shield Health")]
     [SerializeField] private int maxHealth = 100;
@@ -41,6 +40,22 @@ public class Shield : MonoBehaviour
     public bool IsDestroyed => destroyed;
     public int MaxHealth => maxHealth;
     public int CurrentHealth => currentHealth;
+
+    // ============================================================
+    // IDAMAGEABLE
+    // ============================================================
+    public int MaxHP => maxHealth;
+    public int CurrentHP => currentHealth;
+    public bool IsDead => destroyed;
+
+    public void Die()
+    {
+        if (destroyed)
+            return;
+
+        currentHealth = 0;
+        BreakShield();
+    }
 
     private void Awake()
     {
@@ -172,7 +187,6 @@ public class Shield : MonoBehaviour
 
         if (isMainRoomShield)
         {
-            // Preserve the existing main-room Game Over flow.
             if (mainControlRoom != null)
             {
                 mainControlRoom.MainShieldBroken();
@@ -196,7 +210,6 @@ public class Shield : MonoBehaviour
 
             if (assignedRoom != null)
             {
-                // Mark the room permanently disabled.
                 assignedRoom.PermanentlyDisableRoom();
 
                 Turret[] turrets =
@@ -207,12 +220,7 @@ public class Shield : MonoBehaviour
                     if (turret == null)
                         continue;
 
-                    // Start the existing OFF shader animation.
                     turret.TurnOff();
-
-                    // Do NOT disable the component here.
-                    // Turret.Update() must remain active so that
-                    // the shader animation can finish.
                 }
 
                 Debug.LogWarning(

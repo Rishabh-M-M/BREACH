@@ -1,3 +1,4 @@
+
 using UnityEngine;
 using ProjectBreach.Core;
 
@@ -28,45 +29,24 @@ public class EquipmentPanelManager : MonoBehaviour
     [SerializeField] private Turret room4Turret3;
     [SerializeField] private Turret room4Turret4;
 
-
     public void ShowRoom1()
     {
-        SetTurrets(
-            room1Turret1,
-            room1Turret2,
-            null,
-            null
-        );
+        SetTurrets(room1Turret1, room1Turret2, null, null);
     }
 
     public void ShowRoom2()
     {
-        SetTurrets(
-            room2Turret1,
-            room2Turret2,
-            room2Turret3,
-            null
-        );
+        SetTurrets(room2Turret1, room2Turret2, room2Turret3, null);
     }
 
     public void ShowRoom3()
     {
-        SetTurrets(
-            room3Turret1,
-            room3Turret2,
-            null,
-            null
-        );
+        SetTurrets(room3Turret1, room3Turret2, null, null);
     }
 
     public void ShowRoom4()
     {
-        SetTurrets(
-            room4Turret1,
-            room4Turret2,
-            room4Turret3,
-            room4Turret4
-        );
+        SetTurrets(room4Turret1, room4Turret2, room4Turret3, room4Turret4);
     }
 
 
@@ -76,6 +56,13 @@ public class EquipmentPanelManager : MonoBehaviour
         Turret turret3,
         Turret turret4)
     {
+        // Remember which turrets belong to the current room.
+        roomTurretForSlot1 = turret1;
+        roomTurretForSlot2 = turret2;
+        roomTurretForSlot3 = turret3;
+        roomTurretForSlot4 = turret4;
+
+        // Update the four activation slots.
         SetSlot(turretSlot1, turret1);
         SetSlot(turretSlot2, turret2);
         SetSlot(turretSlot3, turret3);
@@ -93,4 +80,27 @@ public class EquipmentPanelManager : MonoBehaviour
         else
             slot.SetTurret(turret);
     }
+
+    // Returns the turret currently assigned to the requested slot.
+    public Turret GetTurretForSlot(EquipmentSlotUI slot)
+    {
+        if (slot == turretSlot1)
+            return roomTurretForSlot1;
+
+        if (slot == turretSlot2)
+            return roomTurretForSlot2;
+
+        if (slot == turretSlot3)
+            return roomTurretForSlot3;
+
+        if (slot == turretSlot4)
+            return roomTurretForSlot4;
+
+        return null;
+    }
+
+    private Turret roomTurretForSlot1;
+    private Turret roomTurretForSlot2;
+    private Turret roomTurretForSlot3;
+    private Turret roomTurretForSlot4;
 }

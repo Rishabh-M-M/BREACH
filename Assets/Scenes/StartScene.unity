@@ -635,11 +635,11 @@ PrefabInstance:
     - target: {fileID: 7034642799511958071, guid: 51c5821c735349c45a9200f0f800ef30, type: 3}
       propertyPath: aimPoint
       value: 
-      objectReference: {fileID: 9198810088432633732, guid: 210a3c20ea86ad34db193ee9d53779ae, type: 3}
+      objectReference: {fileID: 0}
     - target: {fileID: 7034642799511958071, guid: 51c5821c735349c45a9200f0f800ef30, type: 3}
       propertyPath: enemyPrefab
       value: 
-      objectReference: {fileID: 8422696284221005118, guid: 210a3c20ea86ad34db193ee9d53779ae, type: 3}
+      objectReference: {fileID: 22225025112293737, guid: 27f3e7e36a8b2fc4f86bfdf56b70e1aa, type: 3}
     - target: {fileID: 7034642799511958071, guid: 51c5821c735349c45a9200f0f800ef30, type: 3}
       propertyPath: spawnInterval
       value: 2

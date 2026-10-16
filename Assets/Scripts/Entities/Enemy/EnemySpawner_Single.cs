@@ -62,6 +62,11 @@ public class EnemySpawner_Single : MonoBehaviour
 
         Vector3 spawnPosition = GetRandomSpawnPosition();
 
+        if (enemyPrefab.TryGetComponent(out SpawnHeightOffset heightOffset))
+        {
+            spawnPosition += Vector3.up * heightOffset.HeightOffset;
+        }
+
         GameObject enemy = Instantiate(enemyPrefab, spawnPosition, transform.rotation);
 
         // Note: removed Claim() call - enemies share the same point now

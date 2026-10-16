@@ -639,7 +639,7 @@ PrefabInstance:
     - target: {fileID: 7034642799511958071, guid: 51c5821c735349c45a9200f0f800ef30, type: 3}
       propertyPath: enemyPrefab
       value: 
-      objectReference: {fileID: 22225025112293737, guid: 27f3e7e36a8b2fc4f86bfdf56b70e1aa, type: 3}
+      objectReference: {fileID: 7292806244410897802, guid: 6c7ce37ebb19d444fb4e61116e9885f5, type: 3}
     - target: {fileID: 7034642799511958071, guid: 51c5821c735349c45a9200f0f800ef30, type: 3}
       propertyPath: spawnInterval
       value: 2

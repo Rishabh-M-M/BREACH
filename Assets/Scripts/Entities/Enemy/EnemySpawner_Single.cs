@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using ProjectBreach.Core;
 
 /// <summary>
 /// Enemy spawner that allows multiple enemies to share the same target point.
@@ -13,6 +14,10 @@ public class EnemySpawner_Single : MonoBehaviour
     [SerializeField] private int enemiesToSpawn = 3;
     [SerializeField] private float spawnInterval = 1f;
     [SerializeField] private Transform aimPoint;
+
+    [Header("Spawn Position Variation")]
+    [Tooltip("How far left/right of the spawner's own position enemies can spawn.")]
+    [SerializeField] private float spawnSideOffset = 1f;
 
     [Header("Wave System")]
     [Tooltip("When false, this spawner waits for WaveManager to call SpawnWave(). Old demo scenes keep autoStart on.")]
@@ -56,7 +61,14 @@ public class EnemySpawner_Single : MonoBehaviour
             return;
         }
 
-        GameObject enemy = Instantiate(enemyPrefab, transform.position, transform.rotation);
+        Vector3 spawnPosition = GetRandomSpawnPosition();
+
+        if (enemyPrefab.TryGetComponent(out SpawnHeightOffset heightOffset))
+        {
+            spawnPosition += Vector3.up * heightOffset.HeightOffset;
+        }
+
+        GameObject enemy = Instantiate(enemyPrefab, spawnPosition, transform.rotation);
 
         // Note: removed Claim() call - enemies share the same point now
         // targetPoint.Claim();  // Commented out for shared target
@@ -65,6 +77,28 @@ public class EnemySpawner_Single : MonoBehaviour
         {
             mover.SetTarget(targetPoint.transform, targetPoint);
             mover.SetAimPoint(aimPoint);
+
+            // This spawner is parented under its owning Room -- tell the
+            // enemy which room it belongs to for anything that needs it
+            // (e.g. EnemyAudio's camera-visibility check, same convention
+            // Turret/TurretAudioController already use).
+            Room ownerRoom = GetComponentInParent<Room>();
+            mover.SetRoomIndex(ownerRoom != null ? ownerRoom.RoomIndex : 0);
+        }
+    }
+
+    private Vector3 GetRandomSpawnPosition()
+    {
+        int choice = Random.Range(0, 3); // 0 = centre, 1 = left, 2 = right
+
+        switch (choice)
+        {
+            case 1:
+                return transform.position - transform.right * spawnSideOffset;
+            case 2:
+                return transform.position + transform.right * spawnSideOffset;
+            default:
+                return transform.position;
         }
     }
 

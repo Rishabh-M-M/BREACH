@@ -34,6 +34,8 @@ namespace ProjectBreach.Core
         // Verbose logging is a WebGL performance tax (console I/O on every spawn/hit).
         private static bool verboseLogging = false;
 
+        private GameObject explosionEffectOverride;
+
         private void Awake()
         {
             if (verboseLogging) Debug.Log($"[Projectile] Awake - Speed: {speed}, Damage: {damage}, Direction: {flyDirection}");
@@ -105,6 +107,15 @@ namespace ProjectBreach.Core
                     $"direction: {flyDirection}, speed: {speed}"
                 );
             }
+        }
+
+        /// <summary>
+        /// Optionally override which explosion effect this specific projectile
+        /// spawns on hit, instead of the prefab's default explosionEffectPrefab.
+        /// </summary>
+        public void SetExplosionEffectOverride(GameObject effect)
+        {
+            explosionEffectOverride = effect;
         }
 
         /// <summary>
@@ -369,9 +380,11 @@ namespace ProjectBreach.Core
 
             // Spawn the optional explosion burst before the projectile is destroyed. Null-checked so
             // the field can stay unassigned without changing any behaviour.
-            if (explosionEffectPrefab != null)
+            GameObject effectToSpawn = explosionEffectOverride != null ? explosionEffectOverride : explosionEffectPrefab;
+
+            if (effectToSpawn != null)
             {
-                Instantiate(explosionEffectPrefab, transform.position, Quaternion.identity);
+                Instantiate(effectToSpawn, transform.position, Quaternion.identity);
             }
 
             // W7 Plasma shader hook: flash white on hit (via MaterialPropertyBlock), then let the

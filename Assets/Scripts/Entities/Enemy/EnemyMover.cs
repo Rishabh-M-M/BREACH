@@ -7,14 +7,15 @@ public class EnemyMover : MonoBehaviour
 {
     [SerializeField] private Transform target;
     [SerializeField] private float moveSpeed = 2f;
-    [SerializeField] private float turnSpeed = 90f;       // degrees per second
-    [SerializeField] private float maxSteerAngle = 45f;    // matches your blend tree thresholds
-    [SerializeField] private float arrivalDistance = 0.8f; // 使用了 Combat 分支微调过的 0.8f 距离
+    [SerializeField] private float turnSpeed = 90f;   
+    [SerializeField] private float maxSteerAngle = 45f;    
+    [SerializeField] private float arrivalDistance = 0.8f; 
     [SerializeField] private Transform aimPoint;
 
     [Header("Shield")]
     [SerializeField] private LayerMask shieldLayer;
     [SerializeField] private float shieldDetectDistance = 5f;
+    [SerializeField] private float shieldStopDistance = 2.5f;
 
     public Transform AimPoint => aimPoint;
 
@@ -22,12 +23,10 @@ public class EnemyMover : MonoBehaviour
     private Animator animator;
     private EnemyTargetPoint claimedTarget;
 
-    // 【Combat 护盾系统逻辑变量】
     private Transform turretTarget;
     private Transform turretAimPoint;
     private Shield shieldTarget;
 
-    // 【HEAD 陷阱减速系统逻辑变量】
     private float _speedMultiplier = 1f;
     private Coroutine _slowRoutine;
 
@@ -41,7 +40,6 @@ public class EnemyMover : MonoBehaviour
 
     private void FixedUpdate()
     {
-        // 【Combat】护盾被摧毁后，重新把目标设回炮塔/基地
         if (shieldTarget != null && shieldTarget.IsDestroyed)
         {
             shieldTarget = null;
@@ -52,7 +50,6 @@ public class EnemyMover : MonoBehaviour
             animator.SetBool("HasArrived", false);
         }
 
-        // 【Combat】检测前方是否有护盾
         if (shieldTarget == null)
         {
             RaycastHit hit;
@@ -77,7 +74,6 @@ public class EnemyMover : MonoBehaviour
             }
         }
 
-        // 抵达判定
         if (target == null || HasArrived)
         {
             if (HasArrived)
@@ -94,7 +90,9 @@ public class EnemyMover : MonoBehaviour
 
         float distance = toTarget.magnitude;
 
-        if (distance <= arrivalDistance)
+        float effectiveArrivalDistance = shieldTarget != null ? shieldStopDistance : arrivalDistance;
+
+        if (distance <= effectiveArrivalDistance)
         {
             HasArrived = true;
             animator.SetBool("HasArrived", true);
@@ -102,7 +100,6 @@ public class EnemyMover : MonoBehaviour
             return;
         }
 
-        // 移动与旋转计算
         Vector3 desiredDirection = toTarget.normalized;
         float angleToTarget = Vector3.SignedAngle(transform.forward, desiredDirection, Vector3.up);
 
@@ -110,7 +107,6 @@ public class EnemyMover : MonoBehaviour
         Quaternion newRotation = Quaternion.RotateTowards(rb.rotation, targetRotation, turnSpeed * Time.fixedDeltaTime);
         rb.MoveRotation(newRotation);
 
-        // 【HEAD】此处合并了陷阱减速逻辑（_speedMultiplier）
         Vector3 newPosition = rb.position + transform.forward * (moveSpeed * _speedMultiplier) * Time.fixedDeltaTime;
         rb.MovePosition(newPosition);
 
@@ -121,17 +117,16 @@ public class EnemyMover : MonoBehaviour
     public void SetTarget(Transform newTarget, EnemyTargetPoint targetPoint)
     {
         target = newTarget;
-        turretTarget = newTarget; // 【Combat】保存炮塔目标作为备用
+        turretTarget = newTarget; 
         claimedTarget = targetPoint;
     }
 
     public void SetAimPoint(Transform newAimPoint)
     {
         aimPoint = newAimPoint;
-        turretAimPoint = newAimPoint; // 【Combat】保存炮塔瞄准点作为备用
+        turretAimPoint = newAimPoint; 
     }
 
-    // 【HEAD】陷阱减速核心方法
     public void ApplySlow(float multiplier, float duration)
     {
         if (multiplier >= 1f || duration <= 0f) return;

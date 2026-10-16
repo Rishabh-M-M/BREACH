@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using ProjectBreach.Core;
 
 /// <summary>
 /// Enemy spawner that allows multiple enemies to share the same target point.
@@ -76,6 +77,13 @@ public class EnemySpawner_Single : MonoBehaviour
         {
             mover.SetTarget(targetPoint.transform, targetPoint);
             mover.SetAimPoint(aimPoint);
+
+            // This spawner is parented under its owning Room -- tell the
+            // enemy which room it belongs to for anything that needs it
+            // (e.g. EnemyAudio's camera-visibility check, same convention
+            // Turret/TurretAudioController already use).
+            Room ownerRoom = GetComponentInParent<Room>();
+            mover.SetRoomIndex(ownerRoom != null ? ownerRoom.RoomIndex : 0);
         }
     }
 

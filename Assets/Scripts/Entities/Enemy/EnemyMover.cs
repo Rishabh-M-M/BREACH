@@ -30,7 +30,22 @@ public class EnemyMover : MonoBehaviour
     private float _speedMultiplier = 1f;
     private Coroutine _slowRoutine;
 
+    private int currentRoomIndex;
+
     public bool HasArrived { get; private set; }
+
+    /// <summary>
+    /// Which room (by the same index convention as Turret/Room -- 0 is the
+    /// Main Control Room) this enemy currently belongs to, for anything
+    /// that needs to know (e.g. EnemyAudio's camera-visibility check).
+    /// Set by whatever spawns or relocates this enemy; never inferred.
+    /// </summary>
+    public int CurrentRoomIndex => currentRoomIndex;
+
+    public void SetRoomIndex(int roomIndex)
+    {
+        currentRoomIndex = roomIndex;
+    }
 
     private void Awake()
     {

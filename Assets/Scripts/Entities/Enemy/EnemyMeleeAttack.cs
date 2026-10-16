@@ -23,6 +23,7 @@ public class EnemyMeleeAttack : MonoBehaviour
     private Rigidbody rb;
     private Animator animator;
     private EnemyHealth health;
+    private EnemyAudio audioPlayer;
 
     private enum DashState { Idle, Out, Back, Cooldown }
     private DashState state = DashState.Idle;
@@ -37,6 +38,7 @@ public class EnemyMeleeAttack : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         animator = GetComponent<Animator>();
         health = GetComponent<EnemyHealth>();
+        audioPlayer = GetComponent<EnemyAudio>();
     }
 
     private void FixedUpdate()
@@ -74,6 +76,11 @@ public class EnemyMeleeAttack : MonoBehaviour
                 if (!string.IsNullOrEmpty(biteTriggerName))
                 {
                     animator.SetTrigger(biteTriggerName);
+                }
+
+                if (audioPlayer != null)
+                {
+                    audioPlayer.PlayAttack();
                 }
                 break;
 

@@ -639,7 +639,7 @@ PrefabInstance:
     - target: {fileID: 7034642799511958071, guid: 51c5821c735349c45a9200f0f800ef30, type: 3}
       propertyPath: enemyPrefab
       value: 
-      objectReference: {fileID: 22225025112293737, guid: 27f3e7e36a8b2fc4f86bfdf56b70e1aa, type: 3}
+      objectReference: {fileID: 8422696284221005118, guid: 210a3c20ea86ad34db193ee9d53779ae, type: 3}
     - target: {fileID: 7034642799511958071, guid: 51c5821c735349c45a9200f0f800ef30, type: 3}
       propertyPath: spawnInterval
       value: 2
@@ -2219,7 +2219,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e18a6e2a97c7db04d91533f00060b8aa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ProjectBreach.Core.Room
-  roomIndex: 0
+  roomIndex: 4
   roomName: ServerRoom
   structures:
   - {fileID: 744622740}
@@ -4783,7 +4783,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e18a6e2a97c7db04d91533f00060b8aa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ProjectBreach.Core.Room
-  roomIndex: 0
+  roomIndex: 3
   roomName: Shop
   structures:
   - {fileID: 685640740}
@@ -8405,7 +8405,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e18a6e2a97c7db04d91533f00060b8aa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ProjectBreach.Core.Room
-  roomIndex: 0
+  roomIndex: 2
   roomName: Air Lock
   structures:
   - {fileID: 897250901}

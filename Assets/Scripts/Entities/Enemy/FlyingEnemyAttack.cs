@@ -22,6 +22,7 @@ public class FlyingEnemyAttack : MonoBehaviour
     private EnemyMover mover;
     private EnemyHealth health;
     private Rigidbody rb;
+    private EnemyAudio audioPlayer;
     private float cooldownTimer;
 
     private void Awake()
@@ -29,6 +30,7 @@ public class FlyingEnemyAttack : MonoBehaviour
         mover = GetComponent<EnemyMover>();
         health = GetComponent<EnemyHealth>();
         rb = GetComponent<Rigidbody>();
+        audioPlayer = GetComponent<EnemyAudio>();
     }
 
     private void FixedUpdate()
@@ -36,9 +38,6 @@ public class FlyingEnemyAttack : MonoBehaviour
         if (health != null && health.IsDead) return;
         if (!mover.HasArrived) return;
 
-        // Hold steady once arrived. Nothing else corrects position after
-        // EnemyMover stops actively moving it, so a bump from another enemy
-        // would otherwise leave it drifting on leftover velocity forever.
         rb.linearVelocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
 
@@ -132,6 +131,11 @@ public class FlyingEnemyAttack : MonoBehaviour
         else
         {
             Debug.LogError("[FlyingEnemyAttack] Bullet prefab has no Projectile component.", this);
+        }
+
+        if (audioPlayer != null)
+        {
+            audioPlayer.PlayAttack();
         }
     }
 }

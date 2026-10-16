@@ -4203,6 +4203,8 @@ GameObject:
   - component: {fileID: 8559453760959150255}
   - component: {fileID: 1823061264956450593}
   - component: {fileID: 5828790945660558759}
+  - component: {fileID: 5438939781006740097}
+  - component: {fileID: 3333750827870684818}
   m_Layer: 9
   m_Name: Police Enforcer Var
   m_TagString: Enemy
@@ -4219,7 +4221,7 @@ Transform:
   m_GameObject: {fileID: 8422696284221005118}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: 222.18524, y: 4.313572, z: -168.17343}
+  m_LocalPosition: {x: 214.45604, y: 4.01769, z: -116.99863}
   m_LocalScale: {x: 7, y: 7, z: 7}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -4386,6 +4388,127 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a63102439f13b1d42abe6b9f15a53d1a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ProjectBreach.Core.Enemy
+--- !u!82 &5438939781006740097
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8422696284221005118}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!114 &3333750827870684818
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8422696284221005118}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: beb1ab43aaf8cb04f81203201faabbf4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyAudio
+  attackClips:
+  - {fileID: 8300000, guid: f114615e790c8f84dbd05456bd83a4be, type: 3}
+  footstepClips:
+  - {fileID: 8300000, guid: 31ecb83dc6414374a98ac4de45a8dba5, type: 3}
+  - {fileID: 8300000, guid: 5e6c94b9f9cc6c142a486805778f3ea5, type: 3}
+  deathClip: {fileID: 8300000, guid: fc215158ff6a22749bbcd02aa03068df, type: 3}
+  attackVolume: 1
+  footstepVolume: 0.25
+  deathVolume: 1
+  movementLoopClip: {fileID: 0}
+  movementVolume: 0.6
+  pitchVariance: 0.05
 --- !u!1 &8556130955536065810
 GameObject:
   m_ObjectHideFlags: 0

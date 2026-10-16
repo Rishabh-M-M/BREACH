@@ -16,11 +16,13 @@ public class EnemyAttack : MonoBehaviour
 
     private EnemyMover mover;
     private Animator animator;
+    private EnemyAudio audioPlayer;
 
     private void Awake()
     {
         mover = GetComponent<EnemyMover>();
         animator = GetComponent<Animator>();
+        audioPlayer = GetComponent<EnemyAudio>();
     }
 
     /// <summary>
@@ -107,6 +109,11 @@ public class EnemyAttack : MonoBehaviour
         else
         {
             Debug.LogError("[EnemyAttack] Bullet prefab has no Projectile component.", this);
+        }
+
+        if (audioPlayer != null)
+        {
+            audioPlayer.PlayAttack();
         }
     }
 }

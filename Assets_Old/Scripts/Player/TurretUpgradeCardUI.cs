@@ -1,0 +1,346 @@
+using ProjectBreach.Core;
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
+
+public enum TurretUpgradeCardType
+{
+    Standard,
+    BaseTurret,
+    DoubleBarrel,
+    Sharpshooter,
+    HeliosIncinerator,
+    RocketLauncher
+}
+
+public class TurretUpgradeCardUI : MonoBehaviour
+{
+    [Header("Card Type")]
+    [SerializeField] private TurretUpgradeCardType cardType;
+
+    [Header("Text References")]
+    [SerializeField] private TextMeshProUGUI titleText;
+    [SerializeField] private TextMeshProUGUI damageText;
+    [SerializeField] private TextMeshProUGUI rangeText;
+    [SerializeField] private TextMeshProUGUI fireRateText;
+
+    [Header("Cost References")]
+    [SerializeField] private TextMeshProUGUI powerCostText;
+    [SerializeField] private TextMeshProUGUI upgradeCostText;
+    [SerializeField] private GameObject upgradeCostObject;
+
+    [Header("Button References")]
+    [SerializeField] private Button upgradeButton;
+    [SerializeField] private TextMeshProUGUI buttonLabel;
+
+    [Header("Card Appearance")]
+    [SerializeField] private Image cardBackground;
+
+    [Header("Display Stats")]
+    [SerializeField] private float damage = 5f;
+    [SerializeField] private float range = 8f;
+    [SerializeField] private float fireRate = 1f;
+
+    [Header("Costs")]
+    [SerializeField] private int operatingPowerCost = 30;
+    [SerializeField] private int permanentUpgradeCost = 0;
+
+    [Header("Stat Colours")]
+    [SerializeField] private Color betterColour = new Color32(51, 255, 102, 255);
+    [SerializeField] private Color worseColour = new Color32(255, 64, 64, 255);
+    [SerializeField] private Color sameColour = Color.white;
+    [SerializeField] private Color labelCyan = new Color32(0, 255, 255, 255);
+
+    [Header("Card Colours")]
+    [SerializeField] private Color normalBackground = new Color(0.035f, 0.075f, 0.12f);
+    [SerializeField] private Color selectedBackground = new Color(0.05f, 0.22f, 0.16f);
+
+    [Header("Button Colours")]
+    [SerializeField] private Color normalButtonColour = new Color(0.051f, 0.110f, 0.169f);
+    [SerializeField] private Color highlightedButtonColour = new Color(0.094f, 0.212f, 0.302f);
+    [SerializeField] private Color pressedButtonColour = new Color(0f, 0.75f, 1f);
+    [SerializeField] private Color disabledButtonColour = new Color(0.149f, 0.149f, 0.169f);
+
+    [Header("Upgrade Text Colours")]
+    [SerializeField] private Color availableUpgradeTextColour = new Color32(0, 255, 0, 255);
+    [SerializeField] private Color unavailableUpgradeTextColour = new Color32(128, 128, 128, 255);
+    [SerializeField] private Color purchasedUpgradeTextColour = new Color32(128, 128, 128, 255);
+
+    private TurretUpgradePanelUI panel;
+    private TurretUpgradeController currentController;
+    private bool hasTurret;
+
+    public TurretUpgradeCardType CardType => cardType;
+
+    private void Awake()
+    {
+        if (upgradeButton == null)
+            upgradeButton = GetComponentInChildren<Button>();
+
+        if (buttonLabel == null && upgradeButton != null)
+            buttonLabel = upgradeButton.GetComponentInChildren<TextMeshProUGUI>();
+
+        if (upgradeButton != null)
+        {
+            upgradeButton.onClick.RemoveListener(OnUpgradeClicked);
+            upgradeButton.onClick.AddListener(OnUpgradeClicked);
+
+            ColorBlock colors = upgradeButton.colors;
+            colors.normalColor = normalButtonColour;
+            colors.highlightedColor = highlightedButtonColour;
+            colors.pressedColor = pressedButtonColour;
+            colors.selectedColor = highlightedButtonColour;
+            colors.disabledColor = disabledButtonColour;
+            colors.colorMultiplier = 1f;
+            upgradeButton.colors = colors;
+        }
+
+        Refresh();
+    }
+
+    public void Bind(TurretUpgradePanelUI upgradePanel)
+    {
+        panel = upgradePanel;
+    }
+
+    public void Refresh(TurretUpgradeController controller, bool selectedTurretExists)
+    {
+        currentController = controller;
+        hasTurret = selectedTurretExists && controller != null;
+        Refresh();
+    }
+
+    public void SetTurret(bool selectedTurretExists, TurretUpgradeController controller)
+    {
+        currentController = controller;
+        hasTurret = selectedTurretExists && controller != null;
+        Refresh();
+    }
+
+    public void Refresh()
+    {
+        if (titleText != null)
+            titleText.color = labelCyan;
+
+        UpdateStatsText();
+        UpdateCostText();
+        UpdateButtonState();
+    }
+
+    private void UpdateStatsText()
+    {
+        if (damageText != null)
+        {
+            damageText.text =
+                ColourLabel("DAMAGE:") + " " +
+                ColourValue(damage.ToString("0.##"), GetStatColour(damage, 5f, true));
+        }
+
+        if (rangeText != null)
+        {
+            rangeText.text =
+                ColourLabel("RANGE:") + " " +
+                ColourValue(range.ToString("0.##"), GetStatColour(range, 8f, true));
+        }
+
+        if (fireRateText != null)
+        {
+            fireRateText.text =
+                ColourLabel("FIRE RATE:") + " " +
+                ColourValue(fireRate.ToString("0.##") + "s", GetStatColour(fireRate, 1f, false));
+        }
+    }
+
+    private void UpdateCostText()
+    {
+        if (powerCostText != null)
+        {
+            powerCostText.text =
+                ColourLabel("POWER COST:") + " " +
+                ColourValue(operatingPowerCost.ToString(), Color.white);
+        }
+
+        bool showUpgradeCost =
+            cardType != TurretUpgradeCardType.Standard &&
+            cardType != TurretUpgradeCardType.BaseTurret;
+
+        if (upgradeCostObject != null)
+            upgradeCostObject.SetActive(showUpgradeCost);
+
+        if (upgradeCostText != null && showUpgradeCost)
+        {
+            upgradeCostText.text =
+                ColourLabel("UPGRADE COST:") + " " +
+                ColourValue(permanentUpgradeCost.ToString(), Color.white);
+        }
+    }
+
+    private bool IsSelected()
+    {
+        if (!hasTurret || currentController == null)
+            return false;
+
+        switch (cardType)
+        {
+            case TurretUpgradeCardType.BaseTurret:
+                return currentController.IsBase;
+
+            case TurretUpgradeCardType.DoubleBarrel:
+                return currentController.IsDoubleBarrel;
+
+            case TurretUpgradeCardType.Sharpshooter:
+                return currentController.IsSharpshooter;
+
+            case TurretUpgradeCardType.HeliosIncinerator:
+                return currentController.IsHeliosIncinerator;
+
+            default:
+                return false;
+        }
+    }
+
+    private void UpdateButtonState()
+    {
+        if (upgradeButton == null)
+            return;
+
+        if (cardType == TurretUpgradeCardType.Standard)
+        {
+            upgradeButton.gameObject.SetActive(false);
+
+            if (cardBackground != null)
+                cardBackground.color = normalBackground;
+
+            return;
+        }
+
+        upgradeButton.gameObject.SetActive(true);
+
+        if (!hasTurret || currentController == null)
+        {
+            upgradeButton.interactable = false;
+            SetButtonLabel("UNAVAILABLE", unavailableUpgradeTextColour);
+
+            if (cardBackground != null)
+                cardBackground.color = normalBackground;
+
+            return;
+        }
+
+        // The currently active variant is selected.
+        if (IsSelected())
+        {
+            upgradeButton.interactable = false;
+            SetButtonLabel("SELECTED", purchasedUpgradeTextColour);
+
+            if (cardBackground != null)
+                cardBackground.color = selectedBackground;
+
+            return;
+        }
+
+        // Previously purchased variants remain permanently committed.
+        TurretVariant variant = GetVariantForCard();
+
+        if (currentController.IsVariantCommitted(variant))
+        {
+            upgradeButton.interactable = false;
+            SetButtonLabel("COMMITTED", unavailableUpgradeTextColour);
+
+            if (cardBackground != null)
+                cardBackground.color = normalBackground;
+
+            return;
+        }
+
+        if (cardType == TurretUpgradeCardType.BaseTurret)
+        {
+            upgradeButton.interactable = false;
+            SetButtonLabel("BASE ONLY", unavailableUpgradeTextColour);
+
+            if (cardBackground != null)
+                cardBackground.color = normalBackground;
+
+            return;
+        }
+
+        // Never-purchased variants remain available.
+        upgradeButton.interactable = true;
+        SetButtonLabel("UPGRADE", availableUpgradeTextColour);
+
+        if (cardBackground != null)
+            cardBackground.color = normalBackground;
+    }
+
+    private TurretVariant GetVariantForCard()
+    {
+        switch (cardType)
+        {
+            case TurretUpgradeCardType.DoubleBarrel:
+                return TurretVariant.DoubleBarrel;
+
+            case TurretUpgradeCardType.Sharpshooter:
+                return TurretVariant.Sharpshooter;
+
+            case TurretUpgradeCardType.HeliosIncinerator:
+                return TurretVariant.HeliosIncinerator;
+
+            default:
+                return TurretVariant.Base;
+        }
+    }
+
+
+    private void SetButtonLabel(string label, Color colour)
+    {
+        if (buttonLabel == null)
+            return;
+
+        buttonLabel.text = label;
+        buttonLabel.color = colour;
+    }
+
+    private void OnUpgradeClicked()
+    {
+        if (cardType == TurretUpgradeCardType.Standard)
+            return;
+
+        if (panel == null)
+        {
+            Debug.LogError(
+                "[TurretUpgradeCardUI] Upgrade panel is not bound. " +
+                "Add this card to the panel's Cards array.",
+                this);
+            return;
+        }
+
+        panel.TryPurchase(cardType);
+    }
+
+    private Color GetStatColour(float value, float baseValue, bool higherIsBetter)
+    {
+        if (Mathf.Approximately(value, baseValue))
+            return sameColour;
+
+        bool isBetter = higherIsBetter ? value > baseValue : value < baseValue;
+        return isBetter ? betterColour : worseColour;
+    }
+
+    private string ColourLabel(string label)
+    {
+        string hex = ColorUtility.ToHtmlStringRGBA(labelCyan);
+        return $"<color=#{hex}>{label}</color>";
+    }
+
+    private string ColourValue(string value, Color colour)
+    {
+        string hex = ColorUtility.ToHtmlStringRGBA(colour);
+        return $"<color=#{hex}>{value}</color>";
+    }
+
+    private void OnDestroy()
+    {
+        if (upgradeButton != null)
+            upgradeButton.onClick.RemoveListener(OnUpgradeClicked);
+    }
+}

@@ -14,10 +14,6 @@ public class EnemySpawner_Single : MonoBehaviour
     [SerializeField] private float spawnInterval = 1f;
     [SerializeField] private Transform aimPoint;
 
-    [Header("Spawn Position Variation")]
-    [Tooltip("How far left/right of the spawner's own position enemies can spawn.")]
-    [SerializeField] private float spawnSideOffset = 1f;
-
     [Header("Wave System")]
     [Tooltip("When false, this spawner waits for WaveManager to call SpawnWave(). Old demo scenes keep autoStart on.")]
     [SerializeField] private bool autoStart = false;
@@ -60,14 +56,7 @@ public class EnemySpawner_Single : MonoBehaviour
             return;
         }
 
-        Vector3 spawnPosition = GetRandomSpawnPosition();
-
-        if (enemyPrefab.TryGetComponent(out SpawnHeightOffset heightOffset))
-        {
-            spawnPosition += Vector3.up * heightOffset.HeightOffset;
-        }
-
-        GameObject enemy = Instantiate(enemyPrefab, spawnPosition, transform.rotation);
+        GameObject enemy = Instantiate(enemyPrefab, transform.position, transform.rotation);
 
         // Note: removed Claim() call - enemies share the same point now
         // targetPoint.Claim();  // Commented out for shared target
@@ -76,21 +65,6 @@ public class EnemySpawner_Single : MonoBehaviour
         {
             mover.SetTarget(targetPoint.transform, targetPoint);
             mover.SetAimPoint(aimPoint);
-        }
-    }
-
-    private Vector3 GetRandomSpawnPosition()
-    {
-        int choice = Random.Range(0, 3); // 0 = centre, 1 = left, 2 = right
-
-        switch (choice)
-        {
-            case 1:
-                return transform.position - transform.right * spawnSideOffset;
-            case 2:
-                return transform.position + transform.right * spawnSideOffset;
-            default:
-                return transform.position;
         }
     }
 

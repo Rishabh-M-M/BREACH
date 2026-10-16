@@ -5,11 +5,15 @@ using UnityEngine;
 [RequireComponent(typeof(Animator))]
 public class EnemyMover : MonoBehaviour
 {
+    [Header("Gravity")]
+    [SerializeField] private bool isAntiGravity = false;
+
+    [Space]
     [SerializeField] private Transform target;
     [SerializeField] private float moveSpeed = 2f;
-    [SerializeField] private float turnSpeed = 90f;   
-    [SerializeField] private float maxSteerAngle = 45f;    
-    [SerializeField] private float arrivalDistance = 0.8f; 
+    [SerializeField] private float turnSpeed = 90f;
+    [SerializeField] private float maxSteerAngle = 45f;
+    [SerializeField] private float arrivalDistance = 0.8f;
     [SerializeField] private Transform aimPoint;
 
     [Header("Shield")]
@@ -34,13 +38,9 @@ public class EnemyMover : MonoBehaviour
 
     public bool HasArrived { get; private set; }
 
-    /// <summary>
-    /// Which room (by the same index convention as Turret/Room -- 0 is the
-    /// Main Control Room) this enemy currently belongs to, for anything
-    /// that needs to know (e.g. EnemyAudio's camera-visibility check).
-    /// Set by whatever spawns or relocates this enemy; never inferred.
-    /// </summary>
     public int CurrentRoomIndex => currentRoomIndex;
+
+    private Vector3 UpDirection => isAntiGravity ? Vector3.down : Vector3.up;
 
     public void SetRoomIndex(int roomIndex)
     {
@@ -69,7 +69,7 @@ public class EnemyMover : MonoBehaviour
         {
             RaycastHit hit;
             if (Physics.Raycast(
-                transform.position + Vector3.up * 0.5f,
+                transform.position + UpDirection * 0.5f,
                 transform.forward,
                 out hit,
                 shieldDetectDistance,
@@ -116,9 +116,9 @@ public class EnemyMover : MonoBehaviour
         }
 
         Vector3 desiredDirection = toTarget.normalized;
-        float angleToTarget = Vector3.SignedAngle(transform.forward, desiredDirection, Vector3.up);
+        float angleToTarget = Vector3.SignedAngle(transform.forward, desiredDirection, UpDirection);
 
-        Quaternion targetRotation = Quaternion.LookRotation(desiredDirection, Vector3.up);
+        Quaternion targetRotation = Quaternion.LookRotation(desiredDirection, UpDirection);
         Quaternion newRotation = Quaternion.RotateTowards(rb.rotation, targetRotation, turnSpeed * Time.fixedDeltaTime);
         rb.MoveRotation(newRotation);
 
@@ -132,14 +132,14 @@ public class EnemyMover : MonoBehaviour
     public void SetTarget(Transform newTarget, EnemyTargetPoint targetPoint)
     {
         target = newTarget;
-        turretTarget = newTarget; 
+        turretTarget = newTarget;
         claimedTarget = targetPoint;
     }
 
     public void SetAimPoint(Transform newAimPoint)
     {
         aimPoint = newAimPoint;
-        turretAimPoint = newAimPoint; 
+        turretAimPoint = newAimPoint;
     }
 
     public void ApplySlow(float multiplier, float duration)
@@ -170,7 +170,7 @@ public class EnemyMover : MonoBehaviour
 
         if (toAim.sqrMagnitude < 0.0001f) return;
 
-        Quaternion targetRotation = Quaternion.LookRotation(toAim.normalized, Vector3.up);
+        Quaternion targetRotation = Quaternion.LookRotation(toAim.normalized, UpDirection);
         Quaternion newRotation = Quaternion.RotateTowards(rb.rotation, targetRotation, turnSpeed * Time.fixedDeltaTime);
         rb.MoveRotation(newRotation);
     }

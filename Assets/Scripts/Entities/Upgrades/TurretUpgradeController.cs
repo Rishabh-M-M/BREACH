@@ -10,6 +10,7 @@ namespace ProjectBreach.Core
         [SerializeField] private DoubleBarrelUpgrade doubleBarrelUpgrade;
         [SerializeField] private SharpshooterUpgrade sharpshooterUpgrade;
         [SerializeField] private HeliosIncineratorUpgrade heliosIncineratorUpgrade;
+        [SerializeField] private RocketLauncherUpgrade rocketLauncherUpgrade;
 
         [Header("Current Variant")]
         [SerializeField] private TurretVariant currentVariant = TurretVariant.Base;
@@ -31,9 +32,13 @@ namespace ProjectBreach.Core
         public bool IsDoubleBarrel => currentVariant == TurretVariant.DoubleBarrel;
         public bool IsSharpshooter => currentVariant == TurretVariant.Sharpshooter;
         public bool IsHeliosIncinerator => currentVariant == TurretVariant.HeliosIncinerator;
+        public bool IsRocketLauncher => currentVariant == TurretVariant.RocketLauncher;
 
         public HeliosIncineratorUpgrade ActiveHeliosIncinerator =>
             heliosIncineratorUpgrade;
+
+        public RocketLauncherUpgrade ActiveRocketLauncher =>
+            rocketLauncherUpgrade;
 
         // Kept for compatibility with existing UI code.
         // This now means the CURRENT variant is not Base.
@@ -64,6 +69,9 @@ namespace ProjectBreach.Core
 
                     case TurretVariant.HeliosIncinerator:
                         return "Helios Incinerator";
+
+                    case TurretVariant.RocketLauncher:
+                        return "RocketLauncher";
 
                     default:
                         return "Base Turret";
@@ -122,6 +130,10 @@ namespace ProjectBreach.Core
             if (heliosIncineratorUpgrade == null)
                 heliosIncineratorUpgrade =
                     GetComponentInChildren<HeliosIncineratorUpgrade>(true);
+
+            if (rocketLauncherUpgrade == null)
+                rocketLauncherUpgrade =
+                    GetComponentInChildren<RocketLauncherUpgrade>(true);
         }
 
         private bool HasRequiredComponent(TurretVariant variant)
@@ -139,6 +151,9 @@ namespace ProjectBreach.Core
 
                 case TurretVariant.HeliosIncinerator:
                     return heliosIncineratorUpgrade != null;
+
+                case TurretVariant.RocketLauncher:
+                    return rocketLauncherUpgrade != null;
 
                 default:
                     return false;
@@ -164,6 +179,11 @@ namespace ProjectBreach.Core
                         ? heliosIncineratorUpgrade.OperatingPowerCost
                         : baseOperatingPowerCost;
 
+                case TurretVariant.RocketLauncher:
+                    return rocketLauncherUpgrade != null
+                        ? rocketLauncherUpgrade.OperatingPowerCost
+                        : baseOperatingPowerCost;
+
                 default:
                     return baseOperatingPowerCost;
             }
@@ -181,6 +201,9 @@ namespace ProjectBreach.Core
 
                 case TurretVariant.HeliosIncinerator:
                     return heliosIncineratorUpgrade;
+
+                case TurretVariant.RocketLauncher:
+                    return rocketLauncherUpgrade;
 
                 default:
                     return null;
@@ -326,6 +349,14 @@ namespace ProjectBreach.Core
                 TurretVariant.HeliosIncinerator,
                 heliosIncineratorUpgrade,
                 "Helios Incinerator");
+        }
+
+        public bool TryUpgradeToRocketLauncher()
+        {
+            return TrySwitchVariant(
+                TurretVariant.RocketLauncher,
+                rocketLauncherUpgrade,
+                "RocketLauncher");
         }
 
         public bool TrySwitchToBase()
@@ -484,6 +515,9 @@ namespace ProjectBreach.Core
 
             if (heliosIncineratorUpgrade != null)
                 heliosIncineratorUpgrade.SetVisualActive(IsHeliosIncinerator);
+
+            if (rocketLauncherUpgrade != null)
+                rocketLauncherUpgrade.SetVisualActive(IsRocketLauncher);
         }
 
         public void DrawGizmos(Turret turretInstance)
@@ -511,6 +545,12 @@ namespace ProjectBreach.Core
         private void TestBuyHeliosIncinerator()
         {
             TryUpgradeToHeliosIncinerator();
+        }
+
+        [ContextMenu("TEST - Buy RocketLauncher")]
+        private void TestBuyRocketLauncher()
+        {
+            TryUpgradeToRocketLauncher();
         }
     }
 }

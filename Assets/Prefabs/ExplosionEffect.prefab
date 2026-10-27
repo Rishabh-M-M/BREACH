@@ -122,6 +122,7 @@ GameObject:
   - component: {fileID: 1358724875316055969}
   - component: {fileID: 1732125568404738285}
   - component: {fileID: 3493365233918567106}
+  - component: {fileID: -5171626978843920997}
   m_Layer: 0
   m_Name: ExplosionEffect
   m_TagString: Untagged
@@ -5006,3 +5007,19 @@ ParticleSystemRenderer:
   m_MeshWeighting1: 1
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
+--- !u!114 &-5171626978843920997
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7482561660992541774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c3468c40b47340ada9f2aa233d7e905, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ProjectBreach.Core.RocketExplosionEffect
+  showRadiusGizmo: 1
+  radiusGizmoColor: {r: 0, g: 0.85, b: 1, a: 0.9}
+  defaultRadius: 3
+  defaultVisualDuration: 1.5

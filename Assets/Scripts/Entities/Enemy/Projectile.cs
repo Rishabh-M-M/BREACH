@@ -31,6 +31,21 @@ namespace ProjectBreach.Core
         private int sharpshooterMaxDamage;
         private Vector3 projectileStartPosition;
 
+        // Rocket projectile state.
+        private bool isRocketProjectile;
+        private int rocketExplosionDamage;
+        private float rocketExplosionRadius;
+        private float rocketSpeed;
+        [Header("Rocket Visual Orientation")]
+        [Tooltip("Corrects the rocket model's authored forward axis. The default Y=180 fixes models whose nose points backward.")]
+        [SerializeField] private Vector3 rocketModelRotationOffset = new Vector3(0f, 180f, 0f);
+        [Header("Rocket Explosion Visual") ]
+        [Tooltip("How long the explosion particles expand. The visual expansion reaches the configured damage radius at approximately this time.")]
+        [SerializeField, Min(0.1f)] private float rocketExplosionEffectDuration = 1.5f;
+        [Header("Rocket Audio")]
+        [SerializeField] private AudioClip rocketExplosionSound;
+        [SerializeField, Range(0f, 1f)] private float rocketExplosionVolume = 1f;
+
         // Verbose logging is a WebGL performance tax (console I/O on every spawn/hit).
         private static bool verboseLogging = false;
 
@@ -118,6 +133,13 @@ namespace ProjectBreach.Core
             explosionEffectOverride = effect;
         }
 
+        public void SetRocketExplosionSettings(AudioClip explosionSound, float visualDuration, float soundVolume = 1f)
+        {
+            rocketExplosionSound = explosionSound;
+            rocketExplosionEffectDuration = Mathf.Max(0.1f, visualDuration);
+            rocketExplosionVolume = Mathf.Clamp01(soundVolume);
+        }
+
         /// <summary>
         /// Initialize the Sharpshooter projectile.
         /// It travels in one fixed direction at a much higher speed than
@@ -163,9 +185,75 @@ namespace ProjectBreach.Core
             }
         }
 
+        /// <summary>Initializes a rocket that travels toward a world-space target position.</summary>
+        public void LaunchRocket(
+            Vector3 targetPosition,
+            int directDamage,
+            int explosionDamage,
+            float explosionRadius,
+            float projectileSpeed)
+        {
+            target = null;
+            damage = Mathf.Max(0, directDamage);
+            hasHit = false;
+            isSharpshooterProjectile = false;
+            isRocketProjectile = true;
+            rocketExplosionDamage = Mathf.Max(0, explosionDamage);
+            rocketExplosionRadius = Mathf.Max(0.1f, explosionRadius);
+            rocketSpeed = Mathf.Max(0.1f, projectileSpeed);
+
+            Vector3 direction = targetPosition - transform.position;
+            flyDirection = direction.sqrMagnitude > 0.0001f
+                ? direction.normalized
+                : transform.forward;
+            ApplyRocketModelRotation();
+            Destroy(gameObject, lifeTime);
+        }
+
+        /// <summary>Compatibility overload used by older Turret.cs calls.</summary>
+        public void InitializeRocket(
+            Vector3 direction,
+            int directDamage,
+            float projectileSpeed,
+            float explosionRadius,
+            GameObject explosionPrefab)
+        {
+            target = null;
+            damage = Mathf.Max(0, directDamage);
+            hasHit = false;
+            isSharpshooterProjectile = false;
+            isRocketProjectile = true;
+            rocketExplosionDamage = damage;
+            rocketExplosionRadius = Mathf.Max(0.1f, explosionRadius);
+            rocketSpeed = Mathf.Max(0.1f, projectileSpeed);
+            explosionEffectOverride = explosionPrefab;
+            flyDirection = direction.sqrMagnitude > 0.0001f
+                ? direction.normalized
+                : transform.forward;
+            ApplyRocketModelRotation();
+            Destroy(gameObject, lifeTime);
+        }
+
+        /// <summary>Compatibility overload for callers using target + separate splash damage.</summary>
+        public void InitializeRocket(
+            Vector3 targetPosition,
+            int directDamage,
+            int explosionDamage,
+            float explosionRadius,
+            float projectileSpeed)
+        {
+            LaunchRocket(targetPosition, directDamage, explosionDamage, explosionRadius, projectileSpeed);
+        }
+
         void Update()
         {
             if (hasHit) return;
+
+            if (isRocketProjectile)
+            {
+                ContinueFlyingRocket();
+                return;
+            }
 
             if (isSharpshooterProjectile)
             {
@@ -186,6 +274,32 @@ namespace ProjectBreach.Core
                 // Target lost/dead - continue flying straight
                 ContinueFlyingStraight();
             }
+        }
+
+        private void ContinueFlyingRocket()
+        {
+            if (flyDirection.sqrMagnitude < 0.0001f)
+                flyDirection = Vector3.forward;
+
+            if (TryGetComponent(out Rigidbody rb) && !rb.isKinematic)
+                rb.linearVelocity = flyDirection * rocketSpeed;
+            else
+                transform.position += flyDirection * rocketSpeed * Time.deltaTime;
+
+            // Do not use transform.forward here: it would overwrite the model's
+            // 180-degree correction every frame. Movement uses flyDirection only.
+            ApplyRocketModelRotation();
+        }
+
+        private void ApplyRocketModelRotation()
+        {
+            if (flyDirection.sqrMagnitude < 0.0001f)
+                return;
+
+            Quaternion trajectoryRotation =
+                Quaternion.LookRotation(flyDirection.normalized, Vector3.up);
+            transform.rotation = trajectoryRotation *
+                Quaternion.Euler(rocketModelRotationOffset);
         }
 
         private void ContinueFlyingSharpshooter()
@@ -329,6 +443,10 @@ namespace ProjectBreach.Core
             {
                 HitTarget(damageable);
             }
+            else if (isRocketProjectile)
+            {
+                ExplodeRocket();
+            }
             else
             {
                 Debug.Log("[Projectile] Hit obstacle, destroying");
@@ -344,6 +462,10 @@ namespace ProjectBreach.Core
             {
                 HitTarget(damageable);
             }
+            else if (isRocketProjectile)
+            {
+                ExplodeRocket();
+            }
             else
             {
                 Debug.Log("[Projectile] Hit trigger obstacle, destroying");
@@ -355,7 +477,16 @@ namespace ProjectBreach.Core
         {
             if (hasHit) return;
 
-            if (!damageable.IsDead)
+            if (isRocketProjectile)
+            {
+                hasHit = true;
+                if (damageable != null && !damageable.IsDead && damage > 0)
+                    damageable.TakeDamage(damage);
+                ExplodeRocketDamageAndEffects();
+                return;
+            }
+
+            if (damageable != null && !damageable.IsDead)
             {
                 int damageToDeal =
                     isSharpshooterProjectile
@@ -399,5 +530,79 @@ namespace ProjectBreach.Core
                 Destroy(gameObject);
             }
         }
+        private void ExplodeRocket()
+        {
+            if (hasHit) return;
+            hasHit = true;
+            ExplodeRocketDamageAndEffects();
+        }
+
+        private void ExplodeRocketDamageAndEffects()
+        {
+            Vector3 explosionPosition = transform.position;
+
+            if (rocketExplosionSound != null && rocketExplosionVolume > 0f)
+                AudioSource.PlayClipAtPoint(rocketExplosionSound, explosionPosition, rocketExplosionVolume);
+
+            GameObject effectToSpawn = explosionEffectOverride != null
+                ? explosionEffectOverride
+                : explosionEffectPrefab;
+            if (effectToSpawn != null)
+            {
+                GameObject effectInstance = Instantiate(
+                    effectToSpawn, explosionPosition, Quaternion.identity);
+
+                RocketExplosionEffect effectController =
+                    effectInstance.GetComponent<RocketExplosionEffect>();
+
+                if (effectController == null)
+                    effectController = effectInstance.AddComponent<RocketExplosionEffect>();
+
+                effectController.Configure(
+                    rocketExplosionRadius, rocketExplosionEffectDuration);
+            }
+
+            Collider[] colliders = Physics.OverlapSphere(explosionPosition, rocketExplosionRadius);
+            System.Collections.Generic.HashSet<IDamageable> damaged =
+                new System.Collections.Generic.HashSet<IDamageable>();
+
+            foreach (Collider hit in colliders)
+            {
+                if (hit == null) continue;
+                IDamageable damageable = null;
+                if (hit.TryGetComponent(out IDamageable direct))
+                    damageable = direct;
+                else if (hit.transform.root.TryGetComponent(out IDamageable rootDamageable))
+                    damageable = rootDamageable;
+
+                if (damageable == null || damageable.IsDead || !damaged.Add(damageable))
+                    continue;
+                if (rocketExplosionDamage <= 0)
+                    continue;
+
+                // Linear falloff, rounded to integer damage. Damage is strongest at
+                // the centre and falls toward the radius edge; inside targets take >= 1.
+                Component damageableComponent = damageable as Component;
+                Vector3 damagePosition = damageableComponent != null
+                    ? damageableComponent.transform.position
+                    : hit.bounds.center;
+                float distanceRatio = Mathf.Clamp01(
+                    Vector3.Distance(explosionPosition, damagePosition) / rocketExplosionRadius);
+                int scaledDamage = Mathf.RoundToInt(rocketExplosionDamage * (1f - distanceRatio));
+                if (scaledDamage <= 0) scaledDamage = 1;
+                damageable.TakeDamage(scaledDamage);
+            }
+            Destroy(gameObject);
+        }
+
+        private void OnDrawGizmosSelected()
+        {
+            if (!isRocketProjectile || rocketExplosionRadius <= 0f)
+                return;
+
+            Gizmos.color = new Color(0f, 0.8f, 1f, 0.9f);
+            Gizmos.DrawWireSphere(transform.position, rocketExplosionRadius);
+        }
+
     }
 }

@@ -19,6 +19,17 @@ public class Shield : MonoBehaviour, IDamageable
 
     [SerializeField] private float fadeSpeed = 1.5f;
 
+    [Header("Break Effects")]
+    [Tooltip("Optional particle prefab spawned when this shield permanently breaks. A shattering/shard effect works best.")]
+    [SerializeField] private GameObject shatterEffectPrefab;
+    [Tooltip("Optional one-shot sound played when this shield permanently breaks.")]
+    [SerializeField] private AudioClip shatterSound;
+    [SerializeField, Range(0f, 1f)] private float shatterSoundVolume = 1f;
+    [Tooltip("Temporarily slow the whole game when the shield breaks.")]
+    [SerializeField] private bool useBreakSlowMotion = true;
+    [SerializeField, Range(0.05f, 1f)] private float breakTimeScale = 0.25f;
+    [SerializeField, Min(0f)] private float breakSlowMotionDuration = 0.6f;
+
     [Header("Room Assignment")]
     [SerializeField] private Room assignedRoom;
     [SerializeField] private bool isMainRoomShield;
@@ -28,6 +39,10 @@ public class Shield : MonoBehaviour, IDamageable
     private Collider shieldCollider;
     private bool destroyed;
     private bool breakHandled;
+
+    private static Coroutine slowMotionCoroutine;
+    private static Shield slowMotionOwner;
+    private static float timeScaleBeforeSlowMotion = 1f;
 
     public bool IsDestroyed => destroyed;
     public int MaxHealth => maxHealth;
@@ -120,6 +135,7 @@ public class Shield : MonoBehaviour, IDamageable
         currentHealth = 0;
 
         UpdateShieldVisual();
+        PlayPermanentBreakEffects();
 
         if (shieldCollider != null)
             shieldCollider.enabled = false;
@@ -165,6 +181,72 @@ public class Shield : MonoBehaviour, IDamageable
         }
 
         StartCoroutine(FadeOut());
+    }
+
+    private void PlayPermanentBreakEffects()
+    {
+        Vector3 effectPosition = transform.position;
+
+        if (shatterEffectPrefab != null)
+        {
+            GameObject effect = Instantiate(
+                shatterEffectPrefab,
+                effectPosition,
+                transform.rotation
+            );
+
+            // Keep the effect independent if the shield object is disabled.
+            effect.transform.SetParent(null, true);
+
+            ParticleSystem[] particles = effect.GetComponentsInChildren<ParticleSystem>(true);
+            float longestDuration = 2f;
+
+            foreach (ParticleSystem particle in particles)
+            {
+                if (particle == null) continue;
+                particle.Play(true);
+
+                var main = particle.main;
+                float duration = main.duration;
+                if (main.startLifetime.mode == ParticleSystemCurveMode.TwoConstants)
+                    duration += main.startLifetime.constantMax;
+                else if (main.startLifetime.mode == ParticleSystemCurveMode.TwoCurves)
+                    duration += main.startLifetime.constantMax;
+
+                longestDuration = Mathf.Max(longestDuration, duration);
+            }
+
+            Destroy(effect, longestDuration + 0.5f);
+        }
+
+        if (shatterSound != null)
+            AudioSource.PlayClipAtPoint(shatterSound, effectPosition, shatterSoundVolume);
+
+        if (useBreakSlowMotion && breakSlowMotionDuration > 0f)
+            StartBreakSlowMotion();
+    }
+
+    private void StartBreakSlowMotion()
+    {
+        // If another shield breaks during the current slow-motion window,
+        // restart the timer without losing the original time scale.
+        if (slowMotionCoroutine != null && slowMotionOwner != null)
+            slowMotionOwner.StopCoroutine(slowMotionCoroutine);
+        else
+            timeScaleBeforeSlowMotion = Time.timeScale;
+
+        slowMotionOwner = this;
+        Time.timeScale = Mathf.Clamp(breakTimeScale, 0.05f, 1f);
+        slowMotionCoroutine = StartCoroutine(RestoreTimeScaleAfterDelay());
+    }
+
+    private IEnumerator RestoreTimeScaleAfterDelay()
+    {
+        yield return new WaitForSecondsRealtime(breakSlowMotionDuration);
+
+        Time.timeScale = timeScaleBeforeSlowMotion;
+        slowMotionCoroutine = null;
+        slowMotionOwner = null;
     }
 
     private IEnumerator HitFlash()

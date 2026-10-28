@@ -66,7 +66,7 @@ namespace ProjectBreach.Core
         [SerializeField] private bool lockXRotation = false;
 
         [Tooltip("Extra upward visual tilt (degrees) when aiming at a target above the turret. Set to 0 to disable.")]
-        [SerializeField, Range(0f, 15f)] private float upwardAimTilt = 5f;
+        [SerializeField, Range(0f, 25f)] private float upwardAimTilt = 10f;
 
         // ============================================================
         // AUDIO

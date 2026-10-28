@@ -6006,6 +6006,23 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 591735083}
   m_CullTransparentMesh: 1
+--- !u!1 &592182945 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6110375049919213297, guid: 6660178a26c884a81ad690c59e83d18c, type: 3}
+  m_PrefabInstance: {fileID: 1932898712}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &592182952
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 592182945}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6858027b92864468db5265d0071afbf7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ShieldShatterEffect
 --- !u!1 &604996925
 GameObject:
   m_ObjectHideFlags: 0
@@ -11377,6 +11394,9 @@ MonoBehaviour:
   doubleBarrelFireSound: {fileID: 8300000, guid: 6ed48dd759b0d4fc2819f0af3e6ebb06, type: 3}
   sharpshooterFireSound: {fileID: 8300000, guid: da926daff4c72423b8764f9ad56e27b3, type: 3}
   heliosIncineratorFireSound: {fileID: 8300000, guid: 278d324ce2e1c4d0fafed3800d0b66d8, type: 3}
+  rocketLauncherFireSound: {fileID: 8300000, guid: 5c215b1f916314b538e09bf27e29c870, type: 3}
+  rocketLauncherExplosionSound: {fileID: 8300000, guid: de7ee8d5b20764d65bc5597130d96aa8, type: 3}
+  rocketLauncherExplosionVolume: 1
   rotationSound: {fileID: 8300000, guid: dfc8e02a652bd43b29605c1b79937c61, type: 3}
   powerOnSound: {fileID: 8300000, guid: 945fc4d746947416e822e21d831ef7bd, type: 3}
   powerOffSound: {fileID: 8300000, guid: f5e893e2518334f60a2138ff234001c8, type: 3}
@@ -14936,10 +14956,33 @@ MonoBehaviour:
     m_Bits: 4294967295
   projectilePrefab: {fileID: 3559253009315741251, guid: 617fb061e9a4a63489eb89bdaa202df5, type: 3}
   firePoint: {fileID: 1037046935}
+  rocketFiringPoints:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  rocketProjectileSpeed: 16
+  rocketBlastRadius: 3.5
+  rocketReloadDuration: 4
+  blueRocketExplosionPrefab: {fileID: 0}
+  rocketSpentHoleVisuals:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   turretHead: {fileID: 215656291}
   rotationSpeed: 90
   rotationOffset: -90
   lockXRotation: 1
+  upwardAimTilt: 5
   activationShaderProperty: _Activation
   activationLerpSpeed: 4
   recoilDistance: 0.12
@@ -21480,13 +21523,32 @@ PrefabInstance:
       value: Shield
       objectReference: {fileID: 0}
     - target: {fileID: 7070064369690845650, guid: 6660178a26c884a81ad690c59e83d18c, type: 3}
+      propertyPath: shardSpread
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7070064369690845650, guid: 6660178a26c884a81ad690c59e83d18c, type: 3}
       propertyPath: assignedRoom
       value: 
       objectReference: {fileID: 312688382}
+    - target: {fileID: 7070064369690845650, guid: 6660178a26c884a81ad690c59e83d18c, type: 3}
+      propertyPath: shatterSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 38b2f6f3aa8c14f1583d855d3c6a4055, type: 3}
+    - target: {fileID: 7070064369690845650, guid: 6660178a26c884a81ad690c59e83d18c, type: 3}
+      propertyPath: shardMaterial
+      value: 
+      objectReference: {fileID: 2100000, guid: 750e95e141d024d9a9faf2d58c03bcdc, type: 2}
+    - target: {fileID: 7070064369690845650, guid: 6660178a26c884a81ad690c59e83d18c, type: 3}
+      propertyPath: shatterEffectPrefab
+      value: 
+      objectReference: {fileID: 592182945}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6110375049919213297, guid: 6660178a26c884a81ad690c59e83d18c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 592182952}
   m_SourcePrefab: {fileID: 100100000, guid: 6660178a26c884a81ad690c59e83d18c, type: 3}
 --- !u!1 &1937421718
 GameObject:

@@ -1,112 +1,101 @@
 using UnityEngine;
-using ProjectBreach.Core;
 
 namespace ProjectBreach.Core
 {
-    /// <summary>
-    /// MainControlRoom:
-    /// - Manages Core HP
-    /// - Handles enemy breaches
-    /// - Starts breach visuals
-    /// - Ends the game when Core HP reaches zero
-    /// </summary>
+    /// <summary>Manages core HP, enemy breaches, breach visuals, and defeat.</summary>
     public class MainControlRoom : MonoBehaviour, IDamageable
     {
         [Header("Core Settings")]
         [SerializeField] private int maxCoreHP = 50;
         [SerializeField] private int coreDamagePerBreach = 10;
 
-        // Connects the team's breach event to the custom visual effects
-        // created for the graphics component.
         [Header("Breach Visuals")]
         [SerializeField] private BreachController breachController;
 
         private int currentCoreHP;
+        private bool gameOverSent;
 
         public int MaxHP => maxCoreHP;
-
         public int CurrentHP => currentCoreHP;
-
         public bool IsDead => currentCoreHP <= 0;
 
         private void Awake()
         {
             currentCoreHP = maxCoreHP;
-
-            Debug.Log(
-                $"[MainControlRoom] Initialized CoreHP: " +
-                $"{currentCoreHP}/{maxCoreHP}"
-            );
+            if (breachController == null)
+                breachController = FindObjectOfType<BreachController>();
+            Debug.Log($"[MainControlRoom] Initialized CoreHP: {currentCoreHP}/{maxCoreHP}");
         }
 
-        /// <summary>
-        /// Called by GameManager when an enemy successfully breaches.
-        /// </summary>
+        private void OnEnable()
+        {
+            EventRegistry.OnRoomFallen += HandleRoomFallen;
+        }
+
+        private void OnDisable()
+        {
+            EventRegistry.OnRoomFallen -= HandleRoomFallen;
+        }
+
+        private void HandleRoomFallen(Room room)
+        {
+            if (room == null) return;
+            Debug.LogWarning($"[MainControlRoom] Room '{room.RoomName}' fell. Triggering breach visuals.");
+            TriggerBreachVisuals();
+        }
+
+        /// <summary>Called when an enemy reaches the main-room breach zone.</summary>
         public void SpawnBreach(Enemy enemy)
         {
             Debug.Log("[MainControlRoom] Enemy breach received.");
-
-            // Trigger the custom breach visual effect at the same event where
-            // the main room receives the enemy breach: screen shader, lights
-            // and camera shake.
-            if (breachController != null)
-            {
-                breachController.StartBreach();
-            }
-            else
-            {
-                Debug.LogWarning(
-                    "[MainControlRoom] BreachController is not assigned!"
-                );
-            }
-
-            // Existing team gameplay logic: reduce the Core HP.
+            TriggerBreachVisuals();
             TakeDamage(coreDamagePerBreach);
+        }
 
-            Debug.Log(
-                $"[MainControlRoom] Enemy breached! " +
-                $"CoreHP -{coreDamagePerBreach}, " +
-                $"remaining {currentCoreHP}/{maxCoreHP}"
-            );
+        /// <summary>Called when an enemy collides with and damages the main-room shield.</summary>
+        public void NotifyMainShieldDamaged()
+        {
+            TriggerBreachVisuals();
+        }
+
+        public void TriggerBreachVisuals()
+        {
+            if (breachController == null)
+                breachController = FindObjectOfType<BreachController>();
+
+            if (breachController != null)
+                breachController.StartBreach();
+            else
+                Debug.LogWarning("[MainControlRoom] BreachController is not assigned or found.");
         }
 
         public void TakeDamage(int amount)
         {
-            if (IsDead)
-                return;
+            if (IsDead || amount <= 0) return;
 
-            currentCoreHP -= amount;
-
-            if (currentCoreHP < 0)
-                currentCoreHP = 0;
-
-            Debug.Log(
-                $"[MainControlRoom] CoreHP: " +
-                $"{currentCoreHP}/{maxCoreHP}"
-            );
-
-            // HUD listens on this; without the broadcast the Core HP display
-            // never moves even though the damage logic runs fine.
+            currentCoreHP = Mathf.Max(0, currentCoreHP - amount);
+            Debug.Log($"[MainControlRoom] CoreHP: {currentCoreHP}/{maxCoreHP}");
             EventRegistry.BroadcastCoreHPChanged(currentCoreHP, maxCoreHP);
 
-            if (currentCoreHP <= 0)
-            {
-                Die();
-            }
+            if (currentCoreHP <= 0) Die();
         }
 
         public void Die()
         {
-            Debug.Log(
-                "[MainControlRoom] Core destroyed! Game over."
-            );
-
-            OnCoreDestroyed();
+            if (gameOverSent) return;
+            gameOverSent = true;
+            Debug.LogError("[MainControlRoom] Core destroyed! Game over.");
+            if (GameManager.Instance != null)
+                GameManager.Instance.RegisterCoreDestroyed();
+            else
+                Debug.LogError("[MainControlRoom] GameManager.Instance is missing.");
         }
 
-        private void OnCoreDestroyed()
+        /// <summary>Main shield break is an immediate defeat, independent of core HP.</summary>
+        public void MainShieldBroken()
         {
-            GameManager.Instance.RegisterCoreDestroyed();
+            TriggerBreachVisuals();
+            Die();
         }
     }
 }

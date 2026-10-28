@@ -57,11 +57,12 @@ namespace ProjectBreach.Core
         [SerializeField] private float recoilRecoverySpeed = 8f;
 
         [Tooltip("Recoil direction in the turret head parent space. SS moves downward and backward.")]
-        [SerializeField] private Vector3 recoilLocalDirection =
+        [SerializeField]
+        private Vector3 recoilLocalDirection =
             new Vector3(0f, -1f, -1f);
 
-        public int PermanentPowerCost => permanentPowerCost;
-        public int OperatingPowerCost => operatingPowerCost;
+        public override int PermanentPowerCost => permanentPowerCost;
+        public override int OperatingPowerCost => operatingPowerCost;
 
 
         private void Awake()

@@ -54,8 +54,8 @@ namespace ProjectBreach.Core
         private float fractionalDamage;
         private bool coolingDown;
 
-        public int PermanentPowerCost => permanentPowerCost;
-        public int OperatingPowerCost => operatingPowerCost;
+        public override int PermanentPowerCost => permanentPowerCost;
+        public override int OperatingPowerCost => operatingPowerCost;
         public IDamageable LockedTarget => lockedTarget;
         public bool IsCoolingDown => coolingDown;
         public float CurrentDps => coolingDown ? 0f : Mathf.Lerp(startingDps, maximumDps, Mathf.Clamp01(rampTimer / rampDuration));

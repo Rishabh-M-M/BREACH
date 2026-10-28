@@ -1,124 +1,164 @@
+# 1. Evaluation Techniques
 
+## Technique 1: Observational Methods – Post-task Walkthroughs
 
-### 1. Evaluation Techniques 
+**Participants:** 5
 
-**Technique 1：1. Observational Methods - Post-task Walkthroughs**
-*  **Participants**: 5 
+**Reason of Choice:** BREACH is a fast-paced game that focuses on resource management and rapid camera switching. If players were to use the "Think-Aloud" technique, it would interrupt their concentration and ruin the atmosphere of the game, which relies on a claustrophobic environment to create tension. Recording gameplay and asking questions afterwards using the video footage is a better, non-interruptive method.
 
-*  **Reason of Choice**：- BREACH is a high-pressure game that places heavy emphasis on resource management and rapid camera switching. If players were requested to use the "Think-Aloud" method during gameplay, it would severely interrupt their cognitive flow and concentration. More importantly, it would ruin the claustrophobic atmosphere and tension created by the game, negatively affecting their actual gameplay performance. Therefore, recording the gameplay and questioning them afterwards based on the video footage is the most effective, non-intrusive method to observe their true in-game behavior and decision-making.
+**Playtest Task:** Participants will play through the demo, aiming to reach the end of Wave 5. Their objective is to preserve as much Barrier HP as possible and minimise the number of enemies that breach the Main Control Room by managing the four external rooms. The experimenter will avoid helping unless a technical issue prevents the session from continuing.
 
-* **Playtest Task**: Participants are tasked with playing and surviving until the end of the demo (Wave 5). Their core objective is to maintain maximum Barrier HP and minimize the number of enemies breaching the Main Control Room by constantly managing the four external rooms.
+During the session, the experimenter will note timestamps where players hesitate, overlook a warning, switch cameras repeatedly, run low on Power, or lose a room. These moments will guide the post-task questions.
 
+## Technique 2: Query Techniques – Questionnaires
 
-**Technique 2. Query Techniques - Questionnaires**
-* **Participants**: 5 
+**Participants:** 5
 
-*  **Reason of Choice**： Questionnaires allow us to quickly and intuitively collect quantitative data regarding UI clarity, control difficulty, and the game's learning curve in a structured format (e.g., a 1-5 Likert scale). Combined with a few open-ended questions, this method will also help us gauge whether players truly grasp the core "Power allocation" mechanic and understand the narrative.
+**Reason of Choice:** Questionnaires allow us to collect quantitative data about the user interface and difficulty level. Open-ended questions will also help us understand whether players understand the core mechanics and narrative.
 
-* **Playtest Task**: - Participants will be asked to play through the entire demo (attempting to defeat the Wave 5. After finishing the play session, they will fill out an online structured survey.
-
+**Playtest Task:** Participants will play through the demo, attempting to reach Wave 5, then complete an online structured survey. They should answer based on their own experience rather than what they think the game intends them to do.
 
 ---
-### 2. Designed Questions
 
-To ensure our evaluation yields targeted and actionable feedback, we have designed specific questions tailored to the core mechanics, UI/UX, and narrative of *BREACH*.
+# 2. Designed Questions
 
-#### A. Questions for Post-task Walkthroughs
-*(These questions will be asked verbally by the experimenter while reviewing the recorded gameplay footage with the participant. The questions are designed as dynamic prompts to be adapted based on the player's specific in-game actions.)*
+These questions focus on the game's mechanics, UI/UX, difficulty, audio feedback, and narrative. Questions during the post-task walkthrough can be adjusted to match what the participant actually did.
 
-1. **On Multitasking & Camera Switching:** "In this footage, I noticed you focused heavily on [Room A] and didn't check [Room B] for an extended period. Was this a deliberate strategic choice to prioritize a specific route, or was it simply too overwhelming to manage the camera switching under pressure?"
+## A. Questions for Post-task Walkthroughs
 
-2. **On Resource Management:** "At this timestamp, you chose to [e.g., hoard power even when full / immediately spend all power / deactivate a specific turret]. Can you walk me through your thought process for managing your Power resource at this exact moment?"
+*(These questions will be asked while reviewing the gameplay video. They can be adapted to the participant's actions.)*
 
-3. **On UI & Feedback Awareness:** "Right here, [e.g., a room was breached / an alarm went off / the minimap disappeared]. Did you notice the UI changes immediately, and how did losing that room's passive ability influence your next move?"
+**On Multitasking & Camera Switching:**
 
-4. **On Enemy Mechanics :** "During this phase of the ight when [e.g., the EMP disabled your power / the camera jammed], you seemed to [e.g., hesitate / react quickly]. What was your immediate reaction to this specific interference, and how did you adapt your strategy?"
+> "In this video, you focused on [Room A] and ignored [Room B] for some time. Was that a chosen strategy, or was it difficult to keep track of both rooms?"
 
-#### B. Questions for Questionnaires
-These questions will be distributed via a structured Google Form after the participant completes the entire demo, allowing us to collect quantitative usability data and overall impressions.
+**On Resource Management:**
+
+> "At this point, you decided to [save Power / use Power / turn off a turret / purchase an upgrade]. Can you explain your reasoning?"
+
+**On UI & Feedback Awareness:**
+
+> "When [a room came under pressure / a barrier took damage / an alarm appeared], did you notice the UI change straight away? How did it affect your next move?"
+
+**On Combat and Room States:**
+
+> "When [a turret was switched off / a turret was destroyed / a room was lost], what did you think had happened? Was it clear what you could do next?"
+
+**On Audio Feedback:**
+
+> "Could you tell what was happening in rooms you were not currently watching from the sounds alone, or did you need to switch back to the camera to understand?"
+
+**On Difficulty:**
+
+> "Was there a point where the game felt unfair or overwhelming? What was happening at that time?"
+
+## B. Questions for Questionnaires
+
+These questions will be asked through a Google Form after the participant finishes their playthrough.
 
 **Scalar Questions (1 = Strongly Disagree, 5 = Strongly Agree):**
-1. **Core Mechanic:** "The concept of 'Power' being a shared, allocatable resource—rather than just a consumable currency—was intuitive and easy to understand."
-2. **UI/UX Clarity:** "The sidebar UI and Minimap clearly indicated to me which corridors were currently under attack or successfully breached."
-3. **Difficulty Curve:** "The difficulty progression and enemy scaling from Wave 1 to Wave 4 felt smooth, fair, and reasonable."
-4. **Atmosphere:** "The visual and audio feedback successfully conveyed a sense of high tension and claustrophobia."
+
+1. **Core Mechanic:** "The notion of Power as an allocatable resource, rather than just another consumable currency, was clear and understandable."
+2. **UI/UX Clarity:** "The room sidebar and camera controls made it clear which rooms I was viewing and which rooms needed attention."
+3. **Power Feedback:** "It was clear when I had enough Power to activate a device or purchase an upgrade, and when Power was unavailable."
+4. **Room State Feedback:** "It was clear when a barrier was damaged, a turret was lost, or a room was no longer safe."
+5. **Difficulty Curve:** "The progression from Wave 1 towards Wave 5 felt fair and gave me time to adapt."
+6. **Audio and Atmosphere:** "Visual and audio feedback helped me understand what was happening and created a tense atmosphere."
+7. **Controls:** "Switching between rooms and managing their defences felt manageable under pressure."
 
 **Open-ended Questions:**
-1. **Identifying Pain Points:** "What was the most frustrating or confusing aspect of managing four different rooms simultaneously?"
-2. **Narrative Comprehension:** "Did you understand the narrative twist after defeating the Boss (i.e., that you are actually the AI, and the enemies are a containment team sent by the creators)? How did this reveal impact your overall experience?"
-3. **General Improvement:** "If you could change or add one feature to make the surveillance or combat system better, what would it be?"
+
+1. "What was the most difficult or annoying part of managing four rooms at once?"
+2. "Was there any point where the Power system or an upgrade cost confused you? If so, what happened?"
+3. "Were any warnings, room states, or device states easy to miss?"
+4. "Did you understand the narrative twist that reveals the player is the AI and the enemies are a containment team? How did this change your understanding of the game?"
+5. "If you could change one thing about the demo, what would it be?"
 
 ---
 
-### 3. Participants
+# 3. Participants
 
-To ensure the feedback we collect is highly relevant and representative of our intended player base, we have established a clear recruitment strategy and qualifying criteria.
+**Recruitment Strategy:** We will recruit a total of 10 participants: 5 for post-task walkthroughs and 5 for questionnaires. Recruitment will focus on IT and Computer Science students, as well as friends and gamers in Discord.
 
-**Recruitment Strategy:**
-We will recruit a total of **10 participants** (5 dedicated to the Post-task Walkthroughs, and 5 for the Questionnaires). The recruitment will be specifically targeting IT and computer science students—as well as through our personal circles of friends and gaming communities on Discord.
+**Qualifying Criteria:** Participants should have experience with at least one of the following genres:
 
-**Qualifying Criteria:**
-To align with the "Target Audience" outlined in our Game Design Document, participants will be screened to ensure they have relevant gaming experience. We are specifically looking for players who are familiar with at least one of the following genres:
-*   **Tower Defense (TD) Games:** e.g., *Plants vs. Zombies*, *Arknights*.
-*   **Surveillance/Management Games:** e.g., *Five Nights at Freddy's (FNAF)*.
-*   **Real-Time Strategy (RTS) & Resource Management Games:** e.g., Paradox Interactive titles ("Grand Strategy" games), *StarCraft*.
+- **Tower Defense (TD) Games:** such as Plants vs. Zombies or Arknights.
+- **Surveillance/Management Games:** such as Five Nights at Freddy's.
+- **RTS and Resource Management Games:** such as StarCraft or grand strategy games.
 
-Furthermore, because the core gameplay of *BREACH* relies entirely on rapid UI navigation, camera switching, and real-time resource toggling, participants must be comfortable with **high-frequency mouse operations and multitasking** under pressure. This ensures that any usability issues discovered are related to our game's design flaws rather than the participant's lack of basic PC gaming literacy. 
-
+Since BREACH requires mouse interaction, camera switching, and resource management under pressure, participants should be comfortable using a mouse and handling multiple sources of information. We should record participants' relevant game experience so we can consider it when interpreting the results.
 
 ---
 
-### 4. Data Collection
+# 4. Data Collection
 
-To accurately capture both player behavior and actionable feedback, we will utilize specific tools and approaches tailored to each of our chosen evaluation techniques.
+**For Post-task Walkthroughs (Observational Data):**
 
-- **For Post-task Walkthroughs (Observational Data):**  
-    We will use screen recording software (**OBS Studio**) to capture the participant's complete gameplay footage, specifically tracking their UI interactions, camera switching frequency, and mouse trajectories. During the session, the experimenter will sit nearby but remain completely silent and non-intrusive, preserving the game's intended high-tension atmosphere. The experimenter will silently note down the exact "timestamps" of notable moments—such as when the player displays visible panic, gets flustered by multitasking, or makes obvious mechanical errors. These timestamped notes will directly guide the questions asked during the subsequent video review phase.
-    
-- **For Questionnaires (Querying Data):**  
-    We will distribute our structured survey using **Google Forms**. This platform is highly efficient for this task, as it can smoothly handle both Likert-scale questions and open-ended text fields. Furthermore, Google Forms will automatically compile the submitted responses and convert them into an organized spreadsheet format, significantly streamlining our quantitative data analysis process.
+- Use screen-recording software such as **OBS** to record the complete gameplay, including room switching, device toggles, upgrade choices, and visible UI feedback.
+- The experimenter will remain quiet during gameplay to preserve the intended pressure and avoid influencing the participant.
+- Record timestamps for useful moments, such as hesitation, repeated camera switching, missed warnings, unexpected Power shortages, a barrier being destroyed, a turret being lost, or a room being breached.
+- After the playthrough, review selected timestamps with the participant and ask the relevant walkthrough questions.
 
----
+**For Questionnaires (Querying Data):**
 
-### 5. Data Analysis & Success Metrics
-
-Once the data is collected, we will process it using both qualitative and quantitative methods to guide our subsequent design iterations.
-
-- **Qualitative Data Analysis (Interviews & Open-ended Questions):**  
-    We will transcribe the verbal feedback from the post-task walkthroughs and the written responses from the open-ended questionnaire fields. We will then perform a thematic analysis to identify core "pain points" by grouping the feedback into actionable themes (e.g., categorizing recurring issues into themes such as "Insufficient UI feedback" or "Confusion regarding trap mechanics").
-    
-- **Quantitative Data Analysis & Metrics:**  
-    For the structured questionnaires, we will calculate the mean scores for all 1-5 Likert-scale questions to establish a baseline of player satisfaction and usability. We have established the following metrics to dictate our next steps:
-    
-    - **Improvement Threshold:** If the average score for the "UI/UX Clarity" statement falls below **3.5 out of 5**, addressing this will become our highest development priority. It will mandate a redesign of the visual feedback and UI alarm systems before the final release.
-        
-    - **Difficulty Tracking:** We will track the "Average Wave Reached" across all 10 participants. If the data shows that the majority of players are eliminated by Wave 2, it will clearly indicate an unbalanced difficulty curve. In response, we will adjust the game's economy (e.g., increasing the starting Power capacity) or reduce enemy health pools to ensure a fairer experience.
----
-
-### 6. Timeline
-
-We have established a structured timeline to ensure the evaluation is conducted efficiently and leaves ample time for subsequent game iterations before the final deadline.
-
-* **Oct 10 - Oct 12 (Preparation Phase):** Ensure the WebGL build is stable and fully playable. Finalize and test the Google Forms questionnaire. Contact and schedule exact time slots with the 10 recruited participants.
-
-* **Oct 13 - Oct 16 (Execution Phase):** Conduct the 5 in-person Post-task Walkthrough sessions (including OBS recording and interviewing). Simultaneously, distribute the WebGL demo link and the online questionnaire to the remaining 5 participants.
-
-* **Oct 17 - Oct 18 (Analysis Phase):** Team Techtonic will hold a dedicated data analysis meeting. We will review the OBS footage and Google Forms spreadsheet to synthesize the findings, ultimately identifying the top 3 most critical bugs or design flaws that require immediate attention.
-
-* **Oct 19 - Oct 25 (Iteration Phase):** Implement changes based on the evaluation feedback. This will involve adjusting combat balancing (e.g., tweaking turret upgrade costs and enemy health) and optimizing the UI visual feedback in preparation for the final Milestone 4 release.
+- Use Google Forms to collect the structured ratings and open-ended responses.
+- Keep the same 1–5 scale for all scalar questions, with 1 meaning Strongly Disagree and 5 meaning Strongly Agree.
+- Export the responses to a spreadsheet so ratings can be summarised and open-ended answers grouped by topic.
 
 ---
 
-### 7. Responsibilities
+# 5. Data Analysis & Success Metrics
 
-To ensure an equal distribution of workload and to leverage each member's specialized knowledge from the development phase, evaluation tasks have been assigned based on our established GDD roles:
+We will use both qualitative and quantitative feedback to identify problems and decide what to change.
 
-* **Rishabh (Combat & GDD Lead):** Responsible for designing the specific questions and statements for the Google Forms questionnaire. Post-evaluation, he will focus on analyzing player feedback regarding the turret upgrade economy, damage scaling, and overall combat balance.
+**Qualitative Data Analysis (Walkthroughs & Open-ended Questions):**
 
-* **Hitarrth (Player & UI Lead):** Responsible for facilitating and moderating 3 of the in-person Post-task Walkthrough sessions. He will specifically observe and analyze any visual blind spots or usability issues players encounter when interacting with the camera-switching UI and the minimap.
+- Group comments by topic, such as unclear UI feedback, confusing Power costs, difficulty switching between rooms, unclear room states, combat balance, audio feedback, and narrative understanding.
+- Compare what participants say with what happened in their recorded gameplay. For example, if a participant says a warning was clear but repeatedly overlooks it, this may point to a visibility or timing issue.
+- Prioritise issues that occur for multiple participants or prevent them from understanding an important mechanic.
 
-* **Marcus (Enemy Lead):** Responsible for facilitating the remaining 2 Post-task Walkthrough sessions. He will focus on analyzing qualitative feedback regarding the difficulty curve, specifically monitoring enemy pathfinding speed, unit health, and the pacing/telegraphing of the Wave 5 Boss abilities.
+**Quantitative Data Analysis & Metrics:**
 
-* **Rongze (Integration Lead):** Responsible for building, testing, and deploying a stable WebGL build to the hosting platform prior to the evaluation launch. Following data collection, he will lead the team's data synthesis meeting and delegate the resulting iteration tasks across our GitHub development schedule.
+- Calculate the average score for each scalar question and use it as a baseline for usability and satisfaction.
+- **Improvement Threshold:** If the average score for the UI/UX Clarity statement falls below **3 out of 5**, redesigning visual feedback and UI warnings will become a high priority before the final release.
+- **Difficulty Tracking:** Record the highest wave reached by each participant and calculate the average wave reached. If most participants are eliminated around Wave 2, investigate whether enemy health, wave pacing, room pressure, or the Power economy makes the difficulty curve too steep.
+- **Power Clarity:** If Power feedback receives low ratings or participants repeatedly make decisions based on an incorrect understanding of available Power, prioritise clearer feedback before simply changing the costs.
+- **Issue Frequency:** Record how many participants encounter each major issue. Use frequency alongside severity; a single issue that blocks progress may still need urgent attention.
+
+The results should guide changes, but a low score alone will not tell us the cause. We will use the recordings and written feedback to identify what needs to change.
+
+---
+
+# 6. Timeline
+
+| Phase | Dates | Activities |
+| --- | --- | --- |
+| **Preparation Phase** | Oct 9 – Oct 12 | Ensure the WebGL build is stable and playable. Finalise and test the Google Forms questionnaire. Contact participants and schedule the five walkthrough sessions. Check that recording and the build work before each session. |
+| **Execution Phase** | Oct 13 – Oct 18 | Conduct the five in-person post-task walkthroughs, recording gameplay and asking follow-up questions. Distribute the WebGL demo and questionnaire to the other five participants. |
+| **Analysis Phase** | Oct 19 – Oct 20 | Review recordings and questionnaire responses. Group recurring issues, calculate average ratings, and identify the most important bugs or design problems. |
+| **Iteration Phase** | Oct 20 – Oct 31 | Implement changes based on the results. Focus on combat balance, turret upgrade costs, enemy health and pacing, Power feedback, and UI clarity. Retest changes before the final Milestone 4 build. |
+
+---
+
+# 7. Responsibilities
+
+To distribute the workload and use each team member's role and experience:
+
+- **Rishabh (Combat & GDD Lead):** Design the Google Forms and feedback questions. After evaluation, focus on the turret upgrade system, economy, combat balance, and related feedback.
+- **Hitarrth (Player & UI Lead):** Facilitate and conduct three of the in-person post-task walkthroughs. Focus on player controls, camera switching, UI changes, and misleading or hard-to-notice feedback.
+- **Marcus (Enemy Lead):** Facilitate the remaining two post-task walkthroughs. Focus on enemy performance, player experience of the difficulty curve, and wave pacing/telegraphing.
+- **Rongze (Integration Lead):** Build, test, and deploy a stable WebGL build before evaluation. After data collection, lead the team's data synthesis meeting and assist with integration of the changes.
+
+---
+
+# 8. Playtest Notes
+
+To keep the evaluation consistent:
+
+- Use the same demo build and starting conditions for all participants where possible.
+- Do not explain a mechanic during the playthrough unless the participant cannot continue because of a technical problem. The aim is to see what the game communicates on its own.
+- Record build/version details and any technical issues that affect a session.
+- Separate bugs (something not working as intended) from usability problems (something working but difficult to understand) and balance problems (something working but feeling too easy or too difficult).
+- After changes are made, run a short regression test to confirm that the fix has not broken other rooms, turrets, Power allocation, or the WebGL build.
 
 ---

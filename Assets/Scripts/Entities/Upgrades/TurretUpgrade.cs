@@ -3,12 +3,14 @@ using UnityEngine;
 namespace ProjectBreach.Core
 {
     /// <summary>
-    /// Base class for one turret upgrade's unique behaviour.
-    /// Common turret behaviour stays in Turret.cs.
-    /// Upgrade-specific behaviour belongs in the derived upgrade component.
+    /// Base class for turret upgrade behaviour and power costs.
     /// </summary>
     public abstract class TurretUpgrade : MonoBehaviour
     {
+        [Header("Power Costs")]
+        public virtual int PermanentPowerCost => 0;
+        public virtual int OperatingPowerCost => 0;
+
         public abstract int GetDamage(int baseDamage);
 
         public abstract float GetFireRate(float baseFireRate);
@@ -59,8 +61,6 @@ namespace ProjectBreach.Core
             return null;
         }
 
-        // Rotation audio is shared by all turret variants and is handled by Turret.cs.
-        // Kept for compatibility with existing upgrade components.
         public virtual AudioClip GetRotationSound()
         {
             return null;

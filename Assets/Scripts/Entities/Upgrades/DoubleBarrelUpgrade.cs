@@ -34,8 +34,8 @@ namespace ProjectBreach.Core
         [Tooltip("Right physical projectile spawner.")]
         [SerializeField] private Transform rightSpawner;
 
-        public int PermanentPowerCost => permanentPowerCost;
-        public int OperatingPowerCost => operatingPowerCost;
+        public override int PermanentPowerCost => permanentPowerCost;
+        public override int OperatingPowerCost => operatingPowerCost;
 
 
         private void Awake()

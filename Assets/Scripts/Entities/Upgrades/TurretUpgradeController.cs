@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace ProjectBreach.Core
@@ -19,12 +20,35 @@ namespace ProjectBreach.Core
         [Header("Base Visual")]
         [SerializeField] private GameObject baseVisual;
 
+        // Variants purchased previously on this turret.
+        // These remain committed even after switching to another variant.
+        private readonly HashSet<TurretVariant> committedVariants =
+            new HashSet<TurretVariant>();
+
         public TurretVariant CurrentVariant => currentVariant;
+
         public bool IsBase => currentVariant == TurretVariant.Base;
         public bool IsDoubleBarrel => currentVariant == TurretVariant.DoubleBarrel;
         public bool IsSharpshooter => currentVariant == TurretVariant.Sharpshooter;
         public bool IsHeliosIncinerator => currentVariant == TurretVariant.HeliosIncinerator;
-        public HeliosIncineratorUpgrade ActiveHeliosIncinerator => heliosIncineratorUpgrade;
+
+        public HeliosIncineratorUpgrade ActiveHeliosIncinerator =>
+            heliosIncineratorUpgrade;
+
+        // Kept for compatibility with existing UI code.
+        // This now means the CURRENT variant is not Base.
+        public bool HasCommittedUpgrade => !IsBase;
+
+        public bool IsVariantCommitted(TurretVariant variant)
+        {
+            return committedVariants.Contains(variant);
+        }
+
+        public bool IsVariantPurchased(TurretVariant variant)
+        {
+            return variant == currentVariant ||
+                   committedVariants.Contains(variant);
+        }
 
         public string DisplayName
         {
@@ -49,197 +73,105 @@ namespace ProjectBreach.Core
 
         private void Awake()
         {
+            ResolveReferences();
+
+            if (turret == null)
+            {
+                Debug.LogError(
+                    $"[TurretUpgradeController] {name}: Turret component missing.",
+                    this);
+
+                enabled = false;
+                return;
+            }
+
+            if (!HasRequiredComponent(currentVariant))
+            {
+                Debug.LogError(
+                    $"[TurretUpgradeController] {name}: Missing component for " +
+                    $"{currentVariant}. Resetting to Base.",
+                    this);
+
+                currentVariant = TurretVariant.Base;
+            }
+
+            turret.SetPowerCost(GetOperatingPowerCost(currentVariant));
+
+            ApplyVisuals();
+            turret.RefreshActiveVisuals();
+
+            Debug.Log(
+                $"[TurretUpgradeController] Initialized {name}. " +
+                $"Variant={currentVariant}, DisplayName={DisplayName}",
+                this);
+        }
+
+        private void ResolveReferences()
+        {
             if (turret == null)
                 turret = GetComponent<Turret>();
 
             if (doubleBarrelUpgrade == null)
-                doubleBarrelUpgrade = GetComponent<DoubleBarrelUpgrade>();
+                doubleBarrelUpgrade =
+                    GetComponentInChildren<DoubleBarrelUpgrade>(true);
 
             if (sharpshooterUpgrade == null)
-                sharpshooterUpgrade = GetComponent<SharpshooterUpgrade>();
+                sharpshooterUpgrade =
+                    GetComponentInChildren<SharpshooterUpgrade>(true);
 
             if (heliosIncineratorUpgrade == null)
-                heliosIncineratorUpgrade = GetComponent<HeliosIncineratorUpgrade>();
+                heliosIncineratorUpgrade =
+                    GetComponentInChildren<HeliosIncineratorUpgrade>(true);
+        }
 
-            if (turret == null)
-            {
-                Debug.LogError(
-                    $"[TurretUpgradeController] {name} has no Turret component."
-                );
-                return;
-            }
-
-            switch (currentVariant)
+        private bool HasRequiredComponent(TurretVariant variant)
+        {
+            switch (variant)
             {
                 case TurretVariant.Base:
-                    turret.SetPowerCost(baseOperatingPowerCost);
-                    break;
+                    return true;
 
                 case TurretVariant.DoubleBarrel:
-                    if (doubleBarrelUpgrade != null)
-                        turret.SetPowerCost(
-                            doubleBarrelUpgrade.OperatingPowerCost
-                        );
-                    break;
+                    return doubleBarrelUpgrade != null;
 
                 case TurretVariant.Sharpshooter:
-                    if (sharpshooterUpgrade != null)
-                        turret.SetPowerCost(sharpshooterUpgrade.OperatingPowerCost);
-                    break;
+                    return sharpshooterUpgrade != null;
 
                 case TurretVariant.HeliosIncinerator:
-                    if (heliosIncineratorUpgrade != null)
-                        turret.SetPowerCost(heliosIncineratorUpgrade.OperatingPowerCost);
-                    break;
-            }
+                    return heliosIncineratorUpgrade != null;
 
-            ApplyVisuals();
+                default:
+                    return false;
+            }
         }
 
-        // ============================================================
-        // DOUBLE BARREL PURCHASE
-        // ============================================================
-
-        public bool TryUpgradeToDoubleBarrel()
+        private int GetOperatingPowerCost(TurretVariant variant)
         {
-            if (turret == null || doubleBarrelUpgrade == null)
-                return false;
-
-            if (currentVariant != TurretVariant.Base)
-                return false;
-
-            if (PowerManager.Instance == null)
-                return false;
-
-            int permanentCost =
-                doubleBarrelUpgrade.PermanentPowerCost;
-
-            if (!PowerManager.Instance.TryAllocatePermanent(
-                    permanentCost))
+            switch (variant)
             {
-                UIManager.Instance?.ShowMessage(
-                    "Insufficient power capacity!"
-                );
-                return false;
+                case TurretVariant.DoubleBarrel:
+                    return doubleBarrelUpgrade != null
+                        ? doubleBarrelUpgrade.OperatingPowerCost
+                        : baseOperatingPowerCost;
+
+                case TurretVariant.Sharpshooter:
+                    return sharpshooterUpgrade != null
+                        ? sharpshooterUpgrade.OperatingPowerCost
+                        : baseOperatingPowerCost;
+
+                case TurretVariant.HeliosIncinerator:
+                    return heliosIncineratorUpgrade != null
+                        ? heliosIncineratorUpgrade.OperatingPowerCost
+                        : baseOperatingPowerCost;
+
+                default:
+                    return baseOperatingPowerCost;
             }
-
-            if (turret.IsActive)
-                turret.TurnOff();
-
-            currentVariant = TurretVariant.DoubleBarrel;
-
-            turret.SetPowerCost(
-                doubleBarrelUpgrade.OperatingPowerCost
-            );
-
-            ApplyVisuals();
-            turret.RefreshActiveVisuals();
-
-            UIManager.Instance?.ShowMessage(
-                "Double Barrel upgrade installed!"
-            );
-
-            return true;
         }
 
-        // ============================================================
-        // SHARPSHOOTER PURCHASE
-        // ============================================================
-
-        public bool TryUpgradeToSharpshooter()
+        private TurretUpgrade GetUpgrade(TurretVariant variant)
         {
-            if (turret == null || sharpshooterUpgrade == null)
-            {
-                Debug.LogError(
-                    $"[TurretUpgradeController] {name} has no SharpshooterUpgrade component."
-                );
-                return false;
-            }
-
-            if (currentVariant != TurretVariant.Base)
-            {
-                Debug.LogWarning(
-                    $"[TurretUpgradeController] Cannot upgrade {name} " +
-                    $"from {currentVariant} to Sharpshooter."
-                );
-                return false;
-            }
-
-            if (PowerManager.Instance == null)
-            {
-                Debug.LogError(
-                    "[TurretUpgradeController] PowerManager.Instance is missing."
-                );
-                return false;
-            }
-
-            int permanentCost =
-                sharpshooterUpgrade.PermanentPowerCost;
-
-            if (!PowerManager.Instance.TryAllocatePermanent(
-                    permanentCost))
-            {
-                UIManager.Instance?.ShowMessage(
-                    "Insufficient power capacity!"
-                );
-                return false;
-            }
-
-            // Refund the currently held Base operating cost BEFORE
-            // changing PowerCost to the SS operating cost.
-            if (turret.IsActive)
-                turret.TurnOff();
-
-            currentVariant = TurretVariant.Sharpshooter;
-
-            turret.SetPowerCost(
-                sharpshooterUpgrade.OperatingPowerCost
-            );
-
-            ApplyVisuals();
-            turret.RefreshActiveVisuals();
-
-            UIManager.Instance?.ShowMessage(
-                "Sharpshooter upgrade installed!"
-            );
-
-            return true;
-        }
-
-        // ============================================================
-        // MACHINE LASER PURCHASE
-        // ============================================================
-
-        public bool TryUpgradeToHeliosIncinerator()
-        {
-            if (turret == null || heliosIncineratorUpgrade == null ||
-                currentVariant != TurretVariant.Base || PowerManager.Instance == null)
-                return false;
-
-            if (!PowerManager.Instance.TryAllocatePermanent(heliosIncineratorUpgrade.PermanentPowerCost))
-            {
-                UIManager.Instance?.ShowMessage("Insufficient power capacity!");
-                return false;
-            }
-
-            if (turret.IsActive)
-                turret.TurnOff();
-
-            currentVariant = TurretVariant.HeliosIncinerator;
-            turret.SetPowerCost(heliosIncineratorUpgrade.OperatingPowerCost);
-            ApplyVisuals();
-            turret.RefreshActiveVisuals();
-            UIManager.Instance?.ShowMessage("Helios Incinerator upgrade installed!");
-            return true;
-        }
-
-        // ============================================================
-        // ACTIVE UPGRADE
-        // ============================================================
-
-        private TurretUpgrade GetActiveUpgrade()
-        {
-            switch (currentVariant)
+            switch (variant)
             {
                 case TurretVariant.DoubleBarrel:
                     return doubleBarrelUpgrade;
@@ -255,6 +187,165 @@ namespace ProjectBreach.Core
             }
         }
 
+        // ============================================================
+        // VARIANT PURCHASE AND SWITCHING
+        // ============================================================
+
+        private bool TrySwitchVariant(
+            TurretVariant targetVariant,
+            TurretUpgrade targetUpgrade,
+            string upgradeName)
+        {
+            ResolveReferences();
+
+            if (turret == null)
+                return false;
+
+            if (targetVariant == TurretVariant.Base)
+            {
+                Debug.LogWarning(
+                    "[TurretUpgradeController] Returning to Base is disabled.",
+                    this);
+
+                return false;
+            }
+
+            // Cannot purchase the currently selected variant again.
+            if (currentVariant == targetVariant)
+            {
+                Debug.Log(
+                    $"[TurretUpgradeController] {upgradeName} is already selected.",
+                    this);
+
+                return false;
+            }
+
+            // A previously purchased variant can never be purchased again.
+            if (committedVariants.Contains(targetVariant))
+            {
+                Debug.LogWarning(
+                    $"[TurretUpgradeController] {name}: {upgradeName} " +
+                    "has already been purchased and is committed.",
+                    this);
+
+                return false;
+            }
+
+            if (targetUpgrade == null ||
+                !HasRequiredComponent(targetVariant))
+            {
+                Debug.LogError(
+                    $"[TurretUpgradeController] Cannot purchase {upgradeName}. " +
+                    "The correct upgrade component is missing.",
+                    this);
+
+                return false;
+            }
+
+            if (PowerManager.Instance == null)
+            {
+                Debug.LogError(
+                    "[TurretUpgradeController] PowerManager.Instance is missing.",
+                    this);
+
+                return false;
+            }
+
+            int permanentCost = targetUpgrade.PermanentPowerCost;
+            int operatingCost = targetUpgrade.OperatingPowerCost;
+
+            if (permanentCost < 0 || operatingCost < 0)
+            {
+                Debug.LogError(
+                    $"[TurretUpgradeController] Invalid costs for {upgradeName}.",
+                    this);
+
+                return false;
+            }
+
+            // Reserve permanent power before changing the current variant.
+            if (!PowerManager.Instance.TryAllocatePermanent(permanentCost))
+            {
+                UIManager.Instance?.ShowMessage(
+                    "Insufficient power capacity!");
+
+                return false;
+            }
+
+            // Commit the previous variant only after the new purchase succeeds.
+            if (currentVariant != TurretVariant.Base)
+                committedVariants.Add(currentVariant);
+
+            // Stop the turret while its operating cost changes.
+            if (turret.IsActive)
+                turret.TurnOff();
+
+            currentVariant = targetVariant;
+
+            turret.SetPowerCost(operatingCost);
+
+            ApplyVisuals();
+            turret.RefreshActiveVisuals();
+
+            UIManager.Instance?.ShowMessage(upgradeName + " selected!");
+
+            Debug.Log(
+                $"[TurretUpgradeController] VARIANT SWITCHED: {name}. " +
+                $"Variant={currentVariant}, " +
+                $"PermanentCost={permanentCost}, " +
+                $"OperatingCost={operatingCost}, " +
+                $"Committed=[{string.Join(", ", committedVariants)}]",
+                this);
+
+            return true;
+        }
+
+        // ============================================================
+        // UPGRADE SELECTION
+        // ============================================================
+
+        public bool TryUpgradeToDoubleBarrel()
+        {
+            return TrySwitchVariant(
+                TurretVariant.DoubleBarrel,
+                doubleBarrelUpgrade,
+                "Double Barrel");
+        }
+
+        public bool TryUpgradeToSharpshooter()
+        {
+            return TrySwitchVariant(
+                TurretVariant.Sharpshooter,
+                sharpshooterUpgrade,
+                "Sharpshooter");
+        }
+
+        public bool TryUpgradeToHeliosIncinerator()
+        {
+            return TrySwitchVariant(
+                TurretVariant.HeliosIncinerator,
+                heliosIncineratorUpgrade,
+                "Helios Incinerator");
+        }
+
+        public bool TrySwitchToBase()
+        {
+            Debug.LogWarning(
+                "[TurretUpgradeController] Returning to Base is disabled.",
+                this);
+
+            return false;
+        }
+
+        // ============================================================
+        // ACTIVE UPGRADE
+        // ============================================================
+
+        private TurretUpgrade GetActiveUpgrade()
+        {
+            return GetUpgrade(currentVariant);
+        }
+
         public bool HasActiveUpgrade()
         {
             return GetActiveUpgrade() != null;
@@ -262,20 +353,12 @@ namespace ProjectBreach.Core
 
         public AudioClip GetActiveFireSound()
         {
-            TurretUpgrade upgrade = GetActiveUpgrade();
-
-            return upgrade != null
-                ? upgrade.GetFireSound()
-                : null;
+            return GetActiveUpgrade()?.GetFireSound();
         }
 
         public AudioClip GetActiveRotationSound()
         {
-            TurretUpgrade upgrade = GetActiveUpgrade();
-
-            return upgrade != null
-                ? upgrade.GetRotationSound()
-                : null;
+            return GetActiveUpgrade()?.GetRotationSound();
         }
 
         public int GetProjectileDamage(int baseDamage)
@@ -308,8 +391,7 @@ namespace ProjectBreach.Core
         public bool TryFireUpgrade(
             Turret turretInstance,
             IDamageable target,
-            int projectileDamage
-        )
+            int projectileDamage)
         {
             TurretUpgrade upgrade = GetActiveUpgrade();
 
@@ -317,13 +399,10 @@ namespace ProjectBreach.Core
                    upgrade.TryFire(
                        turretInstance,
                        target,
-                       projectileDamage
-                   );
+                       projectileDamage);
         }
 
-        public Transform GetActiveTurretHead(
-            Transform baseHead
-        )
+        public Transform GetActiveTurretHead(Transform baseHead)
         {
             TurretUpgrade upgrade = GetActiveUpgrade();
 
@@ -332,9 +411,7 @@ namespace ProjectBreach.Core
                 : baseHead;
         }
 
-        public Transform GetActiveFirePoint(
-            Transform baseFirePoint
-        )
+        public Transform GetActiveFirePoint(Transform baseFirePoint)
         {
             TurretUpgrade upgrade = GetActiveUpgrade();
 
@@ -345,8 +422,7 @@ namespace ProjectBreach.Core
 
         public bool FiresTwoProjectiles()
         {
-            return currentVariant ==
-                   TurretVariant.DoubleBarrel;
+            return IsDoubleBarrel;
         }
 
         public bool PrefersFurthestTarget()
@@ -366,9 +442,7 @@ namespace ProjectBreach.Core
                 : baseDistance;
         }
 
-        public float GetRecoilRecoverySpeed(
-            float baseRecoverySpeed
-        )
+        public float GetRecoilRecoverySpeed(float baseRecoverySpeed)
         {
             TurretUpgrade upgrade = GetActiveUpgrade();
 
@@ -377,9 +451,7 @@ namespace ProjectBreach.Core
                 : baseRecoverySpeed;
         }
 
-        public Vector3 GetRecoilLocalDirection(
-            Vector3 baseDirection
-        )
+        public Vector3 GetRecoilLocalDirection(Vector3 baseDirection)
         {
             TurretUpgrade upgrade = GetActiveUpgrade();
 
@@ -388,8 +460,13 @@ namespace ProjectBreach.Core
                 : baseDirection;
         }
 
+        // ============================================================
+        // VISUALS
+        // ============================================================
+
         public void RefreshVisuals()
         {
+            ResolveReferences();
             ApplyVisuals();
             turret?.RefreshActiveVisuals();
         }
@@ -397,37 +474,26 @@ namespace ProjectBreach.Core
         private void ApplyVisuals()
         {
             if (baseVisual != null)
-            {
-                baseVisual.SetActive(
-                    currentVariant == TurretVariant.Base
-                );
-            }
+                baseVisual.SetActive(IsBase);
 
             if (doubleBarrelUpgrade != null)
-            {
-                doubleBarrelUpgrade.SetVisualActive(
-                    currentVariant ==
-                    TurretVariant.DoubleBarrel
-                );
-            }
+                doubleBarrelUpgrade.SetVisualActive(IsDoubleBarrel);
 
             if (sharpshooterUpgrade != null)
-            {
-                sharpshooterUpgrade.SetVisualActive(
-                    currentVariant == TurretVariant.Sharpshooter
-                );
-            }
+                sharpshooterUpgrade.SetVisualActive(IsSharpshooter);
 
             if (heliosIncineratorUpgrade != null)
-                heliosIncineratorUpgrade.SetVisualActive(currentVariant == TurretVariant.HeliosIncinerator);
+                heliosIncineratorUpgrade.SetVisualActive(IsHeliosIncinerator);
         }
 
         public void DrawGizmos(Turret turretInstance)
         {
-            GetActiveUpgrade()?.DrawGizmos(
-                turretInstance
-            );
+            GetActiveUpgrade()?.DrawGizmos(turretInstance);
         }
+
+        // ============================================================
+        // DEBUG
+        // ============================================================
 
         [ContextMenu("TEST - Buy Double Barrel")]
         private void TestBuyDoubleBarrel()

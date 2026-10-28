@@ -40,9 +40,35 @@ public sealed class ShieldShatterEffect : MonoBehaviour
         );
 
         if (sound != null)
-        {
-            AudioSource.PlayClipAtPoint(sound, position, 10f);
-        }
+{
+    GameObject audioObject = new GameObject("ShieldShatterAudio");
+    audioObject.transform.position = position;
+
+    AudioSource source = audioObject.AddComponent<AudioSource>();
+    source.clip = sound;
+    source.playOnAwake = false;
+    source.spatialBlend = 0f; // 2D audio; no distance attenuation
+    source.volume = 1f;
+    source.pitch = 1f;
+    source.loop = false;
+    source.ignoreListenerPause = true;
+
+    source.Play();
+
+    Debug.Log(
+        $"[ShieldShatterEffect] Playing shatter sound: {sound.name}, " +
+        $"length: {sound.length:F2}s"
+    );
+
+    Destroy(audioObject, sound.length + 0.5f);
+}
+else
+{
+    Debug.LogError(
+        "[ShieldShatterEffect] Shatter sound is NULL. " +
+        "Assign a sound clip to the Shield component."
+    );
+}
 
         effect.StartSlowMotion(
             Mathf.Clamp(slowScale, 0.05f, 1f),

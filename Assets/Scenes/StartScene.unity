@@ -22560,14 +22560,27 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+<<<<<<< HEAD
+=======
     - target: {fileID: 913600162177905519, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
       propertyPath: m_Range
       value: 200
       objectReference: {fileID: 0}
+>>>>>>> main
     - target: {fileID: 1330230100005544817, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
       propertyPath: m_Range
       value: 100
       objectReference: {fileID: 0}
+<<<<<<< HEAD
+    - target: {fileID: 1389397422870993626, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
+      propertyPath: m_Range
+      value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: 4737208648179676500, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
+      propertyPath: m_Range
+      value: 100
+      objectReference: {fileID: 0}
+=======
     - target: {fileID: 3406171887242366028, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
       propertyPath: m_Range
       value: 100
@@ -22576,6 +22589,7 @@ PrefabInstance:
       propertyPath: m_Range
       value: 250
       objectReference: {fileID: 0}
+>>>>>>> main
     - target: {fileID: 4870754984315837510, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
       propertyPath: m_LocalPosition.x
       value: -835.4
@@ -22640,9 +22654,15 @@ PrefabInstance:
       propertyPath: destinationPoint
       value: 
       objectReference: {fileID: 800765704}
+<<<<<<< HEAD
+    - target: {fileID: 5140888519034256280, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
+      propertyPath: m_Range
+      value: 200
+=======
     - target: {fileID: 5196663093838245310, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
       propertyPath: m_Range
       value: 250
+>>>>>>> main
       objectReference: {fileID: 0}
     - target: {fileID: 5550726445210166776, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
       propertyPath: m_Name
@@ -22652,10 +22672,23 @@ PrefabInstance:
       propertyPath: m_Range
       value: 200
       objectReference: {fileID: 0}
+<<<<<<< HEAD
+    - target: {fileID: 6177627039277658738, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
+      propertyPath: m_Range
+      value: 200
+      objectReference: {fileID: 0}
+=======
+>>>>>>> main
     - target: {fileID: 6850429488697665182, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
       propertyPath: m_Name
       value: AirLockEnemySpawnerB
       objectReference: {fileID: 0}
+<<<<<<< HEAD
+    - target: {fileID: 7041902507893135168, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
+      propertyPath: m_Range
+      value: 200
+      objectReference: {fileID: 0}
+=======
     - target: {fileID: 7629842581221303318, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
       propertyPath: m_Range
       value: 100
@@ -22668,6 +22701,7 @@ PrefabInstance:
       propertyPath: m_Intensity
       value: 10
       objectReference: {fileID: 0}
+>>>>>>> main
     m_RemovedComponents: []
     m_RemovedGameObjects:
     - {fileID: 8716967137340505595, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}

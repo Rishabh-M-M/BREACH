@@ -140,8 +140,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ProjectBreach.Core.Projectile
   damage: 5
-  speed: 12
-  lifeTime: 5
+  speed: 30
+  lifeTime: 10
   hitDistance: 0.5
   aimHeight: 0.6
   explosionEffectPrefab: {fileID: 7482561660992541774, guid: 9cfbcaf535fdd402b9887aa14df6c1f6, type: 3}

@@ -253,7 +253,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: ceafe28944e044d5aaa2c69d5ddea53c, type: 2}
+  - {fileID: 2100000, guid: 6a6b5052f4fe7472da09e353ffaedfe4, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -453,9 +453,9 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1477090923529670651}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0.7071068, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: 243.09, y: 4.135151, z: -180.3251}
-  m_LocalScale: {x: 6, y: 6, z: 6}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8568717510585900874}
@@ -1366,13 +1366,13 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   magazineSize: 8
-  reloadDuration: 5
-  timeBetweenRockets: 0.25
-  directDamage: 12
-  explosionDamage: 75
-  explosionRadius: 3
-  rocketSpeed: 15
-  attackRange: 100
+  reloadDuration: 2
+  timeBetweenRockets: 2
+  directDamage: 5
+  explosionDamage: 10
+  explosionRadius: 20
+  rocketSpeed: 40
+  attackRange: 150
   permanentPowerCost: 40
   operatingPowerCost: 40
   fireSound: {fileID: 8300000, guid: 5c215b1f916314b538e09bf27e29c870, type: 3}
@@ -1380,7 +1380,7 @@ MonoBehaviour:
   explosionSound: {fileID: 8300000, guid: de7ee8d5b20764d65bc5597130d96aa8, type: 3}
   fireVolume: 1
   explosionVolume: 1
-  explosionEffectDuration: 1.5
+  explosionEffectDuration: 1
 --- !u!1 &7015488566446818423
 GameObject:
   m_ObjectHideFlags: 0

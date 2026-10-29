@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 2553537581539720754}
   - component: {fileID: 7070064369690845650}
   - component: {fileID: 199845218882627886}
+  - component: {fileID: -2054459851222449277}
   m_Layer: 3
   m_Name: Shield
   m_TagString: Untagged
@@ -131,7 +132,7 @@ MonoBehaviour:
   baseOpacity: 0.08
   fadeSpeed: 1.5
   shatterSound: {fileID: 8300000, guid: ee7d76e1ffa9d46d995d24aa5b654f96, type: 3}
-  shardMaterial: {fileID: 2100000, guid: 750e95e141d024d9a9faf2d58c03bcdc, type: 2}
+  shardMaterial: {fileID: 2100000, guid: 7f49af93074984c949764a4b02fc5f86, type: 2}
   shardCount: 32
   shardSpread: 7
   shardLifetime: 2.2
@@ -156,3 +157,15 @@ NavMeshObstacle:
   m_CarveOnlyStationary: 1
   m_Center: {x: 0.010000001, y: 1.3790001, z: -0.072000004}
   m_TimeToStationary: 0.5
+--- !u!114 &-2054459851222449277
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6110375049919213297}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6858027b92864468db5265d0071afbf7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ShieldShatterEffect

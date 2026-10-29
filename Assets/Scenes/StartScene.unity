@@ -5999,18 +5999,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 6110375049919213297, guid: 6660178a26c884a81ad690c59e83d18c, type: 3}
   m_PrefabInstance: {fileID: 1932898712}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &592182952
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 592182945}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6858027b92864468db5265d0071afbf7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ShieldShatterEffect
 --- !u!4 &597001796 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4957628506181556069, guid: dd5f447964d740f4ab8b7365ecca6c0d, type: 3}
@@ -8215,21 +8203,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c0950f27c67d04de394059acffdfd737, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ProjectBreach.Core.HeliosIncineratorUpgrade
-  attackRange: 120
+  attackRange: 200
   startingDps: 1
-  maximumDps: 10
+  maximumDps: 30
   rampDuration: 8
-  cooldownDuration: 3
-  permanentPowerCost: 35
-  operatingPowerCost: 45
+  cooldownDuration: 1
+  permanentPowerCost: 0
+  operatingPowerCost: 100
   visual: {fileID: 639610803}
   beamRenderer: {fileID: 1242699495}
   beamStart: {fileID: 1214840767}
   laserAudioSource: {fileID: 0}
-  beamWidth: 0.05
-  maximumBeamWidth: 3
-  startBeamColor: {r: 0.1882353, g: 1, b: 1, a: 1}
-  chargedBeamColor: {r: 0, g: 0, b: 1, a: 1}
+  beamWidth: 0.2
+  maximumBeamWidth: 4
+  startBeamColor: {r: 0.44591188, g: 0, b: 1, a: 1}
+  chargedBeamColor: {r: 0.31875694, g: 0, b: 0.6698113, a: 1}
   startEndColor: {r: 0.039215688, g: 0.05882353, b: 0.39607844, a: 1}
   chargedEndColor: {r: 0.039248843, g: 0.0597425, b: 0.3962264, a: 1}
   turretHead: {fileID: 238551458}
@@ -21184,7 +21172,7 @@ PrefabInstance:
     - target: {fileID: 7070064369690845650, guid: 6660178a26c884a81ad690c59e83d18c, type: 3}
       propertyPath: shardMaterial
       value: 
-      objectReference: {fileID: 2100000, guid: 750e95e141d024d9a9faf2d58c03bcdc, type: 2}
+      objectReference: {fileID: 2100000, guid: 7f49af93074984c949764a4b02fc5f86, type: 2}
     - target: {fileID: 7070064369690845650, guid: 6660178a26c884a81ad690c59e83d18c, type: 3}
       propertyPath: shatterEffectPrefab
       value: 
@@ -21192,10 +21180,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 6110375049919213297, guid: 6660178a26c884a81ad690c59e83d18c, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 592182952}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6660178a26c884a81ad690c59e83d18c, type: 3}
 --- !u!1 &1937421718
 GameObject:

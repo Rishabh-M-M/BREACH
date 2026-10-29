@@ -133,12 +133,28 @@ namespace ProjectBreach.Core
             explosionEffectOverride = effect;
         }
 
-        public void SetRocketExplosionSettings(AudioClip explosionSound, float visualDuration, float soundVolume = 1f)
-        {
-            rocketExplosionSound = explosionSound;
-            rocketExplosionEffectDuration = Mathf.Max(0.1f, visualDuration);
-            rocketExplosionVolume = Mathf.Clamp01(soundVolume);
-        }
+        public void SetRocketExplosionSettings(
+    AudioClip explosionSound,
+    float visualDuration,
+    float soundVolume = 1f)
+{
+    // Preserve the projectile prefab's sound if no sound was
+    // assigned on the RocketLauncherUpgrade component.
+    if (explosionSound != null)
+        rocketExplosionSound = explosionSound;
+
+    rocketExplosionEffectDuration = Mathf.Max(0.1f, visualDuration);
+    rocketExplosionVolume = Mathf.Clamp01(soundVolume);
+
+    if (rocketExplosionSound == null)
+    {
+        Debug.LogWarning(
+            "[Projectile] Rocket explosion sound is missing. " +
+            "Assign it on RocketLauncherUpgrade or the projectile prefab.",
+            this
+        );
+    }
+}
 
         /// <summary>
         /// Initialize the Sharpshooter projectile.
@@ -541,8 +557,38 @@ namespace ProjectBreach.Core
         {
             Vector3 explosionPosition = transform.position;
 
-            if (rocketExplosionSound != null && rocketExplosionVolume > 0f)
-                AudioSource.PlayClipAtPoint(rocketExplosionSound, explosionPosition, rocketExplosionVolume);
+if (rocketExplosionSound != null && rocketExplosionVolume > 0f)
+{
+    GameObject audioObject = new GameObject("RocketExplosionAudio");
+    audioObject.transform.position = explosionPosition;
+
+    AudioSource source = audioObject.AddComponent<AudioSource>();
+    source.clip = rocketExplosionSound;
+    source.playOnAwake = false;
+    source.spatialBlend = 0f; // 2D audio; no distance attenuation
+    source.volume = 1f;
+    source.loop = false;
+    source.ignoreListenerPause = true;
+
+    source.Play();
+
+    Debug.Log(
+        $"[Projectile] Playing rocket explosion sound: " +
+        $"{rocketExplosionSound.name}",
+        audioObject
+    );
+
+    Destroy(audioObject, rocketExplosionSound.length + 0.5f);
+}
+else
+{
+    Debug.LogWarning(
+        "[Projectile] Rocket detonated without an explosion sound. " +
+        $"Clip assigned: {rocketExplosionSound != null}, " +
+        $"Volume: {rocketExplosionVolume}",
+        this
+    );
+}
 
             GameObject effectToSpawn = explosionEffectOverride != null
                 ? explosionEffectOverride

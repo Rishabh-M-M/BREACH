@@ -28,6 +28,9 @@ namespace ProjectBreach.Core
         // for the rest of the current run.
         public bool IsPermanentlyDisabled { get; private set; } = false;
 
+        public IReadOnlyList<DefensiveStructure> Structures => structures;
+        public event System.Action<Room> OnPermanentlyDisabled;
+
         // ============================================================
         // STRUCTURE REGISTRATION
         // ============================================================
@@ -64,6 +67,8 @@ namespace ProjectBreach.Core
                 $"[Room {roomName}] Permanently disabled: " +
                 "the room's shield has been destroyed."
             );
+
+            OnPermanentlyDisabled?.Invoke(this);
         }
 
         // ============================================================

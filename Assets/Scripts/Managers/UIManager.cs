@@ -78,7 +78,7 @@ namespace ProjectBreach.Core
             }
 
             if (powerText != null)
-                powerText.text = $"POWER: {remainingPower}";
+                powerText.text = $"{remainingPower}";
         }
 
         /// <summary>

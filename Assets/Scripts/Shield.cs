@@ -107,6 +107,19 @@ public class Shield : MonoBehaviour, IDamageable
             BreakShield();
     }
 
+    /// <summary>
+    /// Restores shield HP without exceeding max. Destroyed shields are never
+    /// restored (per design doc: "不恢复已摧毁的屏障").
+    /// </summary>
+    public void Heal(int amount)
+    {
+        if (destroyed || amount <= 0)
+            return;
+
+        currentHealth = Mathf.Min(maxHealth, currentHealth + amount);
+        UpdateShieldVisual();
+    }
+
     private void UpdateShieldVisual()
     {
         if (shieldMaterial == null) return;

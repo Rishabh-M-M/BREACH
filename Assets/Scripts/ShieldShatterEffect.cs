@@ -161,6 +161,12 @@ else
         ParticleSystem sparks =
             sparksObject.AddComponent<ParticleSystem>();
 
+        // A freshly-added ParticleSystem can be treated as still playing;
+        // fully stop and clear it before configuring duration, otherwise
+        // setting main.duration throws:
+        //   "Setting the duration while system is still playing is not supported."
+        sparks.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+
         var main = sparks.main;
         main.loop = false;
         main.duration = 0.35f;

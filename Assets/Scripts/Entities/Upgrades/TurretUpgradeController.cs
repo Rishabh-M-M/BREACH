@@ -274,8 +274,10 @@ namespace ProjectBreach.Core
                 return false;
             }
 
-            int permanentCost = targetUpgrade.PermanentPowerCost;
-            int operatingCost = targetUpgrade.OperatingPowerCost;
+            int permanentCost = ArmouryPassive.ApplyDiscount(
+                targetUpgrade.PermanentPowerCost);
+            int operatingCost = ArmouryPassive.ApplyDiscount(
+                targetUpgrade.OperatingPowerCost);
 
             if (permanentCost < 0 || operatingCost < 0)
             {

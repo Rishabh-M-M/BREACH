@@ -28,8 +28,20 @@ namespace ProjectBreach.Core
         // for the rest of the current run.
         public bool IsPermanentlyDisabled { get; private set; } = false;
 
+        // Guards OnRoomFallen so a room broadcasts the fall event only once,
+        // regardless of which fall path (shield broken or all turrets down)
+        // fires first.
+        private bool _fallBroadcast;
+
         public IReadOnlyList<DefensiveStructure> Structures => structures;
         public event System.Action<Room> OnPermanentlyDisabled;
+
+        private void Awake()
+        {
+            // Attach the room's passive ability (ServerRoom -> Generator,
+            // Shop -> Armoury, Air Lock -> Shield Reactor) at runtime.
+            RoomPassiveInstaller.Install(this);
+        }
 
         // ============================================================
         // STRUCTURE REGISTRATION
@@ -69,6 +81,8 @@ namespace ProjectBreach.Core
             );
 
             OnPermanentlyDisabled?.Invoke(this);
+
+            BroadcastRoomFallenIfNeeded();
         }
 
         // ============================================================
@@ -120,8 +134,16 @@ namespace ProjectBreach.Core
                 $"[Room {roomName}] Room fallen!"
             );
 
-            // Keep your existing room-fallen event integration here
-            // if another script is responsible for broadcasting it.
+            BroadcastRoomFallenIfNeeded();
+        }
+
+        private void BroadcastRoomFallenIfNeeded()
+        {
+            if (_fallBroadcast)
+                return;
+
+            _fallBroadcast = true;
+            EventRegistry.BroadcastRoomFallen(this);
         }
     }
 }

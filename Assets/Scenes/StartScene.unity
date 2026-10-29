@@ -3825,6 +3825,22 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1859817851353877521, guid: cd965d401276eca4a88d4c4b4553cecc, type: 3}
   m_PrefabInstance: {fileID: 642611628}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &395446826
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 395446823}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e9f40988c98dc242aa108716efb4e34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ProjectBreach.Core.GeneratorPassive
+  ownerRoom: {fileID: 395446824}
+  intervalSeconds: 0
+  growthPercent: 0.05
+  minGrowth: 5
 --- !u!1 &407293756
 GameObject:
   m_ObjectHideFlags: 0
@@ -6427,6 +6443,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8606589242464356319, guid: cd965d401276eca4a88d4c4b4553cecc, type: 3}
       insertIndex: -1
       addedObject: {fileID: 395446824}
+    - targetCorrespondingSourceObject: {fileID: 8606589242464356319, guid: cd965d401276eca4a88d4c4b4553cecc, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 395446826}
     - targetCorrespondingSourceObject: {fileID: 9199815799044751793, guid: cd965d401276eca4a88d4c4b4553cecc, type: 3}
       insertIndex: -1
       addedObject: {fileID: 225147503}
@@ -7093,6 +7112,20 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 5728555210687986248, guid: 85d001ea16328ac4c8eae5a499789764, type: 3}
   m_PrefabInstance: {fileID: 988436115}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &743386304
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 743386301}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2752efab311e53a4fb261f3253f39260, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ProjectBreach.Core.ArmouryPassive
+  ownerRoom: {fileID: 743386302}
+  discountFactor: 0.85
 --- !u!114 &744622740 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4475582493425317343, guid: cd965d401276eca4a88d4c4b4553cecc, type: 3}
@@ -10214,6 +10247,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 3695093543781014444, guid: 85d001ea16328ac4c8eae5a499789764, type: 3}
       insertIndex: -1
       addedObject: {fileID: 743386302}
+    - targetCorrespondingSourceObject: {fileID: 3695093543781014444, guid: 85d001ea16328ac4c8eae5a499789764, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 743386304}
     - targetCorrespondingSourceObject: {fileID: 2595327868704688958, guid: 85d001ea16328ac4c8eae5a499789764, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1606850146}
@@ -13442,6 +13478,21 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4870754984315837510, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
   m_PrefabInstance: {fileID: 2022107839}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1293980107
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1293980104}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 04dadda03f3c4bb4488e5b3507ee8076, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ProjectBreach.Core.ShieldReactorPassive
+  ownerRoom: {fileID: 1293980105}
+  intervalSeconds: 1
+  healAmount: 2
 --- !u!1 &1302054753
 GameObject:
   m_ObjectHideFlags: 0
@@ -22560,27 +22611,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-<<<<<<< HEAD
-=======
     - target: {fileID: 913600162177905519, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
       propertyPath: m_Range
       value: 200
       objectReference: {fileID: 0}
->>>>>>> main
     - target: {fileID: 1330230100005544817, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
       propertyPath: m_Range
       value: 100
       objectReference: {fileID: 0}
-<<<<<<< HEAD
     - target: {fileID: 1389397422870993626, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
       propertyPath: m_Range
       value: 200
       objectReference: {fileID: 0}
-    - target: {fileID: 4737208648179676500, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
-      propertyPath: m_Range
-      value: 100
-      objectReference: {fileID: 0}
-=======
     - target: {fileID: 3406171887242366028, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
       propertyPath: m_Range
       value: 100
@@ -22589,7 +22631,6 @@ PrefabInstance:
       propertyPath: m_Range
       value: 250
       objectReference: {fileID: 0}
->>>>>>> main
     - target: {fileID: 4870754984315837510, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
       propertyPath: m_LocalPosition.x
       value: -835.4
@@ -22654,15 +22695,13 @@ PrefabInstance:
       propertyPath: destinationPoint
       value: 
       objectReference: {fileID: 800765704}
-<<<<<<< HEAD
     - target: {fileID: 5140888519034256280, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
       propertyPath: m_Range
       value: 200
-=======
+      objectReference: {fileID: 0}
     - target: {fileID: 5196663093838245310, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
       propertyPath: m_Range
       value: 250
->>>>>>> main
       objectReference: {fileID: 0}
     - target: {fileID: 5550726445210166776, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
       propertyPath: m_Name
@@ -22672,23 +22711,18 @@ PrefabInstance:
       propertyPath: m_Range
       value: 200
       objectReference: {fileID: 0}
-<<<<<<< HEAD
     - target: {fileID: 6177627039277658738, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
       propertyPath: m_Range
       value: 200
       objectReference: {fileID: 0}
-=======
->>>>>>> main
     - target: {fileID: 6850429488697665182, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
       propertyPath: m_Name
       value: AirLockEnemySpawnerB
       objectReference: {fileID: 0}
-<<<<<<< HEAD
     - target: {fileID: 7041902507893135168, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
       propertyPath: m_Range
       value: 200
       objectReference: {fileID: 0}
-=======
     - target: {fileID: 7629842581221303318, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
       propertyPath: m_Range
       value: 100
@@ -22701,7 +22735,6 @@ PrefabInstance:
       propertyPath: m_Intensity
       value: 10
       objectReference: {fileID: 0}
->>>>>>> main
     m_RemovedComponents: []
     m_RemovedGameObjects:
     - {fileID: 8716967137340505595, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
@@ -22727,6 +22760,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 5005220005414479839, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1293980105}
+    - targetCorrespondingSourceObject: {fileID: 5005220005414479839, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1293980107}
   m_SourcePrefab: {fileID: 100100000, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
 --- !u!1 &2024833314
 GameObject:

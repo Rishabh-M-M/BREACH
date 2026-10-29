@@ -130,6 +130,16 @@ MonoBehaviour:
   currentHealth: 100
   baseOpacity: 0.08
   fadeSpeed: 1.5
+  shatterSound: {fileID: 8300000, guid: ee7d76e1ffa9d46d995d24aa5b654f96, type: 3}
+  shardMaterial: {fileID: 2100000, guid: 750e95e141d024d9a9faf2d58c03bcdc, type: 2}
+  shardCount: 32
+  shardSpread: 7
+  shardLifetime: 2.2
+  breakTimeScale: 0.25
+  slowMotionDuration: 0.65
+  assignedRoom: {fileID: 0}
+  isMainRoomShield: 0
+  mainControlRoom: {fileID: 0}
 --- !u!208 &199845218882627886
 NavMeshObstacle:
   m_ObjectHideFlags: 0

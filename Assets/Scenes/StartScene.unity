@@ -2054,6 +2054,11 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -2049998165076221786, guid: 190350fdb19f2234c96f0d42987d3927, type: 3}
+--- !u!4 &235687508 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1334298756686232859, guid: dd5f447964d740f4ab8b7365ecca6c0d, type: 3}
+  m_PrefabInstance: {fileID: 261531275}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &236115154
 GameObject:
   m_ObjectHideFlags: 0
@@ -2395,9 +2400,61 @@ PrefabInstance:
     m_TransformParent: {fileID: 312688381}
     m_Modifications:
     - target: {fileID: 806123739114161562, guid: dd5f447964d740f4ab8b7365ecca6c0d, type: 3}
+      propertyPath: rocketBlastRadius
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 806123739114161562, guid: dd5f447964d740f4ab8b7365ecca6c0d, type: 3}
       propertyPath: upgradeController
       value: 
       objectReference: {fileID: 261531277}
+    - target: {fileID: 806123739114161562, guid: dd5f447964d740f4ab8b7365ecca6c0d, type: 3}
+      propertyPath: rocketProjectileSpeed
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 806123739114161562, guid: dd5f447964d740f4ab8b7365ecca6c0d, type: 3}
+      propertyPath: blueRocketExplosionPrefab
+      value: 
+      objectReference: {fileID: 7482561660992541774, guid: 9cfbcaf535fdd402b9887aa14df6c1f6, type: 3}
+    - target: {fileID: 806123739114161562, guid: dd5f447964d740f4ab8b7365ecca6c0d, type: 3}
+      propertyPath: rocketFiringPoints.Array.size
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 806123739114161562, guid: dd5f447964d740f4ab8b7365ecca6c0d, type: 3}
+      propertyPath: 'rocketFiringPoints.Array.data[0]'
+      value: 
+      objectReference: {fileID: 579742683}
+    - target: {fileID: 806123739114161562, guid: dd5f447964d740f4ab8b7365ecca6c0d, type: 3}
+      propertyPath: 'rocketFiringPoints.Array.data[1]'
+      value: 
+      objectReference: {fileID: 1102359400}
+    - target: {fileID: 806123739114161562, guid: dd5f447964d740f4ab8b7365ecca6c0d, type: 3}
+      propertyPath: 'rocketFiringPoints.Array.data[2]'
+      value: 
+      objectReference: {fileID: 235687508}
+    - target: {fileID: 806123739114161562, guid: dd5f447964d740f4ab8b7365ecca6c0d, type: 3}
+      propertyPath: 'rocketFiringPoints.Array.data[3]'
+      value: 
+      objectReference: {fileID: 1580226052}
+    - target: {fileID: 806123739114161562, guid: dd5f447964d740f4ab8b7365ecca6c0d, type: 3}
+      propertyPath: 'rocketFiringPoints.Array.data[4]'
+      value: 
+      objectReference: {fileID: 1318881933}
+    - target: {fileID: 806123739114161562, guid: dd5f447964d740f4ab8b7365ecca6c0d, type: 3}
+      propertyPath: 'rocketFiringPoints.Array.data[5]'
+      value: 
+      objectReference: {fileID: 501769880}
+    - target: {fileID: 806123739114161562, guid: dd5f447964d740f4ab8b7365ecca6c0d, type: 3}
+      propertyPath: 'rocketFiringPoints.Array.data[6]'
+      value: 
+      objectReference: {fileID: 597001796}
+    - target: {fileID: 806123739114161562, guid: dd5f447964d740f4ab8b7365ecca6c0d, type: 3}
+      propertyPath: 'rocketFiringPoints.Array.data[7]'
+      value: 
+      objectReference: {fileID: 465635036}
+    - target: {fileID: 806123739114161562, guid: dd5f447964d740f4ab8b7365ecca6c0d, type: 3}
+      propertyPath: 'rocketFiringPoints.Array.data[8]'
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 1884031024217338423, guid: dd5f447964d740f4ab8b7365ecca6c0d, type: 3}
       propertyPath: m_LocalPosition.x
       value: 61.8114
@@ -2442,6 +2499,98 @@ PrefabInstance:
       propertyPath: m_Name
       value: Turret Shadered
       objectReference: {fileID: 0}
+    - target: {fileID: 2936492446892559889, guid: dd5f447964d740f4ab8b7365ecca6c0d, type: 3}
+      propertyPath: rocketSpeed
+      value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: 2936492446892559889, guid: dd5f447964d740f4ab8b7365ecca6c0d, type: 3}
+      propertyPath: directDamage
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2936492446892559889, guid: dd5f447964d740f4ab8b7365ecca6c0d, type: 3}
+      propertyPath: reloadDuration
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2936492446892559889, guid: dd5f447964d740f4ab8b7365ecca6c0d, type: 3}
+      propertyPath: explosionDamage
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 2936492446892559889, guid: dd5f447964d740f4ab8b7365ecca6c0d, type: 3}
+      propertyPath: explosionRadius
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 2936492446892559889, guid: dd5f447964d740f4ab8b7365ecca6c0d, type: 3}
+      propertyPath: timeBetweenRockets
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2936492446892559889, guid: dd5f447964d740f4ab8b7365ecca6c0d, type: 3}
+      propertyPath: explosionEffectDuration
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199972192758406405, guid: dd5f447964d740f4ab8b7365ecca6c0d, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199972192758406405, guid: dd5f447964d740f4ab8b7365ecca6c0d, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199972192758406405, guid: dd5f447964d740f4ab8b7365ecca6c0d, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199972192758406405, guid: dd5f447964d740f4ab8b7365ecca6c0d, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199972192758406405, guid: dd5f447964d740f4ab8b7365ecca6c0d, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199972192758406405, guid: dd5f447964d740f4ab8b7365ecca6c0d, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199972192758406405, guid: dd5f447964d740f4ab8b7365ecca6c0d, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199972192758406405, guid: dd5f447964d740f4ab8b7365ecca6c0d, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199972192758406405, guid: dd5f447964d740f4ab8b7365ecca6c0d, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199972192758406405, guid: dd5f447964d740f4ab8b7365ecca6c0d, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4318717679059275624, guid: dd5f447964d740f4ab8b7365ecca6c0d, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4318717679059275624, guid: dd5f447964d740f4ab8b7365ecca6c0d, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4318717679059275624, guid: dd5f447964d740f4ab8b7365ecca6c0d, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4318717679059275624, guid: dd5f447964d740f4ab8b7365ecca6c0d, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4318717679059275624, guid: dd5f447964d740f4ab8b7365ecca6c0d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4567388182987805950, guid: dd5f447964d740f4ab8b7365ecca6c0d, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 6a6b5052f4fe7472da09e353ffaedfe4, type: 2}
     - target: {fileID: 8481455517471810308, guid: dd5f447964d740f4ab8b7365ecca6c0d, type: 3}
       propertyPath: turret
       value: 
@@ -2454,6 +2603,10 @@ PrefabInstance:
       propertyPath: sharpshooterUpgrade
       value: 
       objectReference: {fileID: 1611599062}
+    - target: {fileID: 8481455517471810308, guid: dd5f447964d740f4ab8b7365ecca6c0d, type: 3}
+      propertyPath: rocketLauncherUpgrade
+      value: 
+      objectReference: {fileID: 1611599066}
     - target: {fileID: 8481455517471810308, guid: dd5f447964d740f4ab8b7365ecca6c0d, type: 3}
       propertyPath: heliosIncineratorUpgrade
       value: 
@@ -4488,6 +4641,11 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 4777254059575299401, guid: bb1452abf6eabf640be3c3cad8b37672, type: 3}
   m_PrefabInstance: {fileID: 461656482}
   m_PrefabAsset: {fileID: 0}
+--- !u!4 &465635036 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4196163525260465676, guid: dd5f447964d740f4ab8b7365ecca6c0d, type: 3}
+  m_PrefabInstance: {fileID: 261531275}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &466850975
 GameObject:
   m_ObjectHideFlags: 0
@@ -4708,6 +4866,11 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 4571798721828815552, guid: ea2299f234a384d8ba167f9ba20d54d2, type: 3}
+--- !u!4 &501769880 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 385852126133440213, guid: dd5f447964d740f4ab8b7365ecca6c0d, type: 3}
+  m_PrefabInstance: {fileID: 261531275}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &527129066 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8375917465500996226, guid: cd965d401276eca4a88d4c4b4553cecc, type: 3}
@@ -5564,6 +5727,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cefe8896bd7c74d9b90b968da6e68fec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ProjectBreach.Core.TurretUpgradeController
+--- !u!4 &579742683 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 309606252063777622, guid: dd5f447964d740f4ab8b7365ecca6c0d, type: 3}
+  m_PrefabInstance: {fileID: 261531275}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &582164942
 GameObject:
   m_ObjectHideFlags: 0
@@ -5826,6 +5994,16 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 591735083}
   m_CullTransparentMesh: 1
+--- !u!1 &592182945 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6110375049919213297, guid: 6660178a26c884a81ad690c59e83d18c, type: 3}
+  m_PrefabInstance: {fileID: 1932898712}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &597001796 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4957628506181556069, guid: dd5f447964d740f4ab8b7365ecca6c0d, type: 3}
+  m_PrefabInstance: {fileID: 261531275}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &617117850
 GameObject:
   m_ObjectHideFlags: 0
@@ -8025,21 +8203,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c0950f27c67d04de394059acffdfd737, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ProjectBreach.Core.HeliosIncineratorUpgrade
-  attackRange: 120
+  attackRange: 200
   startingDps: 1
-  maximumDps: 10
+  maximumDps: 30
   rampDuration: 8
-  cooldownDuration: 3
-  permanentPowerCost: 35
-  operatingPowerCost: 45
+  cooldownDuration: 1
+  permanentPowerCost: 0
+  operatingPowerCost: 100
   visual: {fileID: 639610803}
   beamRenderer: {fileID: 1242699495}
   beamStart: {fileID: 1214840767}
   laserAudioSource: {fileID: 0}
-  beamWidth: 0.05
-  maximumBeamWidth: 3
-  startBeamColor: {r: 0.1882353, g: 1, b: 1, a: 1}
-  chargedBeamColor: {r: 0, g: 0, b: 1, a: 1}
+  beamWidth: 0.2
+  maximumBeamWidth: 4
+  startBeamColor: {r: 0.44591188, g: 0, b: 1, a: 1}
+  chargedBeamColor: {r: 0.31875694, g: 0, b: 0.6698113, a: 1}
   startEndColor: {r: 0.039215688, g: 0.05882353, b: 0.39607844, a: 1}
   chargedEndColor: {r: 0.039248843, g: 0.0597425, b: 0.3962264, a: 1}
   turretHead: {fileID: 238551458}
@@ -8063,6 +8241,7 @@ MonoBehaviour:
   doubleBarrelUpgrade: {fileID: 829887171}
   sharpshooterUpgrade: {fileID: 829887172}
   heliosIncineratorUpgrade: {fileID: 829887173}
+  rocketLauncherUpgrade: {fileID: 0}
   currentVariant: 0
   baseOperatingPowerCost: 0
   baseVisual: {fileID: 745097457}
@@ -11039,6 +11218,9 @@ MonoBehaviour:
   doubleBarrelFireSound: {fileID: 8300000, guid: 6ed48dd759b0d4fc2819f0af3e6ebb06, type: 3}
   sharpshooterFireSound: {fileID: 8300000, guid: da926daff4c72423b8764f9ad56e27b3, type: 3}
   heliosIncineratorFireSound: {fileID: 8300000, guid: 278d324ce2e1c4d0fafed3800d0b66d8, type: 3}
+  rocketLauncherFireSound: {fileID: 8300000, guid: 5c215b1f916314b538e09bf27e29c870, type: 3}
+  rocketLauncherExplosionSound: {fileID: 8300000, guid: de7ee8d5b20764d65bc5597130d96aa8, type: 3}
+  rocketLauncherExplosionVolume: 1
   rotationSound: {fileID: 8300000, guid: dfc8e02a652bd43b29605c1b79937c61, type: 3}
   powerOnSound: {fileID: 8300000, guid: 945fc4d746947416e822e21d831ef7bd, type: 3}
   powerOffSound: {fileID: 8300000, guid: f5e893e2518334f60a2138ff234001c8, type: 3}
@@ -11154,6 +11336,11 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1095211868}
   m_Mesh: {fileID: 5903174955808974656, guid: ea2299f234a384d8ba167f9ba20d54d2, type: 3}
+--- !u!4 &1102359400 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1291669016541854469, guid: dd5f447964d740f4ab8b7365ecca6c0d, type: 3}
+  m_PrefabInstance: {fileID: 261531275}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1106888336
 GameObject:
   m_ObjectHideFlags: 0
@@ -13643,6 +13830,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &1318881933 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7900548404252633861, guid: dd5f447964d740f4ab8b7365ecca6c0d, type: 3}
+  m_PrefabInstance: {fileID: 261531275}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1327839987
 GameObject:
   m_ObjectHideFlags: 0
@@ -14598,10 +14790,33 @@ MonoBehaviour:
     m_Bits: 4294967295
   projectilePrefab: {fileID: 3559253009315741251, guid: 617fb061e9a4a63489eb89bdaa202df5, type: 3}
   firePoint: {fileID: 1037046935}
+  rocketFiringPoints:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  rocketProjectileSpeed: 16
+  rocketBlastRadius: 3.5
+  rocketReloadDuration: 4
+  blueRocketExplosionPrefab: {fileID: 0}
+  rocketSpentHoleVisuals:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   turretHead: {fileID: 215656291}
   rotationSpeed: 90
   rotationOffset: -90
   lockXRotation: 1
+  upwardAimTilt: 5
   activationShaderProperty: _Activation
   activationLerpSpeed: 4
   recoilDistance: 0.12
@@ -14643,6 +14858,7 @@ MonoBehaviour:
   doubleBarrelUpgrade: {fileID: 0}
   sharpshooterUpgrade: {fileID: 0}
   heliosIncineratorUpgrade: {fileID: 0}
+  rocketLauncherUpgrade: {fileID: 0}
   currentVariant: 0
   baseOperatingPowerCost: 30
   baseVisual: {fileID: 0}
@@ -17048,6 +17264,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1580209991}
   m_CullTransparentMesh: 1
+--- !u!4 &1580226052 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4162524031435739761, guid: dd5f447964d740f4ab8b7365ecca6c0d, type: 3}
+  m_PrefabInstance: {fileID: 261531275}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1590315309
 GameObject:
   m_ObjectHideFlags: 0
@@ -17390,6 +17611,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c0950f27c67d04de394059acffdfd737, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ProjectBreach.Core.HeliosIncineratorUpgrade
+--- !u!114 &1611599066 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2936492446892559889, guid: dd5f447964d740f4ab8b7365ecca6c0d, type: 3}
+  m_PrefabInstance: {fileID: 261531275}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3083ca8dee3b147afb9b4f96441de500, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ProjectBreach.Core.RocketLauncherUpgrade
 --- !u!1 &1612729162
 GameObject:
   m_ObjectHideFlags: 0
@@ -20975,9 +21207,25 @@ PrefabInstance:
       value: Shield
       objectReference: {fileID: 0}
     - target: {fileID: 7070064369690845650, guid: 6660178a26c884a81ad690c59e83d18c, type: 3}
+      propertyPath: shardSpread
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7070064369690845650, guid: 6660178a26c884a81ad690c59e83d18c, type: 3}
       propertyPath: assignedRoom
       value: 
       objectReference: {fileID: 312688382}
+    - target: {fileID: 7070064369690845650, guid: 6660178a26c884a81ad690c59e83d18c, type: 3}
+      propertyPath: shatterSound
+      value: 
+      objectReference: {fileID: 8300000, guid: ee7d76e1ffa9d46d995d24aa5b654f96, type: 3}
+    - target: {fileID: 7070064369690845650, guid: 6660178a26c884a81ad690c59e83d18c, type: 3}
+      propertyPath: shardMaterial
+      value: 
+      objectReference: {fileID: 2100000, guid: 7f49af93074984c949764a4b02fc5f86, type: 2}
+    - target: {fileID: 7070064369690845650, guid: 6660178a26c884a81ad690c59e83d18c, type: 3}
+      propertyPath: shatterEffectPrefab
+      value: 
+      objectReference: {fileID: 592182945}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

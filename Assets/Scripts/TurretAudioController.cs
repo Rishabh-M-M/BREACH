@@ -25,6 +25,14 @@ namespace ProjectBreach.Core
         [Tooltip("Helios Incinerator laser sound. This clip loops while the beam fires and stops on cooldown; use a seamless loop if possible.")]
         [SerializeField] private AudioClip heliosIncineratorFireSound;
 
+        [Tooltip("Fallback Rocket Launcher launch sound. The RocketLauncherUpgrade clip takes priority when assigned.")]
+        [SerializeField] private AudioClip rocketLauncherFireSound;
+
+        [Tooltip("Fallback Rocket Launcher explosion sound. The RocketLauncherUpgrade clip takes priority when assigned.")]
+        [SerializeField] private AudioClip rocketLauncherExplosionSound;
+
+        [SerializeField, Range(0f, 1f)] private float rocketLauncherExplosionVolume = 1f;
+
         [Tooltip("Shared looping sound used whenever a turret head is rotating.")]
         [SerializeField] private AudioClip rotationSound;
 
@@ -56,6 +64,9 @@ namespace ProjectBreach.Core
                 case TurretVariant.HeliosIncinerator:
                     return heliosIncineratorFireSound;
 
+                case TurretVariant.RocketLauncher:
+                    return rocketLauncherFireSound;
+
                 default:
                     return baseFireSound;
             }
@@ -64,6 +75,8 @@ namespace ProjectBreach.Core
         public AudioClip RotationSound => rotationSound;
         public AudioClip PowerOnSound => powerOnSound;
         public AudioClip PowerOffSound => powerOffSound;
+        public AudioClip RocketLauncherExplosionSound => rocketLauncherExplosionSound;
+        public float RocketLauncherExplosionVolume => rocketLauncherExplosionVolume;
 
         private const float VolumeGain = 20f;
 
@@ -77,6 +90,7 @@ namespace ProjectBreach.Core
             fireVolume = Mathf.Clamp01(fireVolume);
             rotationVolume = Mathf.Clamp01(rotationVolume);
             powerVolume = Mathf.Clamp01(powerVolume);
+            rocketLauncherExplosionVolume = Mathf.Clamp01(rocketLauncherExplosionVolume);
         }
 
         /// <summary>

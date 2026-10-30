@@ -69,7 +69,7 @@ namespace ProjectBreach.Core
         /// </summary>
         private void RefreshPowerBar(int load, int max)
         {
-            int remainingPower = max - load;
+            int remainingPower = Mathf.Max(0, max - load);
 
             if (powerBar != null)
             {

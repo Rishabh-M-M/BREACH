@@ -44,6 +44,9 @@ public class Shield : MonoBehaviour, IDamageable
     public int MaxHealth => maxHealth;
     public int CurrentHealth => currentHealth;
 
+    /// <summary>The room this barrier belongs to (resolved in Awake).</summary>
+    public Room AssignedRoom => assignedRoom;
+
     // ============================================================
     // IDAMAGEABLE
     // ============================================================

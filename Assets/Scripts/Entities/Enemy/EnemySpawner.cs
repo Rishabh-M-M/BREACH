@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using ProjectBreach.Core;
 
 public class EnemySpawner : MonoBehaviour
 {
@@ -40,6 +41,9 @@ public class EnemySpawner : MonoBehaviour
         {
             mover.SetTarget(freeTarget.transform, freeTarget);
             mover.SetAimPoint(aimPoint);
+
+            Room ownerRoom = GetComponentInParent<Room>();
+            mover.SetSpawnRoom(ownerRoom);
         }
     }
 

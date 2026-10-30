@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using ProjectBreach.Core;
 
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(Animator))]
@@ -35,16 +36,46 @@ public class EnemyMover : MonoBehaviour
     private Coroutine _slowRoutine;
 
     private int currentRoomIndex;
+    private string currentRoomName;
+    private Room spawnRoom;
 
     public bool HasArrived { get; private set; }
 
     public int CurrentRoomIndex => currentRoomIndex;
+
+    /// <summary>
+    /// The room this enemy spawned in (strong reference). Preferred over
+    /// index/name matching because scene roomIndex values are not unique and
+    /// room names can be empty/duplicated.
+    /// </summary>
+    public Room SpawnRoom => spawnRoom;
+
+    /// <summary>
+    /// Name of the room this enemy spawned in. Kept for legacy consumers;
+    /// prefer <see cref="SpawnRoom"/> for reliable attribution.
+    /// </summary>
+    public string CurrentRoomName => currentRoomName;
 
     private Vector3 UpDirection => isAntiGravity ? Vector3.down : Vector3.up;
 
     public void SetRoomIndex(int roomIndex)
     {
         currentRoomIndex = roomIndex;
+    }
+
+    public void SetRoomName(string roomName)
+    {
+        currentRoomName = roomName;
+    }
+
+    public void SetSpawnRoom(Room room)
+    {
+        spawnRoom = room;
+        if (room != null)
+        {
+            currentRoomName = room.RoomName;
+            currentRoomIndex = room.RoomIndex;
+        }
     }
 
     private void Awake()

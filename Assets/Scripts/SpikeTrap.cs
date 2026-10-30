@@ -54,18 +54,30 @@ public class SpikeTrap : MonoBehaviour
         if (delayRoutine != null)
             StopCoroutine(delayRoutine);
 
+        // Never StartCoroutine on an inactive object (Unity throws:
+        // "Coroutine couldn't be started because the game object ... is
+        // inactive!"). When inactive, apply the target state directly; the
+        // animator still handles the visual.
         if (value)
         {
             active = true;
             canDamage = false;
-            delayRoutine = StartCoroutine(EnableDamageAfterDelay());
+            delayRoutine = gameObject.activeInHierarchy
+                ? StartCoroutine(EnableDamageAfterDelay())
+                : null;
         }
         else
         {
-            // Stop damage immediately; visual animation can finish its delay.
             canDamage = false;
             damagingTargets.Clear();
-            delayRoutine = StartCoroutine(DisableDamageAfterDelay());
+
+            if (gameObject.activeInHierarchy)
+                delayRoutine = StartCoroutine(DisableDamageAfterDelay());
+            else
+            {
+                active = false;
+                delayRoutine = null;
+            }
         }
     }
 

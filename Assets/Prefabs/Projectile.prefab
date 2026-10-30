@@ -128,11 +128,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ProjectBreach.Core.Projectile
   damage: 5
-  speed: 20
-  lifeTime: 3
+  speed: 50
+  lifeTime: 10
   hitDistance: 0.5
   aimHeight: 0.6
   explosionEffectPrefab: {fileID: 7482561660992541774, guid: d4985e679514c324b92da1c3b60738b8, type: 3}
+  rocketModelRotationOffset: {x: 0, y: 180, z: 0}
+  rocketExplosionEffectDuration: 1.5
+  rocketExplosionSound: {fileID: 0}
+  rocketExplosionVolume: 1
 --- !u!114 &7843370042598710411
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -160,8 +160,8 @@ namespace ProjectBreach.Core
             Image hpBar = CreateImage(row, hpFullColor);
             SetTopLeft(hpBar.rectTransform, left + 84f, (rowHeight - 10f) * 0.5f, 66f, 10f);
 
-            // Enemy count (right-aligned).
-            Text enemyText = CreateText(row, "0", 13, Color.white, TextAnchor.MiddleRight);
+            // Enemy count (right-aligned, red for visibility).
+            Text enemyText = CreateText(row, "0", 13, new Color(1f, 0.35f, 0.35f, 1f), TextAnchor.MiddleRight);
             SetTopLeft(enemyText.rectTransform, left + 154f, 0f, 40f, rowHeight);
 
             // Structure status dot (far right).

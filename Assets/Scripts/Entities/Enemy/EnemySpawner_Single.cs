@@ -83,7 +83,7 @@ public class EnemySpawner_Single : MonoBehaviour
             // (e.g. EnemyAudio's camera-visibility check, same convention
             // Turret/TurretAudioController already use).
             Room ownerRoom = GetComponentInParent<Room>();
-            mover.SetRoomIndex(ownerRoom != null ? ownerRoom.RoomIndex : 0);
+            mover.SetSpawnRoom(ownerRoom);
         }
     }
 

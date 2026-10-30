@@ -12,8 +12,8 @@ namespace ProjectBreach.Core
     ///   ServerRoom  -> GeneratorPassive
     ///   Shop        -> ArmouryPassive
     ///   Air Lock    -> ShieldReactorPassive
+    ///   Corridor    -> CommunicationPassive (minimap)
     ///
-    /// Communication has no passive this round (design doc §2.1).
     /// Already-present passives are left untouched, so the same rooms can be
     /// wired manually in the Inspector without double-installing.
     /// </summary>
@@ -54,6 +54,9 @@ namespace ProjectBreach.Core
 
                 case "airlock":
                     return typeof(ShieldReactorPassive);
+
+                case "corridor":
+                    return typeof(CommunicationPassive);
 
                 default:
                     return null;

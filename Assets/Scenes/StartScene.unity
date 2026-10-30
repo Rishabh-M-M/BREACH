@@ -2875,6 +2875,7 @@ GameObject:
   m_Component:
   - component: {fileID: 312688381}
   - component: {fileID: 312688382}
+  - component: {fileID: 312688383}
   m_Layer: 0
   m_Name: RoomACorridor
   m_TagString: Untagged
@@ -2920,10 +2921,36 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ProjectBreach.Core.Room
   roomIndex: 1
-  roomName: 
+  roomName: Corridor
   structures:
   - {fileID: 133458113}
   - {fileID: 787803243}
+--- !u!114 &312688383
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 312688380}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 261b3a3920359ed4cbcec5f6562ed8ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ProjectBreach.Core.CommunicationPassive
+  ownerRoom: {fileID: 312688382}
+  windowWidth: 230
+  titleHeight: 26
+  rowHeight: 30
+  panelColor: {r: 0, g: 0, b: 0, a: 0.55}
+  rowColor: {r: 0.12, g: 0.12, b: 0.12, a: 0.55}
+  fallenColor: {r: 0.75, g: 0.12, b: 0.12, a: 0.55}
+  hpFullColor: {r: 0.35, g: 0.85, b: 1, a: 0.9}
+  onlineColor: {r: 0.3, g: 0.9, b: 0.3, a: 0.95}
+  offlineColor: {r: 0.45, g: 0.45, b: 0.45, a: 0.9}
+  iconComms: {fileID: 21300000, guid: e590308e7184d9a469536e049580747c, type: 3}
+  iconGenerator: {fileID: 21300000, guid: 0fee2b86c0f8a414b8c3c13525a8d19c, type: 3}
+  iconArmoury: {fileID: 21300000, guid: 236fb0b5181a26c41a8ed4ba9a52d623, type: 3}
+  iconRegen: {fileID: 21300000, guid: cb78c49119ec61746b2da55a110dc2e6, type: 3}
 --- !u!1 &320758228
 GameObject:
   m_ObjectHideFlags: 0
@@ -3854,8 +3881,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ProjectBreach.Core.GeneratorPassive
   ownerRoom: {fileID: 395446824}
-  intervalSeconds: 0
-  growthPercent: 0.05
+  intervalSeconds: 10
+  growthPercent: 0
   minGrowth: 5
 --- !u!1 &407293756
 GameObject:
@@ -8452,6 +8479,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ProjectBreach.Core.PowerManager
   maxPower: 100
+  maxPowerCap: 1000000
 --- !u!4 &852053107
 Transform:
   m_ObjectHideFlags: 0

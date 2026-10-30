@@ -53,8 +53,24 @@ public class CameraUIController : MonoBehaviour
 
     private bool isAnimating = false;
 
+    // 0 = Main Control Room, 1-4 = Room 1-4.
+    // Turret audio uses this to determine which room's sounds are audible.
+    private static int currentViewedRoomIndex = 0;
+    private static bool securityCameraOpen = false;
+
+    public static int CurrentViewedRoomIndex => currentViewedRoomIndex;
+    public static bool IsSecurityCameraOpen => securityCameraOpen;
+
+    public static bool IsRoomCurrentlyViewed(int roomIndex)
+    {
+        return currentViewedRoomIndex == roomIndex;
+    }
+
     void Start()
     {
+        currentViewedRoomIndex = 0;
+        securityCameraOpen = false;
+
         if (cameraScreen != null)
         {
             cameraScreenRect =
@@ -126,6 +142,8 @@ public class CameraUIController : MonoBehaviour
     {
         if (isAnimating)
             return;
+
+        securityCameraOpen = true;
 
         if (mainHUD != null)
             mainHUD.SetActive(false);
@@ -232,6 +250,11 @@ public class CameraUIController : MonoBehaviour
     {
         if (isAnimating)
             return;
+
+        // Once the security camera is closed, the player is back in the
+        // Main Control Room view.
+        currentViewedRoomIndex = 0;
+        securityCameraOpen = false;
 
         if (cameraRecordingUI != null)
             cameraRecordingUI.StopRecording();
@@ -352,6 +375,8 @@ public class CameraUIController : MonoBehaviour
 
     public void ShowRoom1()
     {
+        currentViewedRoomIndex = 1;
+
         ShowRoom(
             room1CameraPoint,
             "Room 1"
@@ -367,6 +392,8 @@ public class CameraUIController : MonoBehaviour
 
     public void ShowRoom2()
     {
+        currentViewedRoomIndex = 2;
+
         ShowRoom(
             room2CameraPoint,
             "Room 2"
@@ -382,6 +409,8 @@ public class CameraUIController : MonoBehaviour
 
     public void ShowRoom3()
     {
+        currentViewedRoomIndex = 3;
+
         ShowRoom(
             room3CameraPoint,
             "Room 3"
@@ -397,6 +426,8 @@ public class CameraUIController : MonoBehaviour
 
     public void ShowRoom4()
     {
+        currentViewedRoomIndex = 4;
+
         ShowRoom(
             room4CameraPoint,
             "Room 4"

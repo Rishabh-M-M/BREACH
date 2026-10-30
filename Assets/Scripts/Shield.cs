@@ -1,9 +1,15 @@
-using UnityEngine;
 using System.Collections;
+using UnityEngine;
+using ProjectBreach.Core;
 
-public class Shield : MonoBehaviour
+/// <summary>
+/// Room shield. Takes damage from ranged and melee enemy attacks, never from
+/// physical contact. Normal room shield break permanently disables the room.
+/// Main room shield break triggers Game Over.
+/// </summary>
+public class Shield : MonoBehaviour, IDamageable
 {
-    [Header("Health")]
+    [Header("Shield Health")]
     [SerializeField] private int maxHealth = 100;
     [SerializeField] private int currentHealth = 100;
 
@@ -13,93 +19,224 @@ public class Shield : MonoBehaviour
 
     [SerializeField] private float fadeSpeed = 1.5f;
 
+    [Header("Permanent Break Effects")]
+    [Tooltip("Optional audio played when the shield permanently breaks.")]
+    [SerializeField] private AudioClip shatterSound;
+    [Tooltip("Optional glass-like shard material. If empty, the shield material is used.")]
+    [SerializeField] private Material shardMaterial;
+    [SerializeField, Range(8, 80)] private int shardCount = 32;
+    [SerializeField, Min(0.5f)] private float shardSpread = 7f;
+    [SerializeField, Min(0.5f)] private float shardLifetime = 2.2f;
+    [SerializeField, Range(0.05f, 1f)] private float breakTimeScale = 0.25f;
+    [SerializeField, Min(0.1f)] private float slowMotionDuration = 0.65f;
+
+    [Header("Room Assignment")]
+    [SerializeField] private Room assignedRoom;
+    [SerializeField] private bool isMainRoomShield;
+    [SerializeField] private MainControlRoom mainControlRoom;
+
     private Material shieldMaterial;
+    private Collider shieldCollider;
     private bool destroyed;
+    private bool breakHandled;
 
     public bool IsDestroyed => destroyed;
+    public int MaxHealth => maxHealth;
+    public int CurrentHealth => currentHealth;
+
+    // ============================================================
+    // IDAMAGEABLE
+    // ============================================================
+    public int MaxHP => maxHealth;
+    public int CurrentHP => currentHealth;
+    public bool IsDead => destroyed;
+
+    public void Die()
+    {
+        if (destroyed)
+            return;
+
+        currentHealth = 0;
+        BreakShield();
+    }
 
     private void Awake()
     {
-        shieldMaterial = GetComponent<MeshRenderer>().material;
-        Restore();
-    }
+        maxHealth = Mathf.Max(1, maxHealth);
+        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
 
-    private void Update()
-    {
-        // Debug controls
-        if (Input.GetKeyDown(KeyCode.K))
-        {
-            TakeDamage(10);
-        }
+        Renderer r = GetComponent<Renderer>();
+        if (r == null)
+            r = GetComponentInChildren<Renderer>();
 
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            Restore();
-        }
+        if (r != null)
+            shieldMaterial = r.material;
+
+        shieldCollider = GetComponent<Collider>();
+        if (shieldCollider == null)
+            shieldCollider = GetComponentInChildren<Collider>();
+
+        if (assignedRoom == null)
+            assignedRoom = GetComponentInParent<Room>();
+
+        if (mainControlRoom == null)
+            mainControlRoom = FindObjectOfType<MainControlRoom>();
+
+        destroyed = currentHealth <= 0;
+        UpdateShieldVisual();
+
+        if (destroyed)
+            BreakShield();
     }
 
     public void TakeDamage(int damage)
     {
-        if (destroyed) return;
+        if (destroyed || damage <= 0)
+            return;
 
         currentHealth = Mathf.Max(0, currentHealth - damage);
+        UpdateShieldVisual();
 
-        float hp = (float)currentHealth / maxHealth;
-        shieldMaterial.SetFloat("_Health", hp);
+        if (isMainRoomShield && mainControlRoom != null)
+            mainControlRoom.NotifyMainShieldDamaged();
 
-        StopCoroutine(nameof(HitFlash));
-        StartCoroutine(nameof(HitFlash));
+        if (shieldMaterial != null)
+            StartCoroutine(HitFlash());
 
         if (currentHealth <= 0)
+            BreakShield();
+    }
+
+    /// <summary>
+    /// Restores shield HP without exceeding max. Destroyed shields are never
+    /// restored (per design doc: "不恢复已摧毁的屏障").
+    /// </summary>
+    public void Heal(int amount)
+    {
+        if (destroyed || amount <= 0)
+            return;
+
+        currentHealth = Mathf.Min(maxHealth, currentHealth + amount);
+        UpdateShieldVisual();
+    }
+
+    private void UpdateShieldVisual()
+    {
+        if (shieldMaterial == null) return;
+
+        float ratio = (float)currentHealth / Mathf.Max(1, maxHealth);
+
+        if (shieldMaterial.HasProperty("_Health"))
+            shieldMaterial.SetFloat("_Health", ratio);
+
+        if (shieldMaterial.HasProperty("_Opacity"))
         {
-            destroyed = true;
-            GetComponent<Collider>().enabled = false;
-            StartCoroutine(FadeOut());
+            shieldMaterial.SetFloat("_Opacity", destroyed ? 0f : baseOpacity);
         }
     }
 
-    private void Restore()
+    private void BreakShield()
     {
-        StopAllCoroutines();
+        if (breakHandled) return;
 
-        destroyed = false;
-        currentHealth = maxHealth;
+        breakHandled = true;
+        destroyed = true;
+        currentHealth = 0;
 
-        gameObject.SetActive(true);
+        UpdateShieldVisual();
 
-        Collider col = GetComponent<Collider>();
-        if (col != null)
-            col.enabled = true;
+        // Run independently of the shield object, which fades out and disables.
+        ShieldShatterEffect.Play(
+            transform.position,
+            transform.lossyScale,
+            shardMaterial != null ? shardMaterial : shieldMaterial,
+            shatterSound,
+            shardCount,
+            shardSpread,
+            shardLifetime,
+            breakTimeScale,
+            slowMotionDuration
+        );
+        
 
-        shieldMaterial.SetFloat("_Health", 1f);
-        shieldMaterial.SetFloat("_Opacity", baseOpacity);
-        shieldMaterial.SetFloat("_HitFlash", 0f);
-    }
+        if (shieldCollider != null)
+            shieldCollider.enabled = false;
 
-    IEnumerator HitFlash()
-    {
-        shieldMaterial.SetFloat("_HitFlash", 1f);
-
-        float t = 0f;
-
-        while (t < 0.12f)
+        if (isMainRoomShield)
         {
-            t += Time.deltaTime;
-            shieldMaterial.SetFloat("_HitFlash", 1f - t / 0.12f);
-            yield return null;
+            if (mainControlRoom != null)
+            {
+                mainControlRoom.MainShieldBroken();
+            }
+            else if (GameManager.Instance != null)
+            {
+                GameManager.Instance.RegisterCoreDestroyed();
+            }
+            else
+            {
+                Debug.LogError("[Shield] Main shield broke, but no MainControlRoom/GameManager was found.");
+            }
+        }
+        else
+        {
+            if (assignedRoom == null)
+                assignedRoom = GetComponentInParent<Room>();
+
+            if (assignedRoom != null)
+            {
+                assignedRoom.PermanentlyDisableRoom();
+
+                Turret[] turrets = assignedRoom.GetComponentsInChildren<Turret>(true);
+
+                foreach (Turret turret in turrets)
+                {
+                    if (turret == null) continue;
+                    turret.TurnOff();
+                }
+
+                Debug.LogWarning($"[Shield] Room '{assignedRoom.RoomName}' has fallen. Its turrets are switched off.");
+            }
+            else
+            {
+                Debug.LogError($"[Shield] No Room assigned to {name}; room turrets were not disabled.");
+            }
         }
 
-        shieldMaterial.SetFloat("_HitFlash", 0f);
+        StartCoroutine(FadeOut());
     }
 
-    IEnumerator FadeOut()
+    private IEnumerator HitFlash()
     {
-        float alpha = baseOpacity;
+        if (shieldMaterial == null) yield break;
 
-        while (alpha > 0f)
+        if (shieldMaterial.HasProperty("_HitFlash"))
+            shieldMaterial.SetFloat("_HitFlash", 1f);
+
+        yield return new WaitForSeconds(0.12f);
+
+        if (shieldMaterial != null && shieldMaterial.HasProperty("_HitFlash"))
         {
-            alpha -= Time.deltaTime * fadeSpeed;
-            shieldMaterial.SetFloat("_Opacity", alpha);
+            shieldMaterial.SetFloat("_HitFlash", 0f);
+        }
+    }
+
+    private IEnumerator FadeOut()
+    {
+        if (shieldMaterial == null)
+        {
+            gameObject.SetActive(false);
+            yield break;
+        }
+
+        float opacity = baseOpacity;
+
+        while (opacity > 0f)
+        {
+            opacity = Mathf.Max(0f, opacity - Time.deltaTime * fadeSpeed);
+
+            if (shieldMaterial.HasProperty("_Opacity"))
+                shieldMaterial.SetFloat("_Opacity", opacity);
+
             yield return null;
         }
 

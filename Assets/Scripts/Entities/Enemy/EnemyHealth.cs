@@ -70,6 +70,11 @@ public class EnemyHealth : MonoBehaviour, IDamageable
         isDead = true;
         animator.SetTrigger("Die");
 
+        if (TryGetComponent(out EnemyAudio audioPlayer))
+        {
+            audioPlayer.PlayDeath();
+        }
+
         if (TryGetComponent(out EnemyMover mover))
         {
             mover.enabled = false;

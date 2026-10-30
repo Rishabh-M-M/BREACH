@@ -19,6 +19,7 @@ namespace ProjectBreach.Core
         [SerializeField] private int permanentPowerCost = 30;
         [SerializeField] private int operatingPowerCost = 50;
 
+
         [Header("Double Barrel Visual")]
         [Tooltip("The Double Barrel model/visual only. Do not put another Turret component on it.")]
         [SerializeField] private GameObject visual;
@@ -33,8 +34,9 @@ namespace ProjectBreach.Core
         [Tooltip("Right physical projectile spawner.")]
         [SerializeField] private Transform rightSpawner;
 
-        public int PermanentPowerCost => permanentPowerCost;
-        public int OperatingPowerCost => operatingPowerCost;
+        public override int PermanentPowerCost => permanentPowerCost;
+        public override int OperatingPowerCost => operatingPowerCost;
+
 
         private void Awake()
         {

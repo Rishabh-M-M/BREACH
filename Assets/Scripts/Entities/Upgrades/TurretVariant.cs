@@ -4,7 +4,8 @@ namespace ProjectBreach.Core
     {
         Base,
         DoubleBarrel,
-        LongRange,
-        MachineLaser
+        Sharpshooter,
+        HeliosIncinerator,
+        RocketLauncher
     }
 }

@@ -3,12 +3,14 @@ using UnityEngine;
 namespace ProjectBreach.Core
 {
     /// <summary>
-    /// Base class for one turret upgrade's unique behaviour.
-    /// Common turret behaviour stays in Turret.cs.
-    /// Upgrade-specific behaviour belongs in the derived upgrade component.
+    /// Base class for turret upgrade behaviour and power costs.
     /// </summary>
     public abstract class TurretUpgrade : MonoBehaviour
     {
+        [Header("Power Costs")]
+        public virtual int PermanentPowerCost => 0;
+        public virtual int OperatingPowerCost => 0;
+
         public abstract int GetDamage(int baseDamage);
 
         public abstract float GetFireRate(float baseFireRate);
@@ -32,6 +34,36 @@ namespace ProjectBreach.Core
         public virtual Transform GetFirePoint(Transform baseFirePoint)
         {
             return baseFirePoint;
+        }
+
+        public virtual bool PrefersFurthestTarget()
+        {
+            return false;
+        }
+
+        public virtual float GetRecoilDistance(float baseDistance)
+        {
+            return baseDistance;
+        }
+
+        public virtual float GetRecoilRecoverySpeed(float baseRecoverySpeed)
+        {
+            return baseRecoverySpeed;
+        }
+
+        public virtual Vector3 GetRecoilLocalDirection(Vector3 baseDirection)
+        {
+            return baseDirection;
+        }
+
+        public virtual AudioClip GetFireSound()
+        {
+            return null;
+        }
+
+        public virtual AudioClip GetRotationSound()
+        {
+            return null;
         }
 
         public virtual void SetVisualActive(bool active)

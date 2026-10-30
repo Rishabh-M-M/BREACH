@@ -28,6 +28,25 @@ namespace ProjectBreach.Core
         public int MaxPower => maxPower;
 
         /// <summary>
+        /// Increases the permanent power ceiling (used by the Generator room
+        /// passive). Broadcasts the new budget so the UI refreshes.
+        /// </summary>
+        public void IncreaseMaxPower(int amount)
+        {
+            if (amount <= 0)
+                return;
+
+            maxPower += amount;
+
+            BroadcastPowerChanged();
+
+            Debug.Log(
+                $"[PowerManager] maxPower increased by {amount}. " +
+                $"Total capacity: {maxPower}"
+            );
+        }
+
+        /// <summary>
         /// Total power currently committed.
         /// </summary>
         public int CurrentLoad =>

@@ -1,306 +1,164 @@
-# Shader Report
+# 1. Evaluation Techniques
 
-## Table of Contents
+## Technique 1: Observational Methods – Post-task Walkthroughs
 
-- [ProjectileShader - Plasma Projectile](#projectileshader---plasma-projectile)
-- [HitReaction - Enemy Damage Effect](#hitreaction---enemy-damage-effect)
-- [BreachRoom - Main Room Breach Effect](#breachroom---main-room-breach-effect)
-- [Turret Activation System - TurretTop & TurretBase](#turret-activation-system---turrettop--turretbase)
+**Participants:** 5
 
-## ProjectileShader - Plasma Projectile
+**Reason of Choice:** BREACH is a fast-paced game that focuses on resource management and rapid camera switching. If players were to use the "Think-Aloud" technique, it would interrupt their concentration and ruin the atmosphere of the game, which relies on a claustrophobic environment to create tension. Recording gameplay and asking questions afterwards using the video footage is a better, non-interruptive method.
 
-**Author:** Rongze Han
+**Playtest Task:** Participants will play through the demo, aiming to reach the end of Wave 5. Their objective is to preserve as much Barrier HP as possible and minimise the number of enemies that breach the Main Control Room by managing the four external rooms. The experimenter will avoid helping unless a technical issue prevents the session from continuing.
 
-### Shader Source File
+During the session, the experimenter will note timestamps where players hesitate, overlook a warning, switch cameras repeatedly, run low on Power, or lose a room. These moments will guide the post-task questions.
 
-[Assets/Shaders/PlasmaProjectile.shader](./Assets/Shaders/PlasmaProjectile.shader)
+## Technique 2: Query Techniques – Questionnaires
 
-### Shader Effect
+**Participants:** 5
 
-This is a Plasma Projectile shader designed for the defensive turrets. The projectile renders as a semi-transparent energy ball featuring Fresnel edge lighting, a semi-transparent center, and a breathing pulse. The surface utilizes a noise-driven energy stream, while the vertex stage applies slight normal displacement to create an unstable plasma geometry. Additionally, Bloom post-processing is used to pick up the HDR colors and generate a glowing effect.
+**Reason of Choice:** Questionnaires allow us to collect quantitative data about the user interface and difficulty level. Open-ended questions will also help us understand whether players understand the core mechanics and narrative.
 
-### Chosen Theme
+**Playtest Task:** Participants will play through the demo, attempting to reach Wave 5, then complete an online structured survey. They should answer based on their own experience rather than what they think the game intends them to do.
 
-**Theme 2 — Surface Appearance and Procedural Effects**
+---
 
-(Procedural noise pattern animation + transparent masking to control surface appearance; Fresnel edge lighting as support).
+# 2. Designed Questions
 
-### Design Justification
+These questions focus on the game's mechanics, UI/UX, difficulty, audio feedback, and narrative. Questions during the post-task walkthrough can be adjusted to match what the participant actually did.
 
-Our game is a spaceship surveillance turret defense game where the player observes turret combat through camera feeds. The turret projectile is the most frequently seen active element in the scene, and its visual quality directly determines the futuristic feel of the combat. A glowing plasma ball is an iconic element that effectively portrays this high-energy aesthetic. The glow also ensures the projectile remains highly visible in dark corridor environments, perfectly aligning with the sci-fi setting.
+## A. Questions for Post-task Walkthroughs
 
-### Unity Inspector Parameters
+*(These questions will be asked while reviewing the gameplay video. They can be adapted to the participant's actions.)*
 
-- `_Color`: HDR main color; controls the plasma color and intensity (Bloom trigger threshold).
-- `_RimPower`: Rim light sharpness (higher values concentrate the glow towards the edges/silhouette of the sphere).
-- `_PulseSpeed`: Breathing/pulsation frequency.
-- `_GlowStrength`: Overall glow intensity.
-- `_NoiseTex` / `_NoiseSpeed`: Noise texture and scrolling speed; controls surface turbulence.
-- `_Wobble`: Vertex wobble/displacement amplitude (0 = perfect sphere).
+**On Multitasking & Camera Switching:**
 
-### Technical Implementation
+> "In this video, you focused on [Room A] and ignored [Room B] for some time. Was that a chosen strategy, or was it difficult to keep track of both rooms?"
 
-- **Vertex Stage**: Sinusoidal displacement along the normal direction, creating unstable micro-deformations of the plasma.
+**On Resource Management:**
 
-- **Fragment Stage**: Fresnel rim lighting (view-dependent) + time-based sinusoidal pulsation + scrolling UV noise perturbation. Ultimately, it outputs an HDR color using additive blending (`Blend SrcAlpha One`), which is picked up by the Bloom post-processing effect to generate a glow.
+> "At this point, you decided to [save Power / use Power / turn off a turret / purchase an upgrade]. Can you explain your reasoning?"
 
-### Effect Screenshots
+**On UI & Feedback Awareness:**
 
-#### Vertex Wobble Comparison (`_Wobble`: 0.2 vs 0.01)
+> "When [a room came under pressure / a barrier took damage / an alarm appeared], did you notice the UI change straight away? How did it affect your next move?"
 
-![Vertex Wobble High](Images/REPORT-2.png)
+**On Combat and Room States:**
 
-![Vertex Wobble Low](Images/REPORT-4.png)
+> "When [a turret was switched off / a turret was destroyed / a room was lost], what did you think had happened? Was it clear what you could do next?"
 
-#### RimPower Comparison (**Edge Glow Sharpness**: 2.5 vs 8)
+**On Audio Feedback:**
 
-![RimPower Low](Images/REPORT-5.png)
+> "Could you tell what was happening in rooms you were not currently watching from the sounds alone, or did you need to switch back to the camera to understand?"
 
-![RimPower High](Images/REPORT-6.png)
+**On Difficulty:**
 
-#### Glow Strength Comparison (`_GlowStrength`: 3 vs 8)
+> "Was there a point where the game felt unfair or overwhelming? What was happening at that time?"
 
-![Glow Strength Low](Images/REPORT-7.png)
+## B. Questions for Questionnaires
 
-![Glow Strength High](Images/REPORT-8.png)
+These questions will be asked through a Google Form after the participant finishes their playthrough.
 
-### References
+**Scalar Questions (1 = Strongly Disagree, 5 = Strongly Agree):**
 
-- Unity Documentation: [Shader tutorial: vertex and fragment programs](https://docs.unity3d.com/Manual/ShaderTut2.html)
-- Unity Documentation: [Writing vertex and fragment shaders](https://docs.unity3d.com/Manual/SL-ShaderPrograms.html)
+1. **Core Mechanic:** "The notion of Power as an allocatable resource, rather than just another consumable currency, was clear and understandable."
+2. **UI/UX Clarity:** "The room sidebar and camera controls made it clear which rooms I was viewing and which rooms needed attention."
+3. **Power Feedback:** "It was clear when I had enough Power to activate a device or purchase an upgrade, and when Power was unavailable."
+4. **Room State Feedback:** "It was clear when a barrier was damaged, a turret was lost, or a room was no longer safe."
+5. **Difficulty Curve:** "The progression from Wave 1 towards Wave 5 felt fair and gave me time to adapt."
+6. **Audio and Atmosphere:** "Visual and audio feedback helped me understand what was happening and created a tense atmosphere."
+7. **Controls:** "Switching between rooms and managing their defences felt manageable under pressure."
 
-## HitReaction - Enemy Damage Effect
+**Open-ended Questions:**
 
-**Author:** Marcus Minnelli
+1. "What was the most difficult or annoying part of managing four rooms at once?"
+2. "Was there any point where the Power system or an upgrade cost confused you? If so, what happened?"
+3. "Were any warnings, room states, or device states easy to miss?"
+4. "Did you understand the narrative twist that reveals the player is the AI and the enemies are a containment team? How did this change your understanding of the game?"
+5. "If you could change one thing about the demo, what would it be?"
 
-### Shader source:
+---
 
-[`Assets/Shaders/HitReaction.shader`](Assets/Shaders/HitReaction.shader)
+# 3. Participants
 
-### Shader Effect
+**Recruitment Strategy:** We will recruit a total of 10 participants: 5 for post-task walkthroughs and 5 for questionnaires. Recruitment will focus on IT and Computer Science students, as well as friends and gamers in Discord.
 
-The HitReaction vertex and fragment shader gives visual feedback when an enemy takes damage. It combines two effects driven by a `_HitTime` value, which is set once per hit via a HitReactionController script:
+**Qualifying Criteria:** Participants should have experience with at least one of the following genres:
 
-- **Vertex shader shake** — each vertex is displaced along its own normal by a sine wave, whose amplitude decays over time since the hit. This produces a short flinch that settles back to rest.
+- **Tower Defense (TD) Games:** such as Plants vs. Zombies or Arknights.
+- **Surveillance/Management Games:** such as Five Nights at Freddy's.
+- **RTS and Resource Management Games:** such as StarCraft or grand strategy games.
 
-- **Fragment ring of light** — the fragment stage measures each pixel's world-space distance from an origin, which is set to roughly the middle of the model. It then creates a ring of light that spreads from that origin, growing over time at a configurable speed. So the effect reads as a ring of light expanding outward from the point of impact before fading and disappearing.
-As well as this there is a Blinn–Phong lighting model, so the shaded enemy still looks lit correctly outside of the hit effect.
+Since BREACH requires mouse interaction, camera switching, and resource management under pressure, participants should be comfortable using a mouse and handling multiple sources of information. We should record participants' relevant game experience so we can consider it when interpreting the results.
 
-### Theme
+---
 
-**Theme 2 — Surface Appearance and Procedural Effects.** While the shake technically moves geometry, the effect's defining visual is the procedural and distance-based mask that produces the expanding ring. The ring is created using maths rather than pre-authored animation or texture data.
+# 4. Data Collection
 
-### Why This Effect Was Chosen
+**For Post-task Walkthroughs (Observational Data):**
 
-Enemies in the game take continuous damage from the turrets, and with no health bar or visual indicator that they were hit, it did not look like the bullets were doing anything. A shake plus an expanding ring gives an immediate signal that the enemy was hit, reinforcing player feedback loops without needing extra animations or particle effects.
+- Use screen-recording software such as **OBS** to record the complete gameplay, including room switching, device toggles, upgrade choices, and visible UI feedback.
+- The experimenter will remain quiet during gameplay to preserve the intended pressure and avoid influencing the participant.
+- Record timestamps for useful moments, such as hesitation, repeated camera switching, missed warnings, unexpected Power shortages, a barrier being destroyed, a turret being lost, or a room being breached.
+- After the playthrough, review selected timestamps with the participant and ask the relevant walkthrough questions.
 
-### Exposed Parameters
+**For Questionnaires (Querying Data):**
 
-- **`_MainTex`** — base colour texture for the surface.
+- Use Google Forms to collect the structured ratings and open-ended responses.
+- Keep the same 1–5 scale for all scalar questions, with 1 meaning Strongly Disagree and 5 meaning Strongly Agree.
+- Export the responses to a spreadsheet so ratings can be summarised and open-ended answers grouped by topic.
 
-- **`_Shininess`** — Blinn–Phong specular exponent, controlling highlight tightness.
+---
 
-- **`_HitOrigin`** — world-space offset from the character's root marking where the ring originates.
+# 5. Data Analysis & Success Metrics
 
-- **`_HitTime`** — internal timestamp set by script when a hit occurs.
+We will use both qualitative and quantitative feedback to identify problems and decide what to change.
 
-- **`_RingSpeed`** — how fast the ring's radius expands.
+**Qualitative Data Analysis (Walkthroughs & Open-ended Questions):**
 
-- **`_RingWidth`** — thickness of the visible ring band.
+- Group comments by topic, such as unclear UI feedback, confusing Power costs, difficulty switching between rooms, unclear room states, combat balance, audio feedback, and narrative understanding.
+- Compare what participants say with what happened in their recorded gameplay. For example, if a participant says a warning was clear but repeatedly overlooks it, this may point to a visibility or timing issue.
+- Prioritise issues that occur for multiple participants or prevent them from understanding an important mechanic.
 
-- **`_RingColour`** — colour of the glow.
+**Quantitative Data Analysis & Metrics:**
 
-- **`_RingMaxRadius`** — distance at which the ring fully fades out.
+- Calculate the average score for each scalar question and use it as a baseline for usability and satisfaction.
+- **Improvement Threshold:** If the average score for the UI/UX Clarity statement falls below **3 out of 5**, redesigning visual feedback and UI warnings will become a high priority before the final release.
+- **Difficulty Tracking:** Record the highest wave reached by each participant and calculate the average wave reached. If most participants are eliminated around Wave 2, investigate whether enemy health, wave pacing, room pressure, or the Power economy makes the difficulty curve too steep.
+- **Power Clarity:** If Power feedback receives low ratings or participants repeatedly make decisions based on an incorrect understanding of available Power, prioritise clearer feedback before simply changing the costs.
+- **Issue Frequency:** Record how many participants encounter each major issue. Use frequency alongside severity; a single issue that blocks progress may still need urgent attention.
 
-- **`_ShakeAmplitude`** — maximum vertex displacement on hit.
+The results should guide changes, but a low score alone will not tell us the cause. We will use the recordings and written feedback to identify what needs to change.
 
-- **`_ShakeFrequency`** — oscillation speed of the shake.
+---
 
-- **`_ShakeDecay`** — how quickly the shake settles back to rest.
-### Screenshots
+# 6. Timeline
 
-#### Enemy - no effect
+| Phase | Dates | Activities |
+| --- | --- | --- |
+| **Preparation Phase** | Oct 9 – Oct 12 | Ensure the WebGL build is stable and playable. Finalise and test the Google Forms questionnaire. Contact participants and schedule the five walkthrough sessions. Check that recording and the build work before each session. |
+| **Execution Phase** | Oct 13 – Oct 18 | Conduct the five in-person post-task walkthroughs, recording gameplay and asking follow-up questions. Distribute the WebGL demo and questionnaire to the other five participants. |
+| **Analysis Phase** | Oct 19 – Oct 20 | Review recordings and questionnaire responses. Group recurring issues, calculate average ratings, and identify the most important bugs or design problems. |
+| **Iteration Phase** | Oct 20 – Oct 31 | Implement changes based on the results. Focus on combat balance, turret upgrade costs, enemy health and pacing, Power feedback, and UI clarity. Retest changes before the final Milestone 4 build. |
 
-![Enemy - no effect](Images/HitReaction1.png)
+---
 
-#### Enemy hit reaction (Red ring and slight shake)
+# 7. Responsibilities
 
-![Enemy hit reaction](Images/HitReaction2.png)
+To distribute the workload and use each team member's role and experience:
 
-#### Enemy hit reaction (Enhanced Shake, Amplitude from 0.2 to 0.4)
+- **Rishabh (Combat & GDD Lead):** Design the Google Forms and feedback questions. After evaluation, focus on the turret upgrade system, economy, combat balance, and related feedback.
+- **Hitarrth (Player & UI Lead):** Facilitate and conduct three of the in-person post-task walkthroughs. Focus on player controls, camera switching, UI changes, and misleading or hard-to-notice feedback.
+- **Marcus (Enemy Lead):** Facilitate the remaining two post-task walkthroughs. Focus on enemy performance, player experience of the difficulty curve, and wave pacing/telegraphing.
+- **Rongze (Integration Lead):** Build, test, and deploy a stable WebGL build before evaluation. After data collection, lead the team's data synthesis meeting and assist with integration of the changes.
 
-![Enhanced Shake](Images/HitReaction3.png)
+---
 
-#### Enemy hit reaction (Different Ring, Colour to yellow and Width from 2 to 0.5)
+# 8. Playtest Notes
 
-![Different Ring](Images/HitReaction4.png)
+To keep the evaluation consistent:
 
-### External Resources
+- Use the same demo build and starting conditions for all participants where possible.
+- Do not explain a mechanic during the playthrough unless the participant cannot continue because of a technical problem. The aim is to see what the game communicates on its own.
+- Record build/version details and any technical issues that affect a session.
+- Separate bugs (something not working as intended) from usability problems (something working but difficult to understand) and balance problems (something working but feeling too easy or too difficult).
+- After changes are made, run a short regression test to confirm that the fix has not broken other rooms, turrets, Power allocation, or the WebGL build.
 
-- Unity Documentation: [Built-in shader include files](https://docs.unity3d.com/560/Documentation/Manual/SL-BuiltinIncludes.html)
-- Unity Documentation: [Custom lighting models in Surface Shaders](https://docs.unity3d.com/2023.2/Documentation/Manual/SL-SurfaceShaderLighting.html)
-
-## BreachRoom - Main Room Breach Effect
-
-**Author:** Hitarrth Chheda
-
-### Shader Source File
-
-[Assets/Shaders/BreachRoom.shader](./Assets/Shaders/BreachRoom.shader)
-
-### Shader Effect
-
-The BreachRoom shader is applied to the screens in the Main Control Room when an enemy breaches the room. It creates an animated emergency effect by blending the original screen texture with a configurable breach colour. A time-based pulse alternates between darker and brighter versions of the breach colour, creating a pulsing red warning.
-
-The shader also adds procedural digital corruption. The screen is divided into horizontal sections, with pseudo-random values determining which sections are temporarily shifted horizontally. This creates an animated glitch effect that can be controlled independently from the breach colour.
-
-### Chosen Theme
-
-**Theme 2 — Surface Appearance and Procedural Effects**
-
-The effect uses handwritten Cg/HLSL code to procedurally animate the screen's colour and generate digital corruption without relying on pre-authored animations.
-
-### Design Justification
-
-The game is a spaceship surveillance turret defense game where the player monitors different rooms. Since the Main Control Room screens are already prominent environmental elements, they provide an effective location for breach feedback.
-
-The pulsing red colour immediately communicates an emergency while fitting the game's surveillance and sci-fi aesthetic. Keeping the original screen texture visible also maintains a connection to the environment rather than replacing it with a completely separate visual.
-
-### Unity Inspector Parameters
-
-- `_BreachAmount` — Controls how strongly the breach colour replaces the original screen.
-- `_BreachColour` — Colour of the breach effect.
-- `_PulseSpeed` — Controls the speed of the colour pulse.
-- `_CorruptionStrength` — Controls the intensity of the procedural glitch effect.
-
-### Technical Implementation
-
-- **Vertex Stage:** Transforms vertices into clip space using `UnityObjectToClipPos` and passes UV coordinates to the fragment stage.
-- **Fragment Stage:** Samples the original texture and uses `_Time.y` with a sine function to generate a repeating pulse. `lerp` blends between darker and brighter versions of the breach colour before blending it with the original texture using `_BreachAmount`.The screen is divided into horizontal sections using UV `y` coordinates. A pseudo-random function determines affected sections, while time changes which sections are selected. A horizontal UV offset is applied before the texture is sampled.
-
-### Gameplay Integration
-
-`BreachController` creates temporary copies of the screen materials and switches them to the BreachRoom shader when a breach begins. The original textures are preserved, allowing the shader to modify their appearance. The controller exposes the shader parameters and restores the original materials when the breach ends.
-
-### Effect Screenshots
-
-#### Original Screen
-
-![Original Screen](Images/BreachOriginal.png)
-
-#### Partial Breach
-
-`_BreachAmount = 0.5`  
-`_BreachColour = Red`  
-`_PulseSpeed = 3`  
-`_CorruptionStrength = 0`
-
-![Partial Breach](Images/0.5.gif)
-
-#### Full Breach
-
-`_BreachAmount = 1`  
-`_BreachColour = Red`  
-`_PulseSpeed = 3`  
-`_CorruptionStrength = 0`
-
-![Full Breach](Images/1.gif)
-
-#### High Pulse
-
-`_BreachAmount = 1`  
-`_BreachColour = Red`  
-`_PulseSpeed = 8`  
-`_CorruptionStrength = 0`
-
-![High Pulse](Images/fast.gif)
-
-#### Low Corruption
-
-`_BreachAmount = 1`  
-`_BreachColour = Red`  
-`_PulseSpeed = 3`  
-`_CorruptionStrength = 1`
-
-![Low Corruption](Images/corrupt1.gif)
-
-#### High Corruption
-
-`_BreachAmount = 1`  
-`_BreachColour = Red`  
-`_PulseSpeed = 3`  
-`_CorruptionStrength = 2`
-
-![High Corruption](Images/corrupt2.gif)
-
-### References
-
-- Unity Documentation: [Writing vertex and fragment shaders](https://docs.unity3d.com/Manual/SL-ShaderPrograms.html)
-- Unity Documentation: [ShaderLab: Properties](https://docs.unity3d.com/Manual/SL-Properties.html)
-
-# Turret Activation System - TurretTop & TurretBase
-
-**Author:** Rishabh Maheshwari
-
-## Shader Source Files
-
-* `Assets/Shaders/TurretTop.shader`
-* `Assets/Shaders/TurretBase.shader`
-
-## Shader Effect
-
-This feature consists of two custom shaders applied to different parts of the Room 1 turret. Both are written in handwritten Cg/HLSL and are driven by gameplay through the `_Activation` parameter.
-
-**TurretTop.shader** controls the rotating turret head. When the turret is inactive, the shader preserves the original texture while reducing its brightness to create a powered-down appearance. As the turret activates, the lighting smoothly returns to its fully illuminated state, allowing the model to remain visually consistent with the rest of the environment.
-
-**TurretBase.shader** controls the pedestal. Three horizontal cyan energy bands are generated procedurally using UV coordinates and appear only while the turret is active. The bands remain fixed around the base and provide a clear indication that power is flowing through the turret.
-
-## Chosen Theme
-
-**Theme 2 — Surface Appearance and Procedural Effects**
-
-The shaders modify the surface appearance of the turret through procedural lighting and emissive masking rather than using particle systems or pre-authored animations.
-
-## Design Justification
-
-The turret is one of the most frequently viewed objects in the game because the player observes combat through surveillance cameras. A clear visual distinction between active and inactive turrets improves readability without introducing additional UI elements.
-
-The cyan glow was chosen to match the plasma projectile shader used by the turret bullets. Using the same colour palette creates a consistent visual language across the weapon system: the illuminated bands represent stored energy, while the projectile appears to be discharged from that same energy source. This connection reinforces the game's narrative that the turrets are extensions of the ship's awakening through the NEXUS fragment rather than conventional mechanical upgrades.
-
-The powered-down lighting on the turret head complements this idea by suggesting that the machine is dormant instead of destroyed. Keeping the original material visible also preserves the model's detail and prevents the turret from disappearing into the dark environment.
-
-## Unity Inspector Parameters
-
-### TurretTop.shader
-
-* **`_Activation`** — Controls the transition between powered-down and active lighting.
-* **`_ShadowBrightness`** — Sets the brightness of the inactive turret.
-* **`_Shininess`** — Controls the sharpness of specular highlights.
-* **`_SpecularStrength`** — Adjusts the intensity of the reflective highlight.
-
-### TurretBase.shader
-
-* **`_Activation`** — Enables or disables the energy bands.
-* **`_GlowColor`** — Colour of the illuminated bands.
-* **`_GlowIntensity`** — Brightness of the cyan glow.
-* **`_BandCenter`** — Vertical UV position of the middle band.
-* **`_BandSpacing`** — Distance between the three bands.
-* **`_BandWidth`** — Thickness of each band.
-* **`_BandSoftness`** — Smooth falloff at the band edges.
-
-## Technical Implementation
-
-**TurretTop.shader** transforms vertices into clip space and passes UV coordinates, world-space normals, and world position to the fragment shader. The fragment stage samples the original texture and applies a custom Blinn–Phong lighting model with a fixed light direction. `_Activation` interpolates between reduced brightness and full illumination, producing the powered-down effect while preserving the original colours.
-
-**TurretBase.shader** uses the same lighting model before generating three horizontal emissive bands procedurally from `UV.y`. Each band is created with soft masks using `smoothstep`, producing clean transitions without requiring additional textures. The glow is multiplied by `_Activation`, ensuring that the bands appear only when the turret is powered.
-
-## Effect Screenshots
-
-### Turret Deactivated (Powered-Down Lighting) to Turret Activated (Horizontal Energy Bands)
-
-![Turret activation transition](Images/activation.gif)
-
-## References
-
-* Unity Documentation: *Writing vertex and fragment shaders*
-* Unity Documentation: *ShaderLab Properties*
+---

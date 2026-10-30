@@ -15,6 +15,9 @@ public class RoomExitZone : MonoBehaviour
     [SerializeField] private EnemyTargetPoint newTargetPoint; // optional occupancy tracking
     [SerializeField] private Transform newAimPoint;          // optional new aim point (the core)
 
+    [Tooltip("Room index the enemy belongs to after teleporting here, using the same convention as Turret/Room (0 = Main Control Room). This zone sends enemies to the Main Control Room, so it defaults to 0.")]
+    [SerializeField] private int destinationRoomIndex = 0;
+
     [Header("Spawn Spread")]
     [SerializeField] private float spreadRadius = 1.5f;      // random offset so enemies don't stack
 
@@ -54,6 +57,11 @@ public class RoomExitZone : MonoBehaviour
             {
                 mover.SetAimPoint(newAimPoint);
             }
+
+            // EnemyAudio's camera-visibility check (same policy as
+            // TurretAudioController) needs to know this enemy is now in
+            // the Main Control Room, not its original spawn room.
+            mover.SetRoomIndex(destinationRoomIndex);
         }
 
         Debug.Log($"[RoomExitZone] Teleported {enemy.name} to Main Control Room spawn area");

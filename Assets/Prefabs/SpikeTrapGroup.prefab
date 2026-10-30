@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1143066685975412680}
   - component: {fileID: 7953117990372683164}
   m_Layer: 0
-  m_Name: TrapGroup
+  m_Name: SpikeTrapGroup
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -48,7 +48,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f08735f8307e44b6be5924d8c5e0212, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
+  powerCost: 10
+  isActive: 0
+  trapType: 0
+  enableKeyboardTesting: 1
   toggleKey: 116
+  gravitySpikeTiles:
+  - {fileID: 6045749476387829750}
+  - {fileID: 3668750888456934065}
+  - {fileID: 7822905365387286081}
+  - {fileID: 6849758645280706785}
+  stasisFieldTiles: []
+  damagePerTick: 1
+  damageInterval: 0.1
+  slowAmount: 0.5
+  slowRefreshDuration: 0.3
+  activeLoopSound: {fileID: 8300000, guid: f2e09431828aa48c99e80bb49a9a6105, type: 3}
+  activeLoopVolume: 0.05
+  roomAudioReference: {fileID: 0}
 --- !u!1 &1458709092652115573
 GameObject:
   m_ObjectHideFlags: 0
@@ -234,6 +251,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 204d2614663864a10bc3bb5bdc903f6e, type: 3}
+--- !u!114 &3668750888456934065 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 80870622934355322, guid: 204d2614663864a10bc3bb5bdc903f6e, type: 3}
+  m_PrefabInstance: {fileID: 3743980140541747147}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62c89a0dfc44e4abb9260c1ac9f28879, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SpikeTrap
 --- !u!4 &7949129632250261472 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6747994578954317867, guid: 204d2614663864a10bc3bb5bdc903f6e, type: 3}
@@ -301,6 +329,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6747994578954317867, guid: 204d2614663864a10bc3bb5bdc903f6e, type: 3}
   m_PrefabInstance: {fileID: 5978984230453901964}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &6045749476387829750 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 80870622934355322, guid: 204d2614663864a10bc3bb5bdc903f6e, type: 3}
+  m_PrefabInstance: {fileID: 5978984230453901964}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62c89a0dfc44e4abb9260c1ac9f28879, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SpikeTrap
 --- !u!1001 &6778045349523774875
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -363,6 +402,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6747994578954317867, guid: 204d2614663864a10bc3bb5bdc903f6e, type: 3}
   m_PrefabInstance: {fileID: 6778045349523774875}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &6849758645280706785 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 80870622934355322, guid: 204d2614663864a10bc3bb5bdc903f6e, type: 3}
+  m_PrefabInstance: {fileID: 6778045349523774875}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62c89a0dfc44e4abb9260c1ac9f28879, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SpikeTrap
 --- !u!1001 &7894745946811816763
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -425,3 +475,14 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6747994578954317867, guid: 204d2614663864a10bc3bb5bdc903f6e, type: 3}
   m_PrefabInstance: {fileID: 7894745946811816763}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &7822905365387286081 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 80870622934355322, guid: 204d2614663864a10bc3bb5bdc903f6e, type: 3}
+  m_PrefabInstance: {fileID: 7894745946811816763}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62c89a0dfc44e4abb9260c1ac9f28879, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SpikeTrap

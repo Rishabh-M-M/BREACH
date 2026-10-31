@@ -484,4 +484,18 @@ public class CameraUIController : MonoBehaviour
             " camera."
         );
     }
+
+    public void ShowRoom(int roomIndex)
+    {
+        switch (roomIndex)
+        {
+            case 1: ShowRoom1(); break;
+            case 2: ShowRoom2(); break;
+            case 3: ShowRoom3(); break;
+            case 4: ShowRoom4(); break;
+            default:
+                Debug.LogWarning($"[CameraUIController] ShowRoom called with invalid room index {roomIndex}.");
+                break;
+        }
+    }
 }

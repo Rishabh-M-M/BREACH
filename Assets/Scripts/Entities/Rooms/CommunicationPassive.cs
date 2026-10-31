@@ -23,6 +23,10 @@ namespace ProjectBreach.Core
         [SerializeField] private float titleHeight = 26f;
         [SerializeField] private float rowHeight = 30f;
 
+        [Header("Reappear Delay")]
+        [Tooltip("Seconds to wait after the security camera closes before the minimap / enemy display reappears, so the camera closing animation can finish.")]
+        [SerializeField] private float reappearDelay = 1f;
+
         [Header("Colours")]
         [SerializeField] private Color panelColor = new Color(0f, 0f, 0f, 0.55f);
         [SerializeField] private Color rowColor = new Color(0.12f, 0.12f, 0.12f, 0.55f);
@@ -41,6 +45,8 @@ namespace ProjectBreach.Core
         private Canvas _canvas;
         private RectTransform _window;
         private readonly List<MinimapRow> _rows = new List<MinimapRow>();
+
+        private float _hideTimer = 0f;
 
         private struct MinimapRow
         {
@@ -63,9 +69,30 @@ namespace ProjectBreach.Core
             if (_window == null)
                 return;
 
+            bool enabled = IsEnabled;
+
+            // Hidden while the Communication room falls.
+            if (!enabled)
+            {
+                _window.gameObject.SetActive(false);
+                _hideTimer = 0f;
+                return;
+            }
+
             // Hidden while the security camera is open (so the radar never
-            // overlaps the camera view) and when the Communication room falls.
-            bool visible = IsEnabled && !CameraUIController.IsSecurityCameraOpen;
+            // overlaps the camera view).
+            if (CameraUIController.IsSecurityCameraOpen)
+            {
+                _window.gameObject.SetActive(false);
+                _hideTimer = 0f;
+                return;
+            }
+
+            // The camera is closed. Wait reappearDelay before showing again so
+            // the camera closing animation finishes first. The delay is
+            // configurable from the inspector.
+            _hideTimer += Time.deltaTime;
+            bool visible = _hideTimer >= reappearDelay;
 
             _window.gameObject.SetActive(visible);
             if (visible)
@@ -88,10 +115,10 @@ namespace ProjectBreach.Core
             }
 
             _window = CreatePanel("CommunicationMinimap", _canvas.transform, panelColor);
-            _window.anchorMin = new Vector2(1f, 1f);
-            _window.anchorMax = new Vector2(1f, 1f);
-            _window.pivot = new Vector2(1f, 1f);
-            _window.anchoredPosition = new Vector2(-12f, -12f);
+            _window.anchorMin = new Vector2(0f, 0f);
+            _window.anchorMax = new Vector2(0f, 0f);
+            _window.pivot = new Vector2(0f, 0f);
+            _window.anchoredPosition = new Vector2(12f, 12f);
 
             // Title.
             Text title = CreateText(_window, "MAP", 14, Color.white, TextAnchor.MiddleLeft);

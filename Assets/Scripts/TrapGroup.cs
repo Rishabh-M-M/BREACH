@@ -30,9 +30,12 @@ namespace ProjectBreach.Core
         [Min(0)] [SerializeField] private int damagePerTick = 1;
         [Min(0.02f)] [SerializeField] private float damageInterval = 0.1f;
 
-        [Header("Stasis Field Settings")]
-        [Range(0f, 0.95f)] [SerializeField] private float slowAmount = 0.5f;
-        [Min(0.05f)] [SerializeField] private float slowRefreshDuration = 0.3f;
+        [Header("Stasis Field Pull Settings")]
+        [Tooltip("Pull strength in world units per second. Start around 3-5 and tune in Play Mode.")]
+        [Min(0f)] [SerializeField] private float pullSpeed = 4f;
+
+        [Tooltip("Duration of each pull application. Must be longer than the tile's pull refresh interval.")]
+        [Min(0.1f)] [SerializeField] private float pullApplicationDuration = 0.3f;
 
         [Header("Audio")]
         [SerializeField] private AudioClip activeLoopSound;
@@ -101,7 +104,7 @@ namespace ProjectBreach.Core
             {
                 foreach (StasisFieldTile tile in stasisFieldTiles)
                     if (tile != null)
-                        tile.Configure(slowAmount, slowRefreshDuration);
+                        tile.Configure(pullSpeed, pullApplicationDuration);
             }
         }
 

@@ -13,6 +13,12 @@ public class TurretUpgradePanelUI : MonoBehaviour
     [Header("Upgrade Cards")]
     [SerializeField] private TurretUpgradeCardUI[] cards;
 
+    [Header("Upgrade Purchase Audio")]
+    [SerializeField] private AudioSource upgradeAudioSource;
+    [SerializeField] private AudioClip upgradeAddedClip;
+    [Range(0f, 1f)]
+    [SerializeField] private float upgradeAudioVolume = 1f;
+
     private Turret selectedTurret;
     private TurretUpgradeController selectedController;
 
@@ -26,6 +32,15 @@ public class TurretUpgradePanelUI : MonoBehaviour
             closeButton.onClick.RemoveListener(ClosePanel);
             closeButton.onClick.AddListener(ClosePanel);
         }
+
+        if (upgradeAudioSource == null)
+            upgradeAudioSource = GetComponent<AudioSource>();
+
+        if (upgradeAudioSource == null)
+            upgradeAudioSource = gameObject.AddComponent<AudioSource>();
+
+        upgradeAudioSource.playOnAwake = false;
+        upgradeAudioSource.spatialBlend = 0f;
 
         BindCards();
         RefreshCards();
@@ -170,6 +185,8 @@ public class TurretUpgradePanelUI : MonoBehaviour
 
         if (purchased)
         {
+            PlayUpgradeAddedAudio();
+
             Debug.Log(
                 "[TurretUpgradePanelUI] Selected variant for "
                 + selectedTurret.name + ": " + type,
@@ -182,6 +199,27 @@ public class TurretUpgradePanelUI : MonoBehaviour
                 + selectedTurret.name + ": " + type,
                 selectedTurret);
         }
+    }
+
+    private void PlayUpgradeAddedAudio()
+    {
+        if (upgradeAddedClip == null)
+        {
+            Debug.LogWarning(
+                "[TurretUpgradePanelUI] Upgrade-added audio clip is not assigned.",
+                this);
+            return;
+        }
+
+        if (upgradeAudioSource == null)
+        {
+            Debug.LogWarning(
+                "[TurretUpgradePanelUI] No AudioSource is assigned or attached.",
+                this);
+            return;
+        }
+
+        upgradeAudioSource.PlayOneShot(upgradeAddedClip, upgradeAudioVolume);
     }
 
     private void RefreshCards()

@@ -498,4 +498,16 @@ public class CameraUIController : MonoBehaviour
                 break;
         }
     }
+    
+    public Transform GetRoomCameraPoint(int roomIndex)
+    {
+        switch (roomIndex)
+        {
+            case 1: return room1CameraPoint;
+            case 2: return room2CameraPoint;
+            case 3: return room3CameraPoint;
+            case 4: return room4CameraPoint;
+            default: return null;
+        }
+    }
 }

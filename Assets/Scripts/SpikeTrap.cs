@@ -7,7 +7,7 @@ using ProjectBreach.Core;
 [RequireComponent(typeof(Collider))]
 public class SpikeTrap : MonoBehaviour
 {
-    [Header("Combat")]
+    [Header("Combat (can be overridden by TrapGroup)")]
     [SerializeField] private int damage = 1;
     [SerializeField] private float damageInterval = 0.1f;
 
@@ -19,52 +19,65 @@ public class SpikeTrap : MonoBehaviour
     private bool active;
     private bool canDamage;
     private Coroutine delayRoutine;
-
-    // One damage coroutine per enemy
-    private readonly HashSet<IDamageable> damagingTargets = new();
-
-    // Lock the trap in place
+    private readonly HashSet<IDamageable> damagingTargets = new HashSet<IDamageable>();
     private Vector3 lockedPosition;
     private Quaternion lockedRotation;
-
-    private readonly int ActiveHash = Animator.StringToHash("Active");
+    private static readonly int ActiveHash = Animator.StringToHash("Active");
 
     private void Awake()
     {
         animator = GetComponent<Animator>();
-
         animator.applyRootMotion = false;
         animator.SetBool(ActiveHash, false);
-
         GetComponent<Collider>().isTrigger = true;
-
         lockedPosition = transform.position;
         lockedRotation = transform.rotation;
     }
 
     private void LateUpdate()
     {
-        // Prevent the animation from moving the whole trap
         transform.position = lockedPosition;
         transform.rotation = lockedRotation;
     }
 
+    public void SetCombatSettings(int damagePerTick, float interval)
+    {
+        damage = Mathf.Max(0, damagePerTick);
+        damageInterval = Mathf.Max(0.02f, interval);
+    }
+
     public void SetActive(bool value)
     {
+        if (animator == null) animator = GetComponent<Animator>();
         animator.SetBool(ActiveHash, value);
 
         if (delayRoutine != null)
             StopCoroutine(delayRoutine);
 
+        // Never StartCoroutine on an inactive object (Unity throws:
+        // "Coroutine couldn't be started because the game object ... is
+        // inactive!"). When inactive, apply the target state directly; the
+        // animator still handles the visual.
         if (value)
         {
             active = true;
             canDamage = false;
-            delayRoutine = StartCoroutine(EnableDamageAfterDelay());
+            delayRoutine = gameObject.activeInHierarchy
+                ? StartCoroutine(EnableDamageAfterDelay())
+                : null;
         }
         else
         {
-            delayRoutine = StartCoroutine(DisableDamageAfterDelay());
+            canDamage = false;
+            damagingTargets.Clear();
+
+            if (gameObject.activeInHierarchy)
+                delayRoutine = StartCoroutine(DisableDamageAfterDelay());
+            else
+            {
+                active = false;
+                delayRoutine = null;
+            }
         }
     }
 
@@ -72,45 +85,38 @@ public class SpikeTrap : MonoBehaviour
     {
         yield return new WaitForSeconds(activationDelay);
         canDamage = true;
+        delayRoutine = null;
     }
 
     private IEnumerator DisableDamageAfterDelay()
     {
         yield return new WaitForSeconds(deactivationDelay);
-        canDamage = false;
         active = false;
+        delayRoutine = null;
     }
 
     private void OnTriggerStay(Collider other)
     {
-        if (!active || !canDamage) return;
+        if (!active || !canDamage || damage <= 0) return;
 
-        IDamageable target = other.GetComponentInParent<IDamageable>();
+        IDamageable target = other.GetComponentInParent(typeof(IDamageable)) as IDamageable;
         if (target == null || target.IsDead) return;
 
-        // Start one coroutine per enemy
         if (damagingTargets.Add(target))
-        {
             StartCoroutine(DamageRoutine(target));
-        }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        IDamageable target = other.GetComponentInParent<IDamageable>();
+        IDamageable target = other.GetComponentInParent(typeof(IDamageable)) as IDamageable;
         if (target != null)
-        {
             damagingTargets.Remove(target);
-        }
     }
 
     private IEnumerator DamageRoutine(IDamageable target)
     {
-        while (active &&
-               canDamage &&
-               target != null &&
-               !target.IsDead &&
-               damagingTargets.Contains(target))
+        while (active && canDamage && target != null &&
+               !target.IsDead && damagingTargets.Contains(target))
         {
             target.TakeDamage(damage);
             yield return new WaitForSeconds(damageInterval);
@@ -118,5 +124,19 @@ public class SpikeTrap : MonoBehaviour
 
         if (target != null)
             damagingTargets.Remove(target);
+    }
+
+    private void OnDisable()
+    {
+        if (delayRoutine != null)
+            StopCoroutine(delayRoutine);
+
+        delayRoutine = null;
+        active = false;
+        canDamage = false;
+        damagingTargets.Clear();
+
+        if (animator != null)
+            animator.SetBool(ActiveHash, false);
     }
 }

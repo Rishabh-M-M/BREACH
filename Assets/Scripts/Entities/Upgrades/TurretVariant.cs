@@ -5,6 +5,7 @@ namespace ProjectBreach.Core
         Base,
         DoubleBarrel,
         Sharpshooter,
-        HeliosIncinerator
+        HeliosIncinerator,
+        RocketLauncher
     }
 }

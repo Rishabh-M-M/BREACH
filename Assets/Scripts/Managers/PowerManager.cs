@@ -19,6 +19,12 @@ namespace ProjectBreach.Core
         [Header("Power Settings")]
         [SerializeField] private int maxPower = 100;
 
+        [Tooltip(
+            "Upper bound for maxPower. The Generator passive grows maxPower " +
+            "exponentially (+5% of current), so without a cap it overflows int " +
+            "and wraps negative on long runs. Tune as needed.")]
+        [SerializeField] private int maxPowerCap = 1000000;
+
         // Power permanently committed to upgrades.
         private int permanentLoad = 0;
 
@@ -26,6 +32,26 @@ namespace ProjectBreach.Core
         private int operatingLoad = 0;
 
         public int MaxPower => maxPower;
+
+        /// <summary>
+        /// Increases the permanent power ceiling (used by the Generator room
+        /// passive). Broadcasts the new budget so the UI refreshes.
+        /// </summary>
+        public void IncreaseMaxPower(int amount)
+        {
+            if (amount <= 0)
+                return;
+
+            // Clamp so exponential Generator growth can never overflow int.
+            maxPower = Mathf.Min(maxPower + amount, maxPowerCap);
+
+            BroadcastPowerChanged();
+
+            Debug.Log(
+                $"[PowerManager] maxPower increased by {amount}. " +
+                $"Total capacity: {maxPower}"
+            );
+        }
 
         /// <summary>
         /// Total power currently committed.

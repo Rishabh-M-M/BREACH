@@ -19,6 +19,17 @@ public class Shield : MonoBehaviour, IDamageable
 
     [SerializeField] private float fadeSpeed = 1.5f;
 
+    [Header("Permanent Break Effects")]
+    [Tooltip("Optional audio played when the shield permanently breaks.")]
+    [SerializeField] private AudioClip shatterSound;
+    [Tooltip("Optional glass-like shard material. If empty, the shield material is used.")]
+    [SerializeField] private Material shardMaterial;
+    [SerializeField, Range(8, 80)] private int shardCount = 32;
+    [SerializeField, Min(0.5f)] private float shardSpread = 7f;
+    [SerializeField, Min(0.5f)] private float shardLifetime = 2.2f;
+    [SerializeField, Range(0.05f, 1f)] private float breakTimeScale = 0.25f;
+    [SerializeField, Min(0.1f)] private float slowMotionDuration = 0.65f;
+
     [Header("Room Assignment")]
     [SerializeField] private Room assignedRoom;
     [SerializeField] private bool isMainRoomShield;
@@ -32,6 +43,9 @@ public class Shield : MonoBehaviour, IDamageable
     public bool IsDestroyed => destroyed;
     public int MaxHealth => maxHealth;
     public int CurrentHealth => currentHealth;
+
+    /// <summary>The room this barrier belongs to (resolved in Awake).</summary>
+    public Room AssignedRoom => assignedRoom;
 
     // ============================================================
     // IDAMAGEABLE
@@ -96,6 +110,19 @@ public class Shield : MonoBehaviour, IDamageable
             BreakShield();
     }
 
+    /// <summary>
+    /// Restores shield HP without exceeding max. Destroyed shields are never
+    /// restored (per design doc: "不恢复已摧毁的屏障").
+    /// </summary>
+    public void Heal(int amount)
+    {
+        if (destroyed || amount <= 0)
+            return;
+
+        currentHealth = Mathf.Min(maxHealth, currentHealth + amount);
+        UpdateShieldVisual();
+    }
+
     private void UpdateShieldVisual()
     {
         if (shieldMaterial == null) return;
@@ -120,6 +147,20 @@ public class Shield : MonoBehaviour, IDamageable
         currentHealth = 0;
 
         UpdateShieldVisual();
+
+        // Run independently of the shield object, which fades out and disables.
+        ShieldShatterEffect.Play(
+            transform.position,
+            transform.lossyScale,
+            shardMaterial != null ? shardMaterial : shieldMaterial,
+            shatterSound,
+            shardCount,
+            shardSpread,
+            shardLifetime,
+            breakTimeScale,
+            slowMotionDuration
+        );
+        
 
         if (shieldCollider != null)
             shieldCollider.enabled = false;

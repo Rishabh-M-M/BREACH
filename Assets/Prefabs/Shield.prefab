@@ -11,9 +11,10 @@ GameObject:
   - component: {fileID: 874551235498926388}
   - component: {fileID: 2773323498406600351}
   - component: {fileID: 2724248618797891427}
-  - component: {fileID: 2553537581539720754}
   - component: {fileID: 7070064369690845650}
   - component: {fileID: 199845218882627886}
+  - component: {fileID: -2054459851222449277}
+  - component: {fileID: -5757553797330329249}
   m_Layer: 3
   m_Name: Shield
   m_TagString: Untagged
@@ -93,7 +94,61 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6110375049919213297}
   m_Mesh: {fileID: -7227129179611170996, guid: fa5bee6a3a4c84ce08c932290093feb5, type: 3}
---- !u!65 &2553537581539720754
+--- !u!114 &7070064369690845650
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6110375049919213297}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c02b6d49a94514bb58eab71a6ab0ee67, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  maxHealth: 100
+  currentHealth: 100
+  baseOpacity: 0.08
+  fadeSpeed: 1.5
+  shatterSound: {fileID: 8300000, guid: ee7d76e1ffa9d46d995d24aa5b654f96, type: 3}
+  shardMaterial: {fileID: 2100000, guid: 7f49af93074984c949764a4b02fc5f86, type: 2}
+  shardCount: 32
+  shardSpread: 7
+  shardLifetime: 2.2
+  breakTimeScale: 0.25
+  slowMotionDuration: 0.65
+  assignedRoom: {fileID: 0}
+  isMainRoomShield: 0
+  mainControlRoom: {fileID: 0}
+--- !u!208 &199845218882627886
+NavMeshObstacle:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6110375049919213297}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Shape: 1
+  m_Extents: {x: 0.00001, y: 1.386, z: 2.056}
+  m_MoveThreshold: 0.1
+  m_Carve: 0
+  m_CarveOnlyStationary: 1
+  m_Center: {x: 0.010000001, y: 1.3790001, z: -0.072000004}
+  m_TimeToStationary: 0.5
+--- !u!114 &-2054459851222449277
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6110375049919213297}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6858027b92864468db5265d0071afbf7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ShieldShatterEffect
+--- !u!65 &-5757553797330329249
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -112,37 +167,5 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 15, z: 15}
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &7070064369690845650
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6110375049919213297}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c02b6d49a94514bb58eab71a6ab0ee67, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: '::'
-  maxHealth: 100
-  currentHealth: 100
-  baseOpacity: 0.08
-  fadeSpeed: 1.5
---- !u!208 &199845218882627886
-NavMeshObstacle:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6110375049919213297}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Shape: 1
-  m_Extents: {x: 0.00001, y: 1.386, z: 2.056}
-  m_MoveThreshold: 0.1
-  m_Carve: 0
-  m_CarveOnlyStationary: 1
-  m_Center: {x: 0.010000001, y: 1.3790001, z: -0.072000004}
-  m_TimeToStationary: 0.5
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: -0.35, y: 1.3, z: 0}

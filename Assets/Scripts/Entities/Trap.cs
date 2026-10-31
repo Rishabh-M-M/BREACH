@@ -56,6 +56,10 @@ namespace ProjectBreach.Core
         private TrapState _state = TrapState.Offline;
         private bool _holdingPower;
 
+        // The amount of operating power actually held. May be discounted by the
+        // Armoury passive at arming time; refunds must return the same amount.
+        private int _activePowerCost;
+
         public TrapState State => _state;
         public float TriggerRadius => triggerRadius;
 
@@ -100,12 +104,15 @@ namespace ProjectBreach.Core
             // refund would inflate the budget out of thin air.
             if (refundPowerOnTrigger && !_holdingPower && PowerManager.Instance != null)
             {
-                if (!PowerManager.Instance.TryAllocate(PowerCost))
+                int cost = ArmouryPassive.ApplyDiscount(PowerCost);
+
+                if (!PowerManager.Instance.TryAllocate(cost))
                 {
                     UIManager.Instance?.ShowMessage("Not enough power!");
                     return;
                 }
 
+                _activePowerCost = cost;
                 _holdingPower = true;
             }
 
@@ -118,7 +125,8 @@ namespace ProjectBreach.Core
         {
             if (_holdingPower)
             {
-                PowerManager.Instance?.Refund(PowerCost);
+                PowerManager.Instance?.Refund(_activePowerCost);
+                _activePowerCost = 0;
                 _holdingPower = false;
             }
 
@@ -201,7 +209,8 @@ namespace ProjectBreach.Core
 
             if (refundPowerOnTrigger && _holdingPower)
             {
-                PowerManager.Instance?.Refund(PowerCost);
+                PowerManager.Instance?.Refund(_activePowerCost);
+                _activePowerCost = 0;
                 _holdingPower = false;
             }
 
@@ -224,7 +233,9 @@ namespace ProjectBreach.Core
 
             if (refundPowerOnTrigger)
             {
-                if (PowerManager.Instance != null && !PowerManager.Instance.TryAllocate(PowerCost))
+                int cost = ArmouryPassive.ApplyDiscount(PowerCost);
+
+                if (PowerManager.Instance != null && !PowerManager.Instance.TryAllocate(cost))
                 {
                     // Not enough headroom to re-arm right now. Retry until there is.
                     UIManager.Instance?.ShowMessage("Trap offline: not enough power.");
@@ -233,6 +244,7 @@ namespace ProjectBreach.Core
                     yield break;
                 }
 
+                _activePowerCost = cost;
                 _holdingPower = true;
             }
 

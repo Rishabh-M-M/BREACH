@@ -158,10 +158,8 @@ public class TurretUpgradePanelUI : MonoBehaviour
                 break;
 
             case TurretUpgradeCardType.RocketLauncher:
-                Debug.Log(
-                    "[TurretUpgradePanelUI] Rocket Launcher is not implemented yet.",
-                    this);
-                return;
+                purchased = selectedController.TryUpgradeToRocketLauncher();
+                break;
 
             case TurretUpgradeCardType.Standard:
             default:

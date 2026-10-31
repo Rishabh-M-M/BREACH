@@ -194,6 +194,9 @@ public class TurretUpgradeCardUI : MonoBehaviour
             case TurretUpgradeCardType.HeliosIncinerator:
                 return currentController.IsHeliosIncinerator;
 
+            case TurretUpgradeCardType.RocketLauncher:
+                return currentController.IsRocketLauncher;
+
             default:
                 return false;
         }
@@ -284,6 +287,9 @@ public class TurretUpgradeCardUI : MonoBehaviour
 
             case TurretUpgradeCardType.HeliosIncinerator:
                 return TurretVariant.HeliosIncinerator;
+
+            case TurretUpgradeCardType.RocketLauncher:
+                return TurretVariant.RocketLauncher;
 
             default:
                 return TurretVariant.Base;

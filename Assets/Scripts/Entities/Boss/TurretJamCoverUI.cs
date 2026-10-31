@@ -10,6 +10,7 @@ namespace ProjectBreach.Boss
     {
         protected override int GetRoomIndexToCheck() => CameraUIController.CurrentViewedRoomIndex;
         protected override bool IsJammed(RoomJamState state) => state.TurretsLocked;
+        protected override float GetProgress(RoomJamState state) => state.TurretClearProgress;
 
         protected override void RegisterClick(RoomJamState state)
         {

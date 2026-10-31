@@ -9,6 +9,7 @@ namespace ProjectBreach.Boss
 
         protected override int GetRoomIndexToCheck() => roomIndex;
         protected override bool IsJammed(RoomJamState state) => state.CameraJammed;
+        protected override float GetProgress(RoomJamState state) => state.CameraClearProgress;
 
         protected override void RegisterClick(RoomJamState state)
         {

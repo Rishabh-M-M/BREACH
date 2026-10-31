@@ -52,7 +52,7 @@ MonoBehaviour:
   isActive: 0
   trapType: 1
   enableKeyboardTesting: 1
-  toggleKey: 116
+  toggleKey: 0
   gravitySpikeTiles: []
   stasisFieldTiles:
   - {fileID: 3853368602525992158}

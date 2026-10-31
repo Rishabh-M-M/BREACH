@@ -52,7 +52,7 @@ MonoBehaviour:
   isActive: 0
   trapType: 0
   enableKeyboardTesting: 1
-  toggleKey: 116
+  toggleKey: 0
   gravitySpikeTiles:
   - {fileID: 6045749476387829750}
   - {fileID: 3668750888456934065}
@@ -61,8 +61,8 @@ MonoBehaviour:
   stasisFieldTiles: []
   damagePerTick: 1
   damageInterval: 0.1
-  slowAmount: 0.5
-  slowRefreshDuration: 0.3
+  pullSpeed: 4
+  pullApplicationDuration: 0.3
   activeLoopSound: {fileID: 8300000, guid: f2e09431828aa48c99e80bb49a9a6105, type: 3}
   activeLoopVolume: 0.05
   roomAudioReference: {fileID: 0}

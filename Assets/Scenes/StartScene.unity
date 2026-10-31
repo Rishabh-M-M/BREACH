@@ -2112,8 +2112,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 126.00008, y: 9.999996}
-  m_SizeDelta: {x: 200, y: 150}
+  m_AnchoredPosition: {x: 126.00008, y: 23.321823}
+  m_SizeDelta: {x: 200, y: 153.4253}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &260489651
 MonoBehaviour:
@@ -2285,7 +2285,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: POWER
+  m_text: 'POWER:'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -3642,6 +3642,16 @@ MonoBehaviour:
   turretSlot2: {fileID: 1564674817}
   turretSlot3: {fileID: 852563087}
   turretSlot4: {fileID: 71407504}
+  trapSlot1: {fileID: 0}
+  trapSlot2: {fileID: 0}
+  room1Trap1: {fileID: 0}
+  room1Trap2: {fileID: 0}
+  room2Trap1: {fileID: 0}
+  room2Trap2: {fileID: 0}
+  room3Trap1: {fileID: 0}
+  room3Trap2: {fileID: 0}
+  room4Trap1: {fileID: 0}
+  room4Trap2: {fileID: 0}
   room1Turret1: {fileID: 133458113}
   room1Turret2: {fileID: 787803243}
   room2Turret1: {fileID: 941175155}
@@ -8134,8 +8144,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 125, y: 15.304531}
-  m_SizeDelta: {x: 200, y: 139.3909}
+  m_AnchoredPosition: {x: 125, y: 30.396507}
+  m_SizeDelta: {x: 200, y: 146.3564}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &881999731
 MonoBehaviour:
@@ -11334,6 +11344,7 @@ GameObject:
   - component: {fileID: 1149264654}
   - component: {fileID: 1149264653}
   - component: {fileID: 1149264652}
+  - component: {fileID: 1149264655}
   m_Layer: 5
   m_Name: Trap 2
   m_TagString: Untagged
@@ -11443,6 +11454,27 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1149264650}
   m_CullTransparentMesh: 1
+--- !u!114 &1149264655
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1149264650}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67a6e9fb5b0ec4a4986f1ccd93632c67, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TrapEquipmentSlotUI
+  button: {fileID: 1149264652}
+  slotText: {fileID: 1157219128}
+  targetTrap: {fileID: 0}
+  equipmentName: SPIKE TRAP
+  normalColour: {r: 0.051, g: 0.11, b: 0.169, a: 1}
+  highlightedColour: {r: 0.094, g: 0.212, b: 0.302, a: 1}
+  pressedColour: {r: 0, g: 0.75, b: 1, a: 1}
+  selectedColour: {r: 0.059, g: 0.259, b: 0.388, a: 1}
+  disabledColour: {r: 0.149, g: 0.149, b: 0.169, a: 1}
 --- !u!1 &1156122614
 GameObject:
   m_ObjectHideFlags: 0
@@ -18064,6 +18096,7 @@ GameObject:
   - component: {fileID: 1804968291}
   - component: {fileID: 1804968290}
   - component: {fileID: 1804968289}
+  - component: {fileID: 1804968292}
   m_Layer: 5
   m_Name: Trap 1
   m_TagString: Untagged
@@ -18112,11 +18145,11 @@ MonoBehaviour:
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
   m_Colors:
-    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+    m_NormalColor: {r: 0.34117648, g: 0.34901962, b: 0.36862746, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
-    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_PressedColor: {r: 0.23529412, g: 0.23529412, b: 0.23529412, a: 1}
+    m_SelectedColor: {r: 0.76862746, g: 0.76862746, b: 0.76862746, a: 1}
+    m_DisabledColor: {r: 0.078431375, g: 0.078431375, b: 0.078431375, a: 0.5019608}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
@@ -18173,6 +18206,27 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1804968287}
   m_CullTransparentMesh: 1
+--- !u!114 &1804968292
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1804968287}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67a6e9fb5b0ec4a4986f1ccd93632c67, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TrapEquipmentSlotUI
+  button: {fileID: 1804968289}
+  slotText: {fileID: 2118800705}
+  targetTrap: {fileID: 0}
+  equipmentName: STATIS VORTEX
+  normalColour: {r: 0.051, g: 0.11, b: 0.169, a: 1}
+  highlightedColour: {r: 0.094, g: 0.212, b: 0.302, a: 1}
+  pressedColour: {r: 0, g: 0.75, b: 1, a: 1}
+  selectedColour: {r: 0.059, g: 0.259, b: 0.388, a: 1}
+  disabledColour: {r: 0.149, g: 0.149, b: 0.169, a: 1}
 --- !u!1 &1809894648 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1433680966189486009, guid: 85d001ea16328ac4c8eae5a499789764, type: 3}
@@ -18379,7 +18433,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -50, y: -28}
+  m_AnchoredPosition: {x: 125.000015, y: 88.00001}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1825988196
@@ -18402,7 +18456,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Power: 100'
+  m_text: 100
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

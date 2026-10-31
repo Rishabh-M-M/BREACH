@@ -9335,6 +9335,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: ShopEnemySpawnerB
       objectReference: {fileID: 0}
+    - target: {fileID: 1509990725689142419, guid: 85d001ea16328ac4c8eae5a499789764, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -686.6
+      objectReference: {fileID: 0}
     - target: {fileID: 2499692895339864713, guid: 85d001ea16328ac4c8eae5a499789764, type: 3}
       propertyPath: m_Name
       value: Room3Turret2
@@ -9351,6 +9355,34 @@ PrefabInstance:
       propertyPath: enemyPrefab
       value: 
       objectReference: {fileID: 8422696284221005118, guid: 210a3c20ea86ad34db193ee9d53779ae, type: 3}
+    - target: {fileID: 4479813578768815169, guid: 85d001ea16328ac4c8eae5a499789764, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -689
+      objectReference: {fileID: 0}
+    - target: {fileID: 4479813578768815169, guid: 85d001ea16328ac4c8eae5a499789764, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: 4479813578768815169, guid: 85d001ea16328ac4c8eae5a499789764, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4479813578768815169, guid: 85d001ea16328ac4c8eae5a499789764, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4479813578768815169, guid: 85d001ea16328ac4c8eae5a499789764, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4479813578768815169, guid: 85d001ea16328ac4c8eae5a499789764, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4479813578768815169, guid: 85d001ea16328ac4c8eae5a499789764, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 90
+      objectReference: {fileID: 0}
     - target: {fileID: 5166081629861339580, guid: 85d001ea16328ac4c8eae5a499789764, type: 3}
       propertyPath: newTarget
       value: 
@@ -9419,6 +9451,14 @@ PrefabInstance:
     m_RemovedGameObjects:
     - {fileID: 2499692895339864713, guid: 85d001ea16328ac4c8eae5a499789764, type: 3}
     - {fileID: 5672385372392223647, guid: 85d001ea16328ac4c8eae5a499789764, type: 3}
+    - {fileID: 3770020626650187463, guid: 85d001ea16328ac4c8eae5a499789764, type: 3}
+    - {fileID: 8555602451538907748, guid: 85d001ea16328ac4c8eae5a499789764, type: 3}
+    - {fileID: 8332499624000832630, guid: 85d001ea16328ac4c8eae5a499789764, type: 3}
+    - {fileID: 4857642180571253908, guid: 85d001ea16328ac4c8eae5a499789764, type: 3}
+    - {fileID: 5182464385647252307, guid: 85d001ea16328ac4c8eae5a499789764, type: 3}
+    - {fileID: 573449923702097520, guid: 85d001ea16328ac4c8eae5a499789764, type: 3}
+    - {fileID: 2010837900148033872, guid: 85d001ea16328ac4c8eae5a499789764, type: 3}
+    - {fileID: 843025266665194540, guid: 85d001ea16328ac4c8eae5a499789764, type: 3}
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 5728555210687986248, guid: 85d001ea16328ac4c8eae5a499789764, type: 3}
       insertIndex: 3

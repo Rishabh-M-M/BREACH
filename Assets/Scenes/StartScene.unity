@@ -5508,7 +5508,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40f2686c8eea24d8b9603c8ff371ccbc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TurretUpgradeCardUI
-  cardType: 5
+  cardType: 4
   titleText: {fileID: 903232591}
   descriptionText: {fileID: 881999731}
   powerCostText: {fileID: 2078130488}
@@ -11907,7 +11907,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40f2686c8eea24d8b9603c8ff371ccbc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TurretUpgradeCardUI
-  cardType: 3
+  cardType: 2
   titleText: {fileID: 591735085}
   descriptionText: {fileID: 1020398361}
   powerCostText: {fileID: 1377570034}
@@ -17540,12 +17540,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40f2686c8eea24d8b9603c8ff371ccbc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TurretUpgradeCardUI
-  cardType: 4
+  cardType: 3
   titleText: {fileID: 1113924530}
   descriptionText: {fileID: 260489651}
   powerCostText: {fileID: 1622738443}
   upgradeCostText: {fileID: 2093997358}
-  upgradeCostObject: {fileID: 260489649}
+  upgradeCostObject: {fileID: 0}
   upgradeButton: {fileID: 1686731395}
   buttonLabel: {fileID: 770817616}
   cardBackground: {fileID: 1722315309}

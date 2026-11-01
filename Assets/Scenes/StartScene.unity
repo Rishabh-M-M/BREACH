@@ -1638,6 +1638,17 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 215656290}
   m_Mesh: {fileID: -8099705334291674580, guid: 3f59097de31c5a3408003d3cf1ea626d, type: 3}
+--- !u!114 &221974314 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3251657871644323234, guid: cd965d401276eca4a88d4c4b4553cecc, type: 3}
+  m_PrefabInstance: {fileID: 4352808479206820518}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f08735f8307e44b6be5924d8c5e0212, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
 --- !u!1 &236115154
 GameObject:
   m_ObjectHideFlags: 0
@@ -3426,6 +3437,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 423778204}
   m_CullTransparentMesh: 1
+--- !u!114 &432409380 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3901109506506363816, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
+  m_PrefabInstance: {fileID: 3809056587959303647}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f08735f8307e44b6be5924d8c5e0212, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
 --- !u!1 &439117233
 GameObject:
   m_ObjectHideFlags: 0
@@ -3554,16 +3576,16 @@ MonoBehaviour:
   turretSlot2: {fileID: 1564674817}
   turretSlot3: {fileID: 852563087}
   turretSlot4: {fileID: 71407504}
-  trapSlot1: {fileID: 0}
-  trapSlot2: {fileID: 0}
-  room1Trap1: {fileID: 0}
-  room1Trap2: {fileID: 0}
-  room2Trap1: {fileID: 0}
-  room2Trap2: {fileID: 0}
-  room3Trap1: {fileID: 0}
-  room3Trap2: {fileID: 0}
-  room4Trap1: {fileID: 0}
-  room4Trap2: {fileID: 0}
+  trapSlot1: {fileID: 1804968292}
+  trapSlot2: {fileID: 1149264655}
+  room1Trap1: {fileID: 608098124}
+  room1Trap2: {fileID: 2004329721}
+  room2Trap1: {fileID: 1303094729}
+  room2Trap2: {fileID: 432409380}
+  room3Trap1: {fileID: 1250279519}
+  room3Trap2: {fileID: 812817320}
+  room4Trap1: {fileID: 221974314}
+  room4Trap2: {fileID: 2025645195}
   room1Turret1: {fileID: 133458113}
   room1Turret2: {fileID: 787803243}
   room2Turret1: {fileID: 941175155}
@@ -5336,6 +5358,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 591735083}
   m_CullTransparentMesh: 1
+--- !u!114 &608098124 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1841272590663743387, guid: fc0575d9ac9714f529053b6e54fcad5a, type: 3}
+  m_PrefabInstance: {fileID: 5597760544036861728}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f08735f8307e44b6be5924d8c5e0212, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
 --- !u!1 &617117850
 GameObject:
   m_ObjectHideFlags: 0
@@ -7222,6 +7255,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1714057211}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &812817320 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 757195897095937526, guid: 85d001ea16328ac4c8eae5a499789764, type: 3}
+  m_PrefabInstance: {fileID: 8634048837968667443}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f08735f8307e44b6be5924d8c5e0212, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
 --- !u!1 &829369668
 GameObject:
   m_ObjectHideFlags: 0
@@ -11078,7 +11122,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1149264653}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 392176935}
+        m_TargetAssemblyTypeName: BreachAudioManager, Assembly-CSharp
+        m_MethodName: PlayButtonClick
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1149264653
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11092,7 +11148,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.05882353, g: 0.09803922, b: 0.15686275, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -12041,6 +12097,17 @@ LineRenderer:
   m_UseWorldSpace: 1
   m_Loop: 0
   m_ApplyActiveColorSpace: 1
+--- !u!114 &1250279519 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 398894010540385812, guid: 85d001ea16328ac4c8eae5a499789764, type: 3}
+  m_PrefabInstance: {fileID: 8634048837968667443}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f08735f8307e44b6be5924d8c5e0212, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
 --- !u!1 &1277299377
 GameObject:
   m_ObjectHideFlags: 0
@@ -12450,6 +12517,17 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1302469886}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &1303094729 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5060414650661117287, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
+  m_PrefabInstance: {fileID: 3809056587959303647}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f08735f8307e44b6be5924d8c5e0212, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
 --- !u!1 &1304095357
 GameObject:
   m_ObjectHideFlags: 0
@@ -17547,11 +17625,11 @@ MonoBehaviour:
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
   m_Colors:
-    m_NormalColor: {r: 0.34117648, g: 0.34901962, b: 0.36862746, a: 1}
+    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_PressedColor: {r: 0.23529412, g: 0.23529412, b: 0.23529412, a: 1}
-    m_SelectedColor: {r: 0.76862746, g: 0.76862746, b: 0.76862746, a: 1}
-    m_DisabledColor: {r: 0.078431375, g: 0.078431375, b: 0.078431375, a: 0.5019608}
+    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
@@ -17569,7 +17647,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1804968290}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 392176935}
+        m_TargetAssemblyTypeName: BreachAudioManager, Assembly-CSharp
+        m_MethodName: PlayButtonClick
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1804968290
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17583,7 +17673,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.05882353, g: 0.09803922, b: 0.15686275, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -20067,6 +20157,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2001106036}
   m_CullTransparentMesh: 1
+--- !u!114 &2004329721 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 98562535972823269, guid: fc0575d9ac9714f529053b6e54fcad5a, type: 3}
+  m_PrefabInstance: {fileID: 5597760544036861728}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f08735f8307e44b6be5924d8c5e0212, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
 --- !u!1 &2021908591
 GameObject:
   m_ObjectHideFlags: 0
@@ -20311,6 +20412,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraNumberUI
   cameraNumberText: {fileID: 1076036239}
+--- !u!114 &2025645195 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7983199169137715020, guid: cd965d401276eca4a88d4c4b4553cecc, type: 3}
+  m_PrefabInstance: {fileID: 4352808479206820518}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f08735f8307e44b6be5924d8c5e0212, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
 --- !u!1 &2036790062
 GameObject:
   m_ObjectHideFlags: 0
@@ -22014,6 +22126,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: RoomBAirLock
       objectReference: {fileID: 0}
+    - target: {fileID: 3901109506506363816, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
+      propertyPath: isActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5060414650661117287, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
+      propertyPath: enableKeyboardTesting
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6055558246196504447, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
       propertyPath: m_LocalPosition.x
       value: -835.4
@@ -22134,6 +22254,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3251657871644323234, guid: cd965d401276eca4a88d4c4b4553cecc, type: 3}
+      propertyPath: enableKeyboardTesting
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7713387652346728093, guid: cd965d401276eca4a88d4c4b4553cecc, type: 3}
       propertyPath: newTarget
       value: 
@@ -22150,6 +22274,10 @@ PrefabInstance:
       propertyPath: destinationPoint
       value: 
       objectReference: {fileID: 800765704}
+    - target: {fileID: 7983199169137715020, guid: cd965d401276eca4a88d4c4b4553cecc, type: 3}
+      propertyPath: isActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8332045389460185972, guid: cd965d401276eca4a88d4c4b4553cecc, type: 3}
       propertyPath: m_Name
       value: RoomDServerRoom
@@ -22167,6 +22295,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 98562535972823269, guid: fc0575d9ac9714f529053b6e54fcad5a, type: 3}
+      propertyPath: isActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1841272590663743387, guid: fc0575d9ac9714f529053b6e54fcad5a, type: 3}
+      propertyPath: isActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1841272590663743387, guid: fc0575d9ac9714f529053b6e54fcad5a, type: 3}
+      propertyPath: enableKeyboardTesting
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3328946263123235868, guid: fc0575d9ac9714f529053b6e54fcad5a, type: 3}
       propertyPath: newTarget
       value: 
@@ -22356,6 +22496,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 398894010540385812, guid: 85d001ea16328ac4c8eae5a499789764, type: 3}
+      propertyPath: enableKeyboardTesting
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 757195897095937526, guid: 85d001ea16328ac4c8eae5a499789764, type: 3}
+      propertyPath: isActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2225947540886649130, guid: 85d001ea16328ac4c8eae5a499789764, type: 3}
       propertyPath: m_LocalPosition.x
       value: 11.315308

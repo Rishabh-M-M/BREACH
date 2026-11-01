@@ -1,3 +1,4 @@
+
 using UnityEngine;
 using ProjectBreach.Core;
 
@@ -5,7 +6,17 @@ using ProjectBreach.Core;
 [RequireComponent(typeof(Animator))]
 public class EnemyAttack : MonoBehaviour
 {
+    [Header("Attack Settings")]
     [SerializeField] private int damagePerShot = 10;
+
+    [Min(0.1f)]
+    [SerializeField] private float attackInterval = 2f;
+
+    [Header("Projectile Settings")]
+    [Tooltip("1 = original size, 2 = twice as large, 0.5 = half size.")]
+    [Min(0.1f)]
+    [SerializeField] private float projectileSizeMultiplier = 1f;
+
     [SerializeField] private GameObject bulletPrefab;
     [SerializeField] private Transform firePoint;
 
@@ -18,6 +29,8 @@ public class EnemyAttack : MonoBehaviour
     private Animator animator;
     private EnemyAudio audioPlayer;
 
+    private float nextAttackTime;
+
     private void Awake()
     {
         mover = GetComponent<EnemyMover>();
@@ -26,11 +39,12 @@ public class EnemyAttack : MonoBehaviour
     }
 
     /// <summary>
-    /// Called via an Animation Event placed on the Shoot clip, at the
-    /// exact frame the shot should actually fire.
+    /// Called via an Animation Event placed on the Shoot clip,
+    /// at the exact frame the shot should actually fire.
     /// </summary>
     public void FireAtShield()
     {
+        if (Time.time < nextAttackTime) return;
         if (!mover.HasArrived) return;
 
         Transform aim = mover.AimPoint;
@@ -62,26 +76,27 @@ public class EnemyAttack : MonoBehaviour
             Quaternion.LookRotation(direction)
         );
 
+        // Apply adjustable projectile size.
+        bulletObject.transform.localScale *= projectileSizeMultiplier;
+
         bulletObject.layer = LayerMask.NameToLayer("EnemyProjectile");
 
         if (enemyBulletMaterial != null)
         {
             Renderer bulletRenderer = bulletObject.GetComponentInChildren<Renderer>();
             if (bulletRenderer != null)
-            {
                 bulletRenderer.sharedMaterial = enemyBulletMaterial;
-            }
         }
 
         TrailRenderer trail = bulletObject.GetComponentInChildren<TrailRenderer>();
+
         if (trail != null)
         {
             if (enemyTrailMaterial != null)
-            {
                 trail.sharedMaterial = enemyTrailMaterial;
-            }
 
             Gradient redGradient = new Gradient();
+
             redGradient.SetKeys(
                 new[]
                 {
@@ -94,26 +109,27 @@ public class EnemyAttack : MonoBehaviour
                     new GradientAlphaKey(0f, 1f)
                 }
             );
+
             trail.colorGradient = redGradient;
         }
 
         if (bulletObject.TryGetComponent(out Projectile projectile))
         {
             if (enemyExplosionEffectPrefab != null)
-            {
                 projectile.SetExplosionEffectOverride(enemyExplosionEffectPrefab);
-            }
 
             projectile.InitializeStraight(direction, damagePerShot);
         }
         else
         {
             Debug.LogError("[EnemyAttack] Bullet prefab has no Projectile component.", this);
+            Destroy(bulletObject);
+            return;
         }
 
+        nextAttackTime = Time.time + attackInterval;
+
         if (audioPlayer != null)
-        {
             audioPlayer.PlayAttack();
-        }
     }
 }

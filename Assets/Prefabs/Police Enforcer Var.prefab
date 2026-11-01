@@ -4321,6 +4321,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af8687635b6adf9489585ba920afcc69, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyMover
+  isAntiGravity: 0
   target: {fileID: 0}
   moveSpeed: 7
   turnSpeed: 90
@@ -4332,6 +4333,7 @@ MonoBehaviour:
     m_Bits: 8
   shieldDetectDistance: 35
   shieldStopDistance: 30
+  pullSpeed: 0
 --- !u!114 &2977411416255016049
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4344,8 +4346,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b19f10948ea70604bbe214a03b2940b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
-  maxHealth: 20
-  despawnDelay: 3
+  maxHealth: 25
+  despawnDelay: 2
 --- !u!114 &8559453760959150255
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4358,7 +4360,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 51c8c87cea3af3041aad725796aa6720, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAttack
-  damagePerShot: 2
+  damagePerShot: 7
+  attackInterval: 2
+  projectileSizeMultiplier: 3
   bulletPrefab: {fileID: 3559253009315741251, guid: 617fb061e9a4a63489eb89bdaa202df5, type: 3}
   firePoint: {fileID: 2991197610183346037}
   enemyBulletMaterial: {fileID: 2100000, guid: a5c2c4b7f4f231b4c87127083f47a21d, type: 2}
@@ -4499,12 +4503,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAudio
   attackClips:
   - {fileID: 8300000, guid: f114615e790c8f84dbd05456bd83a4be, type: 3}
-  footstepClips:
-  - {fileID: 8300000, guid: 31ecb83dc6414374a98ac4de45a8dba5, type: 3}
-  - {fileID: 8300000, guid: 5e6c94b9f9cc6c142a486805778f3ea5, type: 3}
   deathClip: {fileID: 8300000, guid: fc215158ff6a22749bbcd02aa03068df, type: 3}
   attackVolume: 1
-  footstepVolume: 0.25
   deathVolume: 1
   movementLoopClip: {fileID: 0}
   movementVolume: 0.6

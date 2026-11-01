@@ -133,28 +133,12 @@ namespace ProjectBreach.Core
             explosionEffectOverride = effect;
         }
 
-        public void SetRocketExplosionSettings(
-    AudioClip explosionSound,
-    float visualDuration,
-    float soundVolume = 1f)
-{
-    // Preserve the projectile prefab's sound if no sound was
-    // assigned on the RocketLauncherUpgrade component.
-    if (explosionSound != null)
-        rocketExplosionSound = explosionSound;
-
-    rocketExplosionEffectDuration = Mathf.Max(0.1f, visualDuration);
-    rocketExplosionVolume = Mathf.Clamp01(soundVolume);
-
-    if (rocketExplosionSound == null)
-    {
-        Debug.LogWarning(
-            "[Projectile] Rocket explosion sound is missing. " +
-            "Assign it on RocketLauncherUpgrade or the projectile prefab.",
-            this
-        );
-    }
-}
+        public void SetRocketExplosionSettings(AudioClip explosionSound, float visualDuration, float soundVolume = 1f)
+        {
+            rocketExplosionSound = explosionSound;
+            rocketExplosionEffectDuration = Mathf.Max(0.1f, visualDuration);
+            rocketExplosionVolume = Mathf.Clamp01(soundVolume);
+        }
 
         /// <summary>
         /// Initialize the Sharpshooter projectile.
@@ -472,9 +456,18 @@ namespace ProjectBreach.Core
 
         private void OnTriggerEnter(Collider other)
         {
-            if (hasHit) return;
+            if (hasHit || other == null) return;
 
-            if (other.TryGetComponent(out IDamageable damageable))
+            // Stasis Field tiles use trigger BoxColliders to detect enemies.
+            // They are area-effect volumes, not projectile obstacles.
+            if (other.GetComponentInParent<StasisFieldTile>() != null)
+                return;
+
+            // Enemy hitboxes can be child colliders, so resolve damageable
+            // components from the collider or any parent object.
+            IDamageable damageable = other.GetComponentInParent<IDamageable>();
+
+            if (damageable != null)
             {
                 HitTarget(damageable);
             }
@@ -557,38 +550,8 @@ namespace ProjectBreach.Core
         {
             Vector3 explosionPosition = transform.position;
 
-if (rocketExplosionSound != null && rocketExplosionVolume > 0f)
-{
-    GameObject audioObject = new GameObject("RocketExplosionAudio");
-    audioObject.transform.position = explosionPosition;
-
-    AudioSource source = audioObject.AddComponent<AudioSource>();
-    source.clip = rocketExplosionSound;
-    source.playOnAwake = false;
-    source.spatialBlend = 0f; // 2D audio; no distance attenuation
-    source.volume = 1f;
-    source.loop = false;
-    source.ignoreListenerPause = true;
-
-    source.Play();
-
-    Debug.Log(
-        $"[Projectile] Playing rocket explosion sound: " +
-        $"{rocketExplosionSound.name}",
-        audioObject
-    );
-
-    Destroy(audioObject, rocketExplosionSound.length + 0.5f);
-}
-else
-{
-    Debug.LogWarning(
-        "[Projectile] Rocket detonated without an explosion sound. " +
-        $"Clip assigned: {rocketExplosionSound != null}, " +
-        $"Volume: {rocketExplosionVolume}",
-        this
-    );
-}
+            if (rocketExplosionSound != null && rocketExplosionVolume > 0f)
+                AudioSource.PlayClipAtPoint(rocketExplosionSound, explosionPosition, rocketExplosionVolume);
 
             GameObject effectToSpawn = explosionEffectOverride != null
                 ? explosionEffectOverride

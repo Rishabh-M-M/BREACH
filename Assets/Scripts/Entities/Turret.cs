@@ -61,12 +61,12 @@ namespace ProjectBreach.Core
         // ============================================================
         [Header("Turret Rotation")]
         [SerializeField] private Transform turretHead;
-        [SerializeField] private float rotationSpeed = 90f;
+        [SerializeField] private float rotationSpeed = 240f;
         [SerializeField] private float rotationOffset = -90f;
         [SerializeField] private bool lockXRotation = false;
 
         [Tooltip("Extra upward visual tilt (degrees) when aiming at a target above the turret. Set to 0 to disable.")]
-        [SerializeField, Range(0f, 25f)] private float upwardAimTilt = 10f;
+        [SerializeField, Range(0f, 45f)] private float upwardAimTilt = 10f;
 
         // ============================================================
         // AUDIO
@@ -576,66 +576,84 @@ namespace ProjectBreach.Core
         // ============================================================
         private void RotateTowardsTarget()
         {
-            MonoBehaviour targetBehaviour = currentTarget as MonoBehaviour;
-            if (targetBehaviour == null || turretHead == null)
+            if (turretHead == null || currentTarget == null)
                 return;
-            // Aim at the centre of the enemy collider so flying enemies are
-            // tracked at their actual height rather than at ground level.
+
+            // Aim from the actual muzzle to the target's collider centre.
+            // This makes the head pitch match the projectile's intended path.
+            Vector3 firingOrigin = firePoint != null
+                ? firePoint.position
+                : turretHead.position;
+
             Vector3 worldDirection =
-                GetTargetAimPoint(currentTarget) - turretHead.position;
-            if (lockXRotation)
-                worldDirection.y = 0f;
+                GetTargetAimPoint(currentTarget) - firingOrigin;
+
             if (worldDirection.sqrMagnitude < 0.0001f)
                 return;
-            worldDirection.Normalize();
-            float targetWorldYaw =
-                Quaternion.LookRotation(worldDirection, Vector3.up).eulerAngles.y;
-            float parentYaw = turretHead.parent != null
-                ? turretHead.parent.eulerAngles.y
-                : 0f;
-            // Keep the model's authored yaw and configured forward-axis offset.
-            float localYaw =
-                targetWorldYaw - parentYaw + rotationOffset + defaultLocalY;
-            float localPitch = defaultLocalX;
-            if (!lockXRotation)
-            {
-                // Convert the aim direction into the head parent's local space.
-                // The negative pitch sign is intentional: in Unity, rotating
-                // around local +X pitches a forward-facing barrel downward.
-                Vector3 localDirection = turretHead.parent != null
-                    ? turretHead.parent.InverseTransformDirection(worldDirection)
-                    : worldDirection;
-                float horizontalMagnitude = new Vector2(
-                    localDirection.x, localDirection.z).magnitude;
-                float pitchDegrees = Mathf.Atan2(
-                    localDirection.y,
-                    Mathf.Max(horizontalMagnitude, 0.0001f)) * Mathf.Rad2Deg;
-                // Add a small extra upward tilt only when the target is above
-                // the turret. This changes the head's visual aim, not projectile
-                // direction or target position. Negative local X pitches the
-                // forward-facing barrel upward in this model's rotation convention.
-                float extraUpwardTilt = worldDirection.y > 0.01f
-                    ? upwardAimTilt
-                    : 0f;
 
-                localPitch = defaultLocalX - pitchDegrees - extraUpwardTilt;
-            }
+            worldDirection.Normalize();
+
+            // This option must be disabled for elevation aiming.
+            if (lockXRotation)
+                worldDirection.y = 0f;
+
+            if (worldDirection.sqrMagnitude < 0.0001f)
+                return;
+
+            worldDirection.Normalize();
+
+            // Convert the trajectory into the head parent's local space.
+            Vector3 localDirection = turretHead.parent != null
+                ? turretHead.parent.InverseTransformDirection(worldDirection)
+                : worldDirection;
+
+            float horizontalDistance = new Vector2(
+                localDirection.x,
+                localDirection.z
+            ).magnitude;
+
+            float pitchDegrees = Mathf.Atan2(
+                localDirection.y,
+                Mathf.Max(horizontalDistance, 0.0001f)
+            ) * Mathf.Rad2Deg;
+
+            float yawDegrees = Mathf.Atan2(
+                localDirection.x,
+                localDirection.z
+            ) * Mathf.Rad2Deg;
+
+            float targetLocalYaw =
+                yawDegrees + rotationOffset + defaultLocalY;
+
+            // Negative local X pitches this model's forward-facing barrel up.
+            // Use the full calculated elevation angle, not a small fixed tilt.
+            float targetLocalPitch = defaultLocalX - pitchDegrees;
+
+            if (!lockXRotation && pitchDegrees > 0f)
+                targetLocalPitch -= upwardAimTilt;
+
             Quaternion targetLocalRotation = Quaternion.Euler(
-                localPitch,
-                localYaw,
-                defaultLocalZ);
+                targetLocalPitch,
+                targetLocalYaw,
+                defaultLocalZ
+            );
+
             Quaternion previousRotation = turretHead.localRotation;
+
             turretHead.localRotation = Quaternion.RotateTowards(
                 turretHead.localRotation,
                 targetLocalRotation,
-                rotationSpeed * Time.deltaTime);
+                rotationSpeed * Time.deltaTime
+            );
+
             float rotationDelta = Quaternion.Angle(
                 previousRotation,
-                turretHead.localRotation);
+                turretHead.localRotation
+            );
+
             UpdateRotationSound(rotationDelta);
         }
 
-        // ============================================================
         // AUDIO
 
         // ============================================================

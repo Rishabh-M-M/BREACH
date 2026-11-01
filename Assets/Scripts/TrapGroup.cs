@@ -22,18 +22,18 @@ namespace ProjectBreach.Core
         [SerializeField] private StasisFieldTile[] stasisFieldTiles;
 
         [Header("Gravity Spikes Settings")]
-        [Min(0)] [SerializeField] private int damagePerTick = 1;
-        [Min(0.02f)] [SerializeField] private float damageInterval = 0.1f;
+        [Min(0)][SerializeField] private int damagePerTick = 1;
+        [Min(0.02f)][SerializeField] private float damageInterval = 0.1f;
 
         [Header("Stasis Field Pull Settings")]
         [Tooltip("Pull strength in world units per second. Start around 3-5 and tune in Play Mode.")]
-        [Min(0f)] [SerializeField] private float pullSpeed = 4f;
+        [Min(0f)][SerializeField] private float pullSpeed = 4f;
         [Tooltip("Duration of each pull application. Must be longer than the tile's pull refresh interval.")]
-        [Min(0.1f)] [SerializeField] private float pullApplicationDuration = 0.3f;
+        [Min(0.1f)][SerializeField] private float pullApplicationDuration = 0.3f;
 
         [Header("Audio")]
         [SerializeField] private AudioClip activeLoopSound;
-        [Range(0f, 1f)] [SerializeField] private float activeLoopVolume = 1f;
+        [Range(0f, 1f)][SerializeField] private float activeLoopVolume = 1f;
         [Tooltip("Assign a turret from the same room so audio follows TurretAudioController room audibility.")]
         [SerializeField] private Turret roomAudioReference;
 
@@ -134,7 +134,7 @@ namespace ProjectBreach.Core
             {
                 if (!power.TryAllocate(PowerCost))
                 {
-                    UIManager.Instance?.ShowMessage("Not enough power to activate trap group.");
+                    UIManager.Instance?.ShowInsufficientPowerMessage();
                     return;
                 }
 

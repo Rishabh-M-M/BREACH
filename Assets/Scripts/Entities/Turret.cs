@@ -89,7 +89,8 @@ namespace ProjectBreach.Core
         [Tooltip(
             "Shader property used to control turret ON/OFF appearance."
         )]
-        [SerializeField] private string activationShaderProperty =
+        [SerializeField]
+        private string activationShaderProperty =
             "_Activation";
         [Tooltip(
             "How quickly the ON/OFF shader transitions."
@@ -103,7 +104,8 @@ namespace ProjectBreach.Core
         [Header("Shooting Recoil")]
         [SerializeField] private float recoilDistance = 0.12f;
         [SerializeField] private float recoilRecoverySpeed = 6f;
-        [SerializeField] private Vector3 recoilLocalDirection =
+        [SerializeField]
+        private Vector3 recoilLocalDirection =
             new Vector3(0f, -1f, 0f);
 
         // ============================================================
@@ -384,9 +386,7 @@ namespace ProjectBreach.Core
                 {
                     // Not enough operating power.
                     isActive = false;
-                    UIManager.Instance?.ShowMessage(
-                        "Insufficient power!"
-                    );
+                    UIManager.Instance?.ShowInsufficientPowerMessage();
                 }
             }
             // --------------------------------------------------------
@@ -1329,13 +1329,13 @@ namespace ProjectBreach.Core
                         recoilRecoverySpeed
                     )
                     : recoilRecoverySpeed;
-recoilAmount =
-                Mathf.MoveTowards(
-                    recoilAmount,
-                    0f,
-                    currentRecoilRecoverySpeed *
-                    Time.deltaTime
-                );
+            recoilAmount =
+                            Mathf.MoveTowards(
+                                recoilAmount,
+                                0f,
+                                currentRecoilRecoverySpeed *
+                                Time.deltaTime
+                            );
             // Recoil is always visually DOWN in world space. Applying a
             // parent-local vector directly can become sideways when the turret
             // base or upgraded model has a different authored rotation.

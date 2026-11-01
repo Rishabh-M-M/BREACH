@@ -293,8 +293,7 @@ namespace ProjectBreach.Core
             // Reserve permanent power before changing the current variant.
             if (!PowerManager.Instance.TryAllocatePermanent(permanentCost))
             {
-                UIManager.Instance?.ShowMessage(
-                    "Insufficient power capacity!");
+                UIManager.Instance?.ShowInsufficientPowerMessage();
 
                 return false;
             }

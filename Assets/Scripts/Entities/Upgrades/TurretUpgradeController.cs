@@ -277,8 +277,7 @@ namespace ProjectBreach.Core
 
             // Armoury passive (design doc §2.1) discounts the turret-upgrade
             // purchase cost while the room is online.
-            int permanentCost =
-                ArmouryPassive.ApplyDiscount(targetUpgrade.PermanentPowerCost);
+            int permanentCost = GetUpgradePurchaseCost(targetVariant);
             int operatingCost = targetUpgrade.OperatingPowerCost;
 
             if (permanentCost < 0 || operatingCost < 0)
@@ -555,5 +554,48 @@ namespace ProjectBreach.Core
         {
             TryUpgradeToRocketLauncher();
         }
+
+        // ============================================================
+        // UI DATA - READ DIRECTLY FROM UPGRADE COMPONENTS
+        // ============================================================
+
+        public int GetUpgradePurchaseCost(TurretVariant variant)
+        {
+            ResolveReferences();
+
+            TurretUpgrade upgrade = GetUpgrade(variant);
+
+            if (upgrade == null)
+                return 0;
+
+            // Same discount calculation used by the actual purchase.
+            return ArmouryPassive.ApplyDiscount(upgrade.PermanentPowerCost);
+        }
+
+        public int GetOperatingPowerCostForVariant(TurretVariant variant)
+        {
+            ResolveReferences();
+
+            return GetOperatingPowerCost(variant);
+        }
+
+        public string GetUpgradeInfo(TurretVariant variant)
+        {
+            ResolveReferences();
+
+            switch (variant)
+            {
+                case TurretVariant.Base:
+                    return "Balanced automatic fire for reliable, sustained damage.";
+
+                default:
+                    TurretUpgrade upgrade = GetUpgrade(variant);
+
+                    return upgrade != null
+                        ? upgrade.UpgradeInfo
+                        : "Upgrade information unavailable.";
+            }
+        }
     }
+
 }

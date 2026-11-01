@@ -36,7 +36,10 @@ namespace ProjectBreach.Core
 
         public override int PermanentPowerCost => permanentPowerCost;
         public override int OperatingPowerCost => operatingPowerCost;
-
+        public override string UpgradeInfo =>
+            $"Fires two projectiles per shot. " +
+            $"Each barrel deals {damage} damage. " +
+            $"Firing interval: {fireRate:0.##} seconds.";
 
         private void Awake()
         {

@@ -1,15 +1,19 @@
+
 using UnityEngine;
 
 namespace ProjectBreach.Core
 {
     /// <summary>
-    /// Base class for turret upgrade behaviour and power costs.
+    /// Base class for turret upgrade behaviour, information and power costs.
     /// </summary>
     public abstract class TurretUpgrade : MonoBehaviour
     {
         [Header("Power Costs")]
         public virtual int PermanentPowerCost => 0;
         public virtual int OperatingPowerCost => 0;
+
+        // The UI reads this directly from the active upgrade component.
+        public virtual string UpgradeInfo => string.Empty;
 
         public abstract int GetDamage(int baseDamage);
 

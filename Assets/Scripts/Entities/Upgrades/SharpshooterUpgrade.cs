@@ -64,7 +64,13 @@ namespace ProjectBreach.Core
         public override int PermanentPowerCost => permanentPowerCost;
         public override int OperatingPowerCost => operatingPowerCost;
 
-
+        public override string UpgradeInfo =>
+            $"Long-range precision weapon. " +
+            $"Base damage: {damage}. " +
+            $"Range: {attackRange:0.##}. " +
+            $"Damage increases by {damagePerMetre:0.##} per metre, " +
+            $"up to {maxDamage}. " +
+            $"Projectile speed: {projectileSpeed:0.##}.";
         private void Awake()
         {
             if (turretHead == null)

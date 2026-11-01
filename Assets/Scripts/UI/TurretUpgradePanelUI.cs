@@ -1,3 +1,4 @@
+
 using UnityEngine;
 using UnityEngine.UI;
 using ProjectBreach.Core;
@@ -16,6 +17,7 @@ public class TurretUpgradePanelUI : MonoBehaviour
     [Header("Upgrade Purchase Audio")]
     [SerializeField] private AudioSource upgradeAudioSource;
     [SerializeField] private AudioClip upgradeAddedClip;
+
     [Range(0f, 1f)]
     [SerializeField] private float upgradeAudioVolume = 1f;
 
@@ -156,8 +158,8 @@ public class TurretUpgradePanelUI : MonoBehaviour
         {
             case TurretUpgradeCardType.BaseTurret:
                 Debug.Log(
-                "[TurretUpgradePanelUI] Returning to Base Turret is not allowed.",
-                this);
+                    "[TurretUpgradePanelUI] Returning to Base Turret is not allowed.",
+                    this);
                 return;
 
             case TurretUpgradeCardType.DoubleBarrel:
@@ -176,7 +178,6 @@ public class TurretUpgradePanelUI : MonoBehaviour
                 purchased = selectedController.TryUpgradeToRocketLauncher();
                 break;
 
-            case TurretUpgradeCardType.Standard:
             default:
                 return;
         }
@@ -219,7 +220,10 @@ public class TurretUpgradePanelUI : MonoBehaviour
             return;
         }
 
-        upgradeAudioSource.PlayOneShot(upgradeAddedClip, upgradeAudioVolume);
+        upgradeAudioSource.PlayOneShot(
+            upgradeAddedClip,
+            upgradeAudioVolume
+        );
     }
 
     private void RefreshCards()

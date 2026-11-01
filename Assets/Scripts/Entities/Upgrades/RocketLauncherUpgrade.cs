@@ -60,6 +60,13 @@ namespace ProjectBreach.Core
         public float ExplosionVolume => explosionVolume;
         public float ExplosionEffectDuration => explosionEffectDuration;
 
+        public override string UpgradeInfo =>
+            $"Launches {magazineSize} explosive rockets before reloading. " +
+            $"Direct damage: {directDamage}. " +
+            $"Explosion damage: {explosionDamage}. " +
+            $"Explosion radius: {explosionRadius:0.##}. " +
+            $"Reload: {reloadDuration:0.##} seconds. " +
+            $"Range: {attackRange:0.##}.";
         private void Awake()
         {
             magazineSize = Mathf.Max(1, magazineSize);

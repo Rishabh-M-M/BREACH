@@ -1,3 +1,4 @@
+
 using ProjectBreach.Core;
 using TMPro;
 using UnityEngine;
@@ -5,7 +6,6 @@ using UnityEngine.UI;
 
 public enum TurretUpgradeCardType
 {
-    Standard,
     BaseTurret,
     DoubleBarrel,
     Sharpshooter,
@@ -34,27 +34,51 @@ public class TurretUpgradeCardUI : MonoBehaviour
     [Header("Card Appearance")]
     [SerializeField] private Image cardBackground;
 
-    [Header("Costs")]
-    [SerializeField] private int operatingPowerCost = 30;
-    [SerializeField] private int permanentUpgradeCost = 0;
-
     [Header("Text Colours")]
-    [SerializeField] private Color labelCyan = new Color32(0, 255, 255, 255);
+    [SerializeField]
+    private Color labelCyan = new Color32(0, 255, 255, 255);
+
+    [SerializeField]
+    private Color infoTextColour = new Color32(80, 125, 165, 255);
+
+    [SerializeField]
+    private Color betterColour = new Color32(50, 230, 130, 255);
+
+    [SerializeField]
+    private Color worseColour = new Color32(255, 75, 75, 255);
+
+    [SerializeField]
+    private Color equalColour = new Color32(255, 255, 255, 255);
 
     [Header("Card Colours")]
-    [SerializeField] private Color normalBackground = new Color(0.035f, 0.075f, 0.12f);
-    [SerializeField] private Color selectedBackground = new Color(0.05f, 0.22f, 0.16f);
+    [SerializeField]
+    private Color normalBackground = new Color(0.035f, 0.075f, 0.12f);
+
+    [SerializeField]
+    private Color selectedBackground = new Color(0.05f, 0.22f, 0.16f);
 
     [Header("Button Colours")]
-    [SerializeField] private Color normalButtonColour = new Color(0.051f, 0.110f, 0.169f);
-    [SerializeField] private Color highlightedButtonColour = new Color(0.094f, 0.212f, 0.302f);
-    [SerializeField] private Color pressedButtonColour = new Color(0f, 0.75f, 1f);
-    [SerializeField] private Color disabledButtonColour = new Color(0.149f, 0.149f, 0.169f);
+    [SerializeField]
+    private Color normalButtonColour = new Color(0.051f, 0.110f, 0.169f);
+
+    [SerializeField]
+    private Color highlightedButtonColour = new Color(0.094f, 0.212f, 0.302f);
+
+    [SerializeField]
+    private Color pressedButtonColour = new Color(0f, 0.75f, 1f);
+
+    [SerializeField]
+    private Color disabledButtonColour = new Color(0.149f, 0.149f, 0.169f);
 
     [Header("Upgrade Text Colours")]
-    [SerializeField] private Color availableUpgradeTextColour = new Color32(0, 255, 0, 255);
-    [SerializeField] private Color unavailableUpgradeTextColour = new Color32(128, 128, 128, 255);
-    [SerializeField] private Color purchasedUpgradeTextColour = new Color32(128, 128, 128, 255);
+    [SerializeField]
+    private Color availableUpgradeTextColour = new Color32(0, 255, 0, 255);
+
+    [SerializeField]
+    private Color unavailableUpgradeTextColour = new Color32(128, 128, 128, 255);
+
+    [SerializeField]
+    private Color purchasedUpgradeTextColour = new Color32(128, 128, 128, 255);
 
     private TurretUpgradePanelUI panel;
     private TurretUpgradeController currentController;
@@ -88,19 +112,33 @@ public class TurretUpgradeCardUI : MonoBehaviour
         Refresh();
     }
 
+    private void Update()
+    {
+        if (hasTurret && currentController != null)
+        {
+            UpdateDescriptionText();
+            UpdateCostText();
+            UpdateButtonState();
+        }
+    }
+
     public void Bind(TurretUpgradePanelUI upgradePanel)
     {
         panel = upgradePanel;
     }
 
-    public void Refresh(TurretUpgradeController controller, bool selectedTurretExists)
+    public void Refresh(
+        TurretUpgradeController controller,
+        bool selectedTurretExists)
     {
         currentController = controller;
         hasTurret = selectedTurretExists && controller != null;
         Refresh();
     }
 
-    public void SetTurret(bool selectedTurretExists, TurretUpgradeController controller)
+    public void SetTurret(
+        bool selectedTurretExists,
+        TurretUpgradeController controller)
     {
         currentController = controller;
         hasTurret = selectedTurretExists && controller != null;
@@ -122,57 +160,87 @@ public class TurretUpgradeCardUI : MonoBehaviour
         if (descriptionText == null)
             return;
 
-        descriptionText.text = GetDescription(cardType);
+        descriptionText.color = infoTextColour;
+
+        if (currentController == null)
+        {
+            descriptionText.text = GetFallbackInfo();
+            return;
+        }
+
+        descriptionText.text =
+            currentController.GetUpgradeInfo(GetVariantForCard());
     }
 
-    private string GetDescription(TurretUpgradeCardType type)
+    private string GetFallbackInfo()
     {
-        switch (type)
+        switch (cardType)
         {
-            case TurretUpgradeCardType.DoubleBarrel:
-                return "Paired burst shots with a slower fire rate for boosted damage over time.";
-
-            case TurretUpgradeCardType.HeliosIncinerator:
-                return "Incinerating beam that ramps up damage by locking onto the highest-HP enemy.";
-
-            case TurretUpgradeCardType.RocketLauncher:
-                return "Heavy explosive firepower designed to devastate enemy groups.";
-
-            case TurretUpgradeCardType.Sharpshooter:
-                return "Slow-firing precision weapon built for critical damage through long-range targeting.";
-
             case TurretUpgradeCardType.BaseTurret:
                 return "Balanced automatic fire for reliable, sustained damage.";
 
             default:
-                return string.Empty;
+                return "Select a turret to view upgrade information.";
         }
     }
 
     private void UpdateCostText()
     {
-        if (powerCostText != null)
-        {
-            powerCostText.text =
-                ColourLabel("POWER COST:") + " " +
-                ColourValue(operatingPowerCost.ToString(), Color.white);
-        }
-
         bool showUpgradeCost =
-            cardType != TurretUpgradeCardType.Standard &&
             cardType != TurretUpgradeCardType.BaseTurret;
 
         if (upgradeCostObject != null)
             upgradeCostObject.SetActive(showUpgradeCost);
 
+        if (currentController == null)
+        {
+            if (powerCostText != null)
+                powerCostText.text = ColourLabel("POWER COST:") + " --";
+
+            if (upgradeCostText != null && showUpgradeCost)
+                upgradeCostText.text = ColourLabel("UPGRADE COST:") + " --";
+
+            return;
+        }
+
+        TurretVariant variant = GetVariantForCard();
+
+        int operatingCost =
+            currentController.GetOperatingPowerCostForVariant(variant);
+
+        int baseOperatingCost =
+            currentController.GetOperatingPowerCostForVariant(TurretVariant.Base);
+
+        if (powerCostText != null)
+        {
+            Color powerColour =
+                GetComparisonColour(operatingCost, baseOperatingCost);
+
+            powerCostText.text =
+                ColourLabel("POWER COST:") + " " +
+                ColourValue(operatingCost.ToString(), powerColour);
+        }
+
         if (upgradeCostText != null && showUpgradeCost)
         {
-            // Reflect the Armoury passive discount in the displayed price.
-            int shownCost = ArmouryPassive.ApplyDiscount(permanentUpgradeCost);
+            int purchaseCost =
+                currentController.GetUpgradePurchaseCost(variant);
+
             upgradeCostText.text =
                 ColourLabel("UPGRADE COST:") + " " +
-                ColourValue(shownCost.ToString(), Color.white);
+                ColourValue(purchaseCost.ToString(), Color.white);
         }
+    }
+
+    private Color GetComparisonColour(int value, int normalValue)
+    {
+        if (value < normalValue)
+            return betterColour;
+
+        if (value > normalValue)
+            return worseColour;
+
+        return equalColour;
     }
 
     private bool IsSelected()
@@ -207,16 +275,6 @@ public class TurretUpgradeCardUI : MonoBehaviour
         if (upgradeButton == null)
             return;
 
-        if (cardType == TurretUpgradeCardType.Standard)
-        {
-            upgradeButton.gameObject.SetActive(false);
-
-            if (cardBackground != null)
-                cardBackground.color = normalBackground;
-
-            return;
-        }
-
         upgradeButton.gameObject.SetActive(true);
 
         if (!hasTurret || currentController == null)
@@ -224,55 +282,60 @@ public class TurretUpgradeCardUI : MonoBehaviour
             upgradeButton.interactable = false;
             SetButtonLabel("UNAVAILABLE", unavailableUpgradeTextColour);
 
-            if (cardBackground != null)
-                cardBackground.color = normalBackground;
-
+            SetCardBackground(normalBackground);
             return;
         }
 
-        // The currently active variant is selected.
+        // BASE TURRET CARD
+        // Green by default; blue after any upgrade.
+        if (cardType == TurretUpgradeCardType.BaseTurret)
+        {
+            bool baseIsActive = currentController.IsBase;
+
+            SetCardBackground(
+                baseIsActive ? selectedBackground : normalBackground
+            );
+
+            upgradeButton.interactable = false;
+            SetButtonLabel("BASE TURRET", unavailableUpgradeTextColour);
+            return;
+        }
+
+        // ACTIVE UPGRADE CARD
         if (IsSelected())
         {
+            SetCardBackground(selectedBackground);
+
             upgradeButton.interactable = false;
             SetButtonLabel("SELECTED", purchasedUpgradeTextColour);
-
-            if (cardBackground != null)
-                cardBackground.color = selectedBackground;
-
             return;
         }
 
-        // Previously purchased variants remain permanently committed.
+        // ALREADY COMMITTED UPGRADE
         TurretVariant variant = GetVariantForCard();
 
         if (currentController.IsVariantCommitted(variant))
         {
+            SetCardBackground(normalBackground);
+
             upgradeButton.interactable = false;
             SetButtonLabel("COMMITTED", unavailableUpgradeTextColour);
-
-            if (cardBackground != null)
-                cardBackground.color = normalBackground;
-
             return;
         }
 
-        if (cardType == TurretUpgradeCardType.BaseTurret)
-        {
-            upgradeButton.interactable = false;
-            SetButtonLabel("BASE ONLY", unavailableUpgradeTextColour);
+        // AVAILABLE UPGRADE
+        SetCardBackground(normalBackground);
 
-            if (cardBackground != null)
-                cardBackground.color = normalBackground;
-
-            return;
-        }
-
-        // Never-purchased variants remain available.
         upgradeButton.interactable = true;
         SetButtonLabel("UPGRADE", availableUpgradeTextColour);
+    }
 
+    private void SetCardBackground(Color colour)
+    {
         if (cardBackground != null)
-            cardBackground.color = normalBackground;
+        {
+            cardBackground.color = colour;
+        }
     }
 
     private TurretVariant GetVariantForCard()
@@ -296,7 +359,6 @@ public class TurretUpgradeCardUI : MonoBehaviour
         }
     }
 
-
     private void SetButtonLabel(string label, Color colour)
     {
         if (buttonLabel == null)
@@ -308,15 +370,13 @@ public class TurretUpgradeCardUI : MonoBehaviour
 
     private void OnUpgradeClicked()
     {
-        if (cardType == TurretUpgradeCardType.Standard)
-            return;
-
         if (panel == null)
         {
             Debug.LogError(
                 "[TurretUpgradeCardUI] Upgrade panel is not bound. " +
                 "Add this card to the panel's Cards array.",
                 this);
+
             return;
         }
 

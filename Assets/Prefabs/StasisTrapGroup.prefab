@@ -49,9 +49,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   powerCost: 10
-  isActive: 0
+  isActive: 1
   trapType: 1
-  enableKeyboardTesting: 1
+  enableKeyboardTesting: 0
   toggleKey: 0
   gravitySpikeTiles: []
   stasisFieldTiles:
@@ -61,7 +61,7 @@ MonoBehaviour:
   - {fileID: 3837823765145259120}
   damagePerTick: 1
   damageInterval: 0.1
-  pullSpeed: 20
+  pullSpeed: 40
   pullApplicationDuration: 1
   activeLoopSound: {fileID: 8300000, guid: f2e09431828aa48c99e80bb49a9a6105, type: 3}
   activeLoopVolume: 0.05
@@ -319,9 +319,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 77e99e9a067cb4ba0b5b28f166e41fd6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StasisFieldTile
-  pullSpeed: 2
+  pullSpeed: 20
   startupDelay: 0.8
-  pullDuration: 0.3
+  pullDuration: 1
   releaseDuration: 0.8
   pullRefreshInterval: 0.08
   pullApplicationDuration: 0.25
@@ -460,9 +460,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 77e99e9a067cb4ba0b5b28f166e41fd6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StasisFieldTile
-  pullSpeed: 4
+  pullSpeed: 20
   startupDelay: 0.8
-  pullDuration: 0.3
+  pullDuration: 1
   releaseDuration: 0.8
   pullRefreshInterval: 0.08
   pullApplicationDuration: 0.2
@@ -484,9 +484,21 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1587523502865505639}
     m_Modifications:
+    - target: {fileID: 1116910612855813875, guid: 4882b60c3788e4f9bbf05c717e6cbaf4, type: 3}
+      propertyPath: m_Size.y
+      value: 40
+      objectReference: {fileID: 0}
     - target: {fileID: 6143519872327505170, guid: 4882b60c3788e4f9bbf05c717e6cbaf4, type: 3}
       propertyPath: m_Name
       value: stasis trap
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546519977058809757, guid: 4882b60c3788e4f9bbf05c717e6cbaf4, type: 3}
+      propertyPath: pullSpeed
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546519977058809757, guid: 4882b60c3788e4f9bbf05c717e6cbaf4, type: 3}
+      propertyPath: pullDuration
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6842143562911550875, guid: 4882b60c3788e4f9bbf05c717e6cbaf4, type: 3}
       propertyPath: m_LocalPosition.x
@@ -679,9 +691,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 77e99e9a067cb4ba0b5b28f166e41fd6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StasisFieldTile
-  pullSpeed: 4
+  pullSpeed: 20
   startupDelay: 0.8
-  pullDuration: 0.3
+  pullDuration: 1
   releaseDuration: 0.8
   pullRefreshInterval: 0.08
   pullApplicationDuration: 0.2

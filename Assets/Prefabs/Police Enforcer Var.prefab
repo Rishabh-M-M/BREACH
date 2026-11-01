@@ -4360,7 +4360,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 51c8c87cea3af3041aad725796aa6720, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAttack
-  damagePerShot: 5
+  damagePerShot: 7
+  attackInterval: 2
+  projectileSizeMultiplier: 3
   bulletPrefab: {fileID: 3559253009315741251, guid: 617fb061e9a4a63489eb89bdaa202df5, type: 3}
   firePoint: {fileID: 2991197610183346037}
   enemyBulletMaterial: {fileID: 2100000, guid: a5c2c4b7f4f231b4c87127083f47a21d, type: 2}

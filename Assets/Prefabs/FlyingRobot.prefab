@@ -1213,7 +1213,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyMover
   isAntiGravity: 0
   target: {fileID: 0}
-  moveSpeed: 25
+  moveSpeed: 32
   turnSpeed: 90
   maxSteerAngle: 45
   arrivalDistance: 0.8
@@ -1223,7 +1223,7 @@ MonoBehaviour:
     m_Bits: 8
   shieldDetectDistance: 20
   shieldStopDistance: 15
-  pullSpeed: 0
+  pullSpeed: 1000
 --- !u!114 &1174891021982378817
 MonoBehaviour:
   m_ObjectHideFlags: 0

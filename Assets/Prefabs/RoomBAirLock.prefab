@@ -692,7 +692,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e18a6e2a97c7db04d91533f00060b8aa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ProjectBreach.Core.Room
-  roomIndex: 0
+  roomIndex: 2
   roomName: ShieldReactor
   structures:
   - {fileID: 7125228285896843694}
@@ -3355,12 +3355,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 77e99e9a067cb4ba0b5b28f166e41fd6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StasisFieldTile
-  pullSpeed: 4
-  startupDelay: 0.8
-  pullDuration: 0.3
-  releaseDuration: 0.8
-  pullRefreshInterval: 0.08
-  pullApplicationDuration: 0.2
+  slowMultiplier: 0.5
+  slowRefreshInterval: 0.1
+  slowApplicationDuration: 0.25
   enemyLayers:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -4254,12 +4251,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 77e99e9a067cb4ba0b5b28f166e41fd6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StasisFieldTile
-  pullSpeed: 4
-  startupDelay: 0.8
-  pullDuration: 0.3
-  releaseDuration: 0.8
-  pullRefreshInterval: 0.08
-  pullApplicationDuration: 0.2
+  slowMultiplier: 0.5
+  slowRefreshInterval: 0.1
+  slowApplicationDuration: 0.25
   enemyLayers:
     serializedVersion: 2
     m_Bits: 4294967295

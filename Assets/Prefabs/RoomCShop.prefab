@@ -9902,7 +9902,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e18a6e2a97c7db04d91533f00060b8aa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ProjectBreach.Core.Room
-  roomIndex: 0
+  roomIndex: 3
   roomName: Armory
   structures:
   - {fileID: 3828023417785392240}

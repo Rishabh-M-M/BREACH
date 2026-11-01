@@ -4347,7 +4347,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
   maxHealth: 25
-  despawnDelay: 2
+  despawnDelay: 2.5
 --- !u!114 &8559453760959150255
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4361,7 +4361,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAttack
   damagePerShot: 7
-  attackInterval: 2
+  attackInterval: 2.5
   projectileSizeMultiplier: 3
   bulletPrefab: {fileID: 3559253009315741251, guid: 617fb061e9a4a63489eb89bdaa202df5, type: 3}
   firePoint: {fileID: 2991197610183346037}

@@ -1249,7 +1249,7 @@ MonoBehaviour:
   heliosIncineratorUpgrade: {fileID: 6193736927790889720}
   rocketLauncherUpgrade: {fileID: 6853967221070149171}
   currentVariant: 0
-  baseOperatingPowerCost: 30
+  baseOperatingPowerCost: 25
   baseVisual: {fileID: 3357269126286942244}
 --- !u!114 &6193736927790889720
 MonoBehaviour:
@@ -1263,7 +1263,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c0950f27c67d04de394059acffdfd737, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ProjectBreach.Core.HeliosIncineratorUpgrade
-  attackRange: 120
+  attackRange: 150
   startingDps: 1
   maximumDps: 10
   rampDuration: 8
@@ -1300,9 +1300,9 @@ MonoBehaviour:
   damage: 1
   fireRate: 5
   projectileSpeed: 160
-  attackRange: 160
-  damagePerMetre: 0.5
-  maxDamage: 10
+  attackRange: 200
+  damagePerMetre: 0.25
+  maxDamage: 25
   permanentPowerCost: 20
   operatingPowerCost: 20
   visual: {fileID: 570055973667432907}

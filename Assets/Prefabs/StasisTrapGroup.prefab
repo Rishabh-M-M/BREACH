@@ -49,7 +49,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   powerCost: 10
-  isActive: 1
+  isActive: 0
   trapType: 1
   enableKeyboardTesting: 0
   toggleKey: 0

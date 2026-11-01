@@ -3,49 +3,46 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// One tile in a Stasis Field group.
+/// Controls one Stasis Field tile.
 ///
-/// Animator bools:
-/// - Powered
-/// - EnemyDetected
+/// Animator setup:
+/// - Bool parameter "Powered"
+/// - Bool parameter "EnemyDetected"
 ///
-/// The field waits after activation, then repeatedly pulls for a short burst
-/// and releases. Enemies continue their normal movement during release phases.
+/// Expected transitions:
+/// Entry -> ViewHolo
+/// ViewHolo -> HoloEnd        (Powered = true)
+/// HoloEnd -> Idle            (Powered = true, Has Exit Time)
+/// HoloEnd -> ViewHolo        (Powered = false, Has Exit Time)
+/// Idle -> ComingHolo         (EnemyDetected = true)
+/// ComingHolo -> Idle         (Has Exit Time, Powered = true)
+/// Idle -> HoloEnd            (Powered = false)
+/// ComingHolo -> HoloEnd      (Powered = false)
+///
+/// Attach this script to the same GameObject as the Animator and trigger Collider.
 /// </summary>
 [RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(Collider))]
 public class StasisFieldTile : MonoBehaviour
 {
-    [Header("Pull Effect")]
-    [Tooltip("Pull speed in world units per second, configured by TrapGroup.")]
-    [Min(0f)]
-    [SerializeField] private float pullSpeed = 4f;
+    [Header("Stasis Effect")]
+    [Tooltip("Enemy speed multiplier while inside the field. 0.5 = 50% speed.")]
+    [Range(0.05f, 1f)]
+    [SerializeField] private float slowMultiplier = 0.5f;
 
-    [Tooltip("Delay after powering on before the first pull cycle.")]
-    [Min(0f)]
-    [SerializeField] private float startupDelay = 0.8f;
-
-    [Tooltip("How long each pull burst lasts.")]
+    [Tooltip("How often the slow effect is refreshed.")]
     [Min(0.05f)]
-    [SerializeField] private float pullDuration = 0.3f;
+    [SerializeField] private float slowRefreshInterval = 0.1f;
 
-    [Tooltip("How long the field releases enemies between pull bursts.")]
-    [Min(0f)]
-    [SerializeField] private float releaseDuration = 0.8f;
-
-    [Tooltip("How often the pull is refreshed during a burst.")]
-    [Min(0.02f)]
-    [SerializeField] private float pullRefreshInterval = 0.08f;
-
-    [Tooltip("Each refresh remains active slightly longer than the refresh interval.")]
-    [Min(0.05f)]
-    [SerializeField] private float pullApplicationDuration = 0.2f;
+    [Tooltip("Duration of each refreshed slow application. Keep this longer than the refresh interval.")]
+    [Min(0.1f)]
+    [SerializeField] private float slowApplicationDuration = 0.25f;
 
     [Header("Target Filtering")]
     [SerializeField] private LayerMask enemyLayers = ~0;
 
     [Header("Ring Material")]
-    [Tooltip("Assign only ring renderers if other child materials should not change.")]
+    [Tooltip("Optional. If empty, all child renderers are used. Assign only the ring renderers if other child materials should not change.")]
     [SerializeField] private Renderer[] ringRenderers;
     [Min(0.01f)]
     [SerializeField] private float materialTransitionSpeed = 2.5f;
@@ -54,12 +51,16 @@ public class StasisFieldTile : MonoBehaviour
     private static readonly int EnemyDetectedHash = Animator.StringToHash("EnemyDetected");
     private static readonly int MaterialPoweredHash = Shader.PropertyToID("_Powered");
 
+    // Unity native objects must be created in Awake/Start, not in a
+    // MonoBehaviour field initializer or constructor.
     private MaterialPropertyBlock propertyBlock;
+    private float materialPowered;
+
     private Animator animator;
     private bool powered;
-    private float materialPowered;
-    private Coroutine pullCycleRoutine;
+    private Coroutine slowRoutine;
 
+    // Track colliders individually so enemies with multiple colliders are handled correctly.
     private readonly Dictionary<Collider, EnemyMover> colliderOwners = new();
     private readonly Dictionary<EnemyMover, int> enemyColliderCounts = new();
 
@@ -68,8 +69,12 @@ public class StasisFieldTile : MonoBehaviour
 
     private void Awake()
     {
-        animator = GetComponent<Animator>();
+        // MaterialPropertyBlock wraps a Unity native object. Creating it here
+        // avoids UnityException: CreateImpl is not allowed from a constructor
+        // or instance field initializer.
         propertyBlock = new MaterialPropertyBlock();
+
+        animator = GetComponent<Animator>();
 
         Collider trigger = GetComponent<Collider>();
         trigger.isTrigger = true;
@@ -99,25 +104,28 @@ public class StasisFieldTile : MonoBehaviour
 
     private void UpdateRingMaterial(float value)
     {
-        if (ringRenderers == null || propertyBlock == null)
+        if (ringRenderers == null)
             return;
+
+        propertyBlock.SetFloat(MaterialPoweredHash, value);
 
         foreach (Renderer ringRenderer in ringRenderers)
         {
             if (ringRenderer == null)
                 continue;
 
-            bool usesStasisShader = false;
+            // Only touch renderers that use the StasisRing shader/property.
+            bool hasPoweredProperty = false;
             foreach (Material material in ringRenderer.sharedMaterials)
             {
                 if (material != null && material.HasProperty(MaterialPoweredHash))
                 {
-                    usesStasisShader = true;
+                    hasPoweredProperty = true;
                     break;
                 }
             }
 
-            if (!usesStasisShader)
+            if (!hasPoweredProperty)
                 continue;
 
             ringRenderer.GetPropertyBlock(propertyBlock);
@@ -127,16 +135,19 @@ public class StasisFieldTile : MonoBehaviour
     }
 
     /// <summary>
-    /// Called by TrapGroup. The second value is the duration of each pull burst.
-    /// Startup delay and release interval are configured per tile in the Inspector.
+    /// Called by the parent Stasis Field group when its power state changes.
+    /// Power allocation should be handled by the group/controller, not each tile.
     /// </summary>
-    public void Configure(float configuredPullSpeed, float configuredPullDuration)
+    // Compatibility with TrapGroup.Configure(slowAmount, slowRefreshDuration).
+    // TrapGroup supplies slowAmount as the fraction of speed to remove:
+    // 0.5 means the enemy moves at 50% speed.
+    public void Configure(float configuredSlowAmount, float configuredRefreshDuration)
     {
-        pullSpeed = Mathf.Max(0f, configuredPullSpeed);
-        pullDuration = Mathf.Max(0.05f, configuredPullDuration);
+        slowMultiplier = 1f - Mathf.Clamp(configuredSlowAmount, 0f, 0.95f);
+        slowApplicationDuration = Mathf.Max(0.1f, configuredRefreshDuration);
     }
 
-    // Compatibility with TrapGroup.SetTilesActive(bool).
+    // Compatibility with TrapGroup.SetActive(bool).
     public void SetActive(bool value)
     {
         SetPowered(value);
@@ -150,15 +161,10 @@ public class StasisFieldTile : MonoBehaviour
         powered = value;
         animator.SetBool(PoweredHash, powered);
 
-        if (powered)
-        {
-            if (enemyColliderCounts.Count > 0)
-                StartPullCycle();
-        }
+        if (powered && enemyColliderCounts.Count > 0)
+            StartSlowRoutine();
         else
-        {
-            StopPullCycleAndReleaseEnemies();
-        }
+            StopSlowRoutine();
     }
 
     private void OnTriggerEnter(Collider other)
@@ -168,6 +174,7 @@ public class StasisFieldTile : MonoBehaviour
 
     private void OnTriggerStay(Collider other)
     {
+        // Safety net in case the tile becomes powered while an enemy is already inside.
         RegisterEnemyCollider(other);
     }
 
@@ -198,7 +205,7 @@ public class StasisFieldTile : MonoBehaviour
         UpdateEnemyDetected();
 
         if (powered)
-            StartPullCycle();
+            StartSlowRoutine();
     }
 
     private void UnregisterEnemyCollider(Collider other)
@@ -214,111 +221,68 @@ public class StasisFieldTile : MonoBehaviour
                 enemyColliderCounts.Remove(enemy);
             else
                 enemyColliderCounts[enemy] = count - 1;
-
-            if (!enemyColliderCounts.ContainsKey(enemy))
-                enemy.ClearPull();
         }
 
         UpdateEnemyDetected();
 
         if (enemyColliderCounts.Count == 0)
-            StopPullCycle();
+            StopSlowRoutine();
     }
 
     private void UpdateEnemyDetected()
     {
-        if (animator != null)
-            animator.SetBool(EnemyDetectedHash, enemyColliderCounts.Count > 0);
+        animator.SetBool(EnemyDetectedHash, enemyColliderCounts.Count > 0);
     }
 
-    private void StartPullCycle()
+    private void StartSlowRoutine()
     {
-        if (!powered || enemyColliderCounts.Count == 0 || pullCycleRoutine != null)
+        if (!powered || enemyColliderCounts.Count == 0 || slowRoutine != null)
             return;
 
-        pullCycleRoutine = StartCoroutine(PullCycle());
+        slowRoutine = StartCoroutine(RefreshSlowEffect());
     }
 
-    private void StopPullCycle()
+    private void StopSlowRoutine()
     {
-        if (pullCycleRoutine != null)
-        {
-            StopCoroutine(pullCycleRoutine);
-            pullCycleRoutine = null;
-        }
+        if (slowRoutine == null)
+            return;
+
+        StopCoroutine(slowRoutine);
+        slowRoutine = null;
     }
 
-    private void StopPullCycleAndReleaseEnemies()
+    private IEnumerator RefreshSlowEffect()
     {
-        StopPullCycle();
-
-        foreach (EnemyMover enemy in new List<EnemyMover>(enemyColliderCounts.Keys))
-        {
-            if (enemy != null)
-                enemy.ClearPull();
-        }
-    }
-
-    private IEnumerator PullCycle()
-    {
-        // Delay the first pull after the field powers on / first detects an enemy.
-        if (startupDelay > 0f)
-            yield return new WaitForSeconds(startupDelay);
-
         while (powered && enemyColliderCounts.Count > 0)
         {
-            // PULL PHASE: refresh the pull while the burst is active.
-            float elapsed = 0f;
-            while (powered && enemyColliderCounts.Count > 0 && elapsed < pullDuration)
+            // Remove destroyed enemies while iterating over a snapshot.
+            List<EnemyMover> enemies = new List<EnemyMover>(enemyColliderCounts.Keys);
+
+            foreach (EnemyMover enemy in enemies)
             {
-                ApplyPullToCurrentEnemies();
-                yield return new WaitForSeconds(pullRefreshInterval);
-                elapsed += pullRefreshInterval;
+                if (enemy == null)
+                {
+                    enemyColliderCounts.Remove(enemy);
+                    continue;
+                }
+
+                enemy.ApplySlow(slowMultiplier, slowApplicationDuration);
             }
 
-            // RELEASE PHASE: cancel the pull so normal forward movement resumes.
-            ClearPullFromCurrentEnemies();
+            UpdateEnemyDetected();
 
-            if (!powered || enemyColliderCounts.Count == 0)
+            if (enemyColliderCounts.Count == 0)
                 break;
 
-            if (releaseDuration > 0f)
-                yield return new WaitForSeconds(releaseDuration);
+            yield return new WaitForSeconds(slowRefreshInterval);
         }
 
-        pullCycleRoutine = null;
-    }
-
-    private void ApplyPullToCurrentEnemies()
-    {
-        List<EnemyMover> enemies = new List<EnemyMover>(enemyColliderCounts.Keys);
-
-        foreach (EnemyMover enemy in enemies)
-        {
-            if (enemy == null)
-            {
-                enemyColliderCounts.Remove(enemy);
-                continue;
-            }
-
-            enemy.ApplyPull(transform.position, pullSpeed, pullApplicationDuration);
-        }
-
-        UpdateEnemyDetected();
-    }
-
-    private void ClearPullFromCurrentEnemies()
-    {
-        foreach (EnemyMover enemy in new List<EnemyMover>(enemyColliderCounts.Keys))
-        {
-            if (enemy != null)
-                enemy.ClearPull();
-        }
+        slowRoutine = null;
     }
 
     private void OnDisable()
     {
-        StopPullCycleAndReleaseEnemies();
+        StopSlowRoutine();
         powered = false;
         materialPowered = 0f;
         UpdateRingMaterial(0f);

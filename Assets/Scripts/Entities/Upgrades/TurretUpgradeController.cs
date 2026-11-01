@@ -100,7 +100,11 @@ namespace ProjectBreach.Core
                 currentVariant = TurretVariant.Base;
             }
 
-            turret.SetPowerCost(GetOperatingPowerCost(currentVariant));
+            // Only override the Inspector-configured cost for upgraded variants.
+            if (currentVariant != TurretVariant.Base)
+            {
+                turret.SetPowerCost(GetOperatingPowerCost(currentVariant));
+            }
 
             ApplyVisuals();
             turret.RefreshActiveVisuals();

@@ -4,8 +4,9 @@ using TMPro;
 using ProjectBreach.Core;
 
 /// <summary>
-/// UI slot for one TrapGroup. TrapGroup handles Power allocation/refunds
-/// and activation of its own trap tiles.
+/// UI slot for one TrapGroup.
+/// Matches the appearance and interaction behaviour of EquipmentSlotUI.
+/// TrapGroup handles power allocation/refunds and activation of its tiles.
 /// </summary>
 public class TrapEquipmentSlotUI : MonoBehaviour
 {
@@ -25,7 +26,6 @@ public class TrapEquipmentSlotUI : MonoBehaviour
     [SerializeField] private Color pressedColour = new Color(0f, 0.75f, 1f);
     [SerializeField] private Color selectedColour = new Color(0.059f, 0.259f, 0.388f);
     [SerializeField] private Color disabledColour = new Color(0.149f, 0.149f, 0.169f);
-
     private void Awake()
     {
         if (button == null)
@@ -34,17 +34,15 @@ public class TrapEquipmentSlotUI : MonoBehaviour
         ApplyButtonColours();
     }
 
-    private void OnEnable()
+    private void Start()
     {
         if (button != null)
-        {
-            button.onClick.RemoveListener(OnClicked);
             button.onClick.AddListener(OnClicked);
-        }
+
         Refresh();
     }
 
-    private void OnDisable()
+    private void OnDestroy()
     {
         if (button != null)
             button.onClick.RemoveListener(OnClicked);
@@ -61,13 +59,16 @@ public class TrapEquipmentSlotUI : MonoBehaviour
             return;
 
         ColorBlock colours = button.colors;
+
         colours.normalColor = normalColour;
         colours.highlightedColor = highlightedColour;
         colours.pressedColor = pressedColour;
         colours.selectedColor = selectedColour;
         colours.disabledColor = disabledColour;
+
         colours.colorMultiplier = 1f;
         colours.fadeDuration = 0.1f;
+
         button.colors = colours;
     }
 
@@ -76,9 +77,13 @@ public class TrapEquipmentSlotUI : MonoBehaviour
         if (targetTrap == null)
             return;
 
+        // Toggle the entire TrapGroup.
+        // TrapGroup manages its own power allocation and refunds.
         targetTrap.Toggle();
+
         Refresh();
 
+        // Return the button to its normal visual state.
         if (button != null)
             button.OnDeselect(null);
     }
@@ -91,33 +96,44 @@ public class TrapEquipmentSlotUI : MonoBehaviour
         if (targetTrap == null)
         {
             button.interactable = false;
+
             if (slotText != null)
+            {
                 slotText.text =
                     $"<color=#B0C4DE>{equipmentName}</color>\n" +
                     "<color=#777777>— EMPTY —</color>";
+            }
+
+            return;
+        }
+
+        if (targetTrap.IsGroupActive)
+        {
+            button.interactable = true;
+
+            if (slotText != null)
+            {
+                slotText.text =
+                    $"<color=#B0C4DE>{equipmentName}</color>\n" +
+                    "<color=#33FF66>● ACTIVE</color>\n" +
+                    $"<color=#55AAFF>POWER {targetTrap.PowerCost}</color>";
+            }
+
             return;
         }
 
         button.interactable = true;
 
-        if (targetTrap.IsGroupActive)
+        if (slotText != null)
         {
-            if (slotText != null)
-                slotText.text =
-                    $"<color=#B0C4DE>{equipmentName}</color>\n" +
-                    "<color=#33FF66>○ ON</color>\n" +
-                    $"<color=#55AAFF>POWER {targetTrap.PowerCost}</color>";
-        }
-        else
-        {
-            if (slotText != null)
-                slotText.text =
-                    $"<color=#B0C4DE>{equipmentName}</color>\n" +
-                    "<color=#FF3333>○ OFF</color>\n" +
-                    $"<color=#55AAFF>POWER {targetTrap.PowerCost}</color>";
+            slotText.text =
+                $"<color=#B0C4DE>{equipmentName}</color>\n" +
+                "<color=#FF3333>○ OFF</color>\n" +
+                $"<color=#55AAFF>POWER {targetTrap.PowerCost}</color>";
         }
     }
 
+    // Allows EquipmentPanelManager to assign a room's TrapGroup.
     public void SetTrap(TrapGroup trap, string displayName)
     {
         targetTrap = trap;
@@ -125,6 +141,7 @@ public class TrapEquipmentSlotUI : MonoBehaviour
         Refresh();
     }
 
+    // Clears the slot when the selected room has no trap.
     public void SetEmpty(string displayName)
     {
         targetTrap = null;

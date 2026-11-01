@@ -172,10 +172,19 @@ namespace ProjectBreach.Core
 
             if (info.icon != null)
             {
-                Image icon = CreateImage(row, Color.white);
-                SetTopLeft(icon.rectTransform, nameX, (rowHeight - 16f) * 0.5f, 16f, 16f);
+                // Create the icon as a Simple image from the start so it always
+                // draws the sprite (CreateImage would otherwise leave it Filled).
+                GameObject iconGo = new GameObject("Icon", typeof(RectTransform), typeof(Image));
+                RectTransform iconRt = (RectTransform)iconGo.transform;
+                iconRt.SetParent(row, false);
+
+                Image icon = iconGo.GetComponent<Image>();
                 icon.sprite = info.icon;
                 icon.type = Image.Type.Simple;
+                icon.color = Color.white;
+                icon.raycastTarget = false;
+
+                SetTopLeft(iconRt, nameX, (rowHeight - 16f) * 0.5f, 16f, 16f);
                 nameX += 20f;
                 nameWidth -= 20f;
             }
@@ -297,15 +306,17 @@ namespace ProjectBreach.Core
         /// </summary>
         private void LoadIcons()
         {
-            iconComms = ResolveIcon(iconComms, "comms");
-            iconGenerator = ResolveIcon(iconGenerator, "generator");
-            iconArmoury = ResolveIcon(iconArmoury, "armory");
-            iconRegen = ResolveIcon(iconRegen, "regen");
+            iconComms = ResolveIcon(iconComms, "Comm");
+            iconGenerator = ResolveIcon(iconGenerator, "Generator");
+            iconArmoury = ResolveIcon(iconArmoury, "Armory");
+            iconRegen = ResolveIcon(iconRegen, "Shield");
         }
 
         /// <summary>
         /// Resolves a room icon sprite. An assigned sprite wins; otherwise the
         /// sprite is loaded from Assets/Art/Images/{fileName}.png at editor time.
+        /// The lookup scans the folder and matches by name (case-insensitive), so
+        /// it works regardless of how the file is capitalized on disk.
         /// </summary>
         private static Sprite ResolveIcon(Sprite assigned, string fileName)
         {
@@ -313,8 +324,20 @@ namespace ProjectBreach.Core
                 return assigned;
 
 #if UNITY_EDITOR
-            return UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>(
-                "Assets/Art/Images/" + fileName + ".png");
+            string[] guids = UnityEditor.AssetDatabase.FindAssets(
+                "t:Sprite", new[] { "Assets/Art/Images" });
+            foreach (string guid in guids)
+            {
+                string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
+                string name = System.IO.Path.GetFileNameWithoutExtension(path);
+                if (string.Equals(
+                    name, fileName,
+                    System.StringComparison.OrdinalIgnoreCase))
+                {
+                    return UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>(path);
+                }
+            }
+            return null;
 #else
             return null;
 #endif
@@ -322,19 +345,35 @@ namespace ProjectBreach.Core
 
         /// <summary>
         /// Returns the shortened display label (and optional icon sprite) for a
-        /// room, based on its normalized name. Unknown rooms keep their full name.
+        /// room. Matching is keyword-based so it tolerates the many ways a room
+        /// can be named in the scene (e.g. "Shop" or "Armory", "ServerRoom" or
+        /// "Shield Generator"). Unknown rooms keep their full name with no icon.
         /// </summary>
         private (string label, Sprite icon) GetRoomInfo(Room room)
         {
             string key = Normalize(room.RoomName);
-            switch (key)
-            {
-                case "corridor":   return ("Comms", iconComms);
-                case "serverroom": return ("Generator", iconGenerator);
-                case "shop":       return ("Armory", iconArmoury);
-                case "airlock":    return ("Regen", iconRegen);
-                default:           return (room.RoomName, null);
-            }
+
+            // Comms / corridor room.
+            if (key.Contains("corridor") || key.Contains("comm"))
+                return ("Comms", iconComms);
+
+            // Shield / regen room — checked before "generator" so a room named
+            // "Shield Generator" maps to the shield icon, not the generator one.
+            if (key.Contains("shield") || key.Contains("regen")
+                || key.Contains("airlock"))
+                return ("Regen", iconRegen);
+
+            // Generator / server room.
+            if (key.Contains("server") || key.Contains("generator")
+                || key.Contains("power"))
+                return ("Generator", iconGenerator);
+
+            // Armory / shop room.
+            if (key.Contains("armory") || key.Contains("armour")
+                || key.Contains("shop"))
+                return ("Armory", iconArmoury);
+
+            return (room.RoomName, null);
         }
 
         private static string Normalize(string name)

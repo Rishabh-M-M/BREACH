@@ -1211,8 +1211,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af8687635b6adf9489585ba920afcc69, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyMover
+  isAntiGravity: 0
   target: {fileID: 0}
-  moveSpeed: 10
+  moveSpeed: 25
   turnSpeed: 90
   maxSteerAngle: 45
   arrivalDistance: 0.8
@@ -1220,8 +1221,9 @@ MonoBehaviour:
   shieldLayer:
     serializedVersion: 2
     m_Bits: 8
-  shieldDetectDistance: 30
-  shieldStopDistance: 25
+  shieldDetectDistance: 20
+  shieldStopDistance: 15
+  pullSpeed: 0
 --- !u!114 &1174891021982378817
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1235,7 +1237,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
   maxHealth: 15
-  despawnDelay: 3
+  despawnDelay: 1.5
 --- !u!114 &5120817520650007182
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1261,7 +1263,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FlyingEnemyAttack
   damagePerShot: 2
-  fireCooldown: 1.5
+  fireCooldown: 0.75
   bulletPrefab: {fileID: 3559253009315741251, guid: 617fb061e9a4a63489eb89bdaa202df5, type: 3}
   firePoint: {fileID: 6675771659164830546}
   enemyBulletMaterial: {fileID: 2100000, guid: a5c2c4b7f4f231b4c87127083f47a21d, type: 2}

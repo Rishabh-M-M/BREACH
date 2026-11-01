@@ -971,6 +971,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 71407502}
   m_CullTransparentMesh: 1
+--- !u!114 &71776470 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 723791109048013422, guid: 85d001ea16328ac4c8eae5a499789764, type: 3}
+  m_PrefabInstance: {fileID: 1309545894767253165}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f08735f8307e44b6be5924d8c5e0212, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
 --- !u!1 &83108285
 GameObject:
   m_ObjectHideFlags: 0
@@ -2604,6 +2615,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 342652177}
   m_CullTransparentMesh: 1
+--- !u!114 &347953705 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5060414650661117287, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
+  m_PrefabInstance: {fileID: 3809056587959303647}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f08735f8307e44b6be5924d8c5e0212, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
 --- !u!1 &352509135
 GameObject:
   m_ObjectHideFlags: 0
@@ -3400,16 +3422,16 @@ MonoBehaviour:
   turretSlot2: {fileID: 1564674817}
   turretSlot3: {fileID: 852563087}
   turretSlot4: {fileID: 71407504}
-  trapSlot1: {fileID: 0}
-  trapSlot2: {fileID: 0}
-  room1Trap1: {fileID: 0}
-  room1Trap2: {fileID: 0}
-  room2Trap1: {fileID: 0}
-  room2Trap2: {fileID: 0}
-  room3Trap1: {fileID: 0}
-  room3Trap2: {fileID: 0}
-  room4Trap1: {fileID: 0}
-  room4Trap2: {fileID: 0}
+  trapSlot1: {fileID: 1804968292}
+  trapSlot2: {fileID: 1149264655}
+  room1Trap1: {fileID: 1584708794}
+  room1Trap2: {fileID: 828914783}
+  room2Trap1: {fileID: 347953705}
+  room2Trap2: {fileID: 465790726}
+  room3Trap1: {fileID: 1194584733}
+  room3Trap2: {fileID: 71776470}
+  room4Trap1: {fileID: 1679770312}
+  room4Trap2: {fileID: 1602104522}
   room1Turret1: {fileID: 133458113}
   room1Turret2: {fileID: 787803243}
   room2Turret1: {fileID: 941175155}
@@ -3852,6 +3874,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 464502286}
   m_CullTransparentMesh: 1
+--- !u!114 &465790726 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3901109506506363816, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
+  m_PrefabInstance: {fileID: 3809056587959303647}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f08735f8307e44b6be5924d8c5e0212, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
 --- !u!1 &466850975
 GameObject:
   m_ObjectHideFlags: 0
@@ -6934,6 +6967,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1714057211}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &828914783 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 98562535972823269, guid: fc0575d9ac9714f529053b6e54fcad5a, type: 3}
+  m_PrefabInstance: {fileID: 5597760544036861728}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f08735f8307e44b6be5924d8c5e0212, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
 --- !u!1 &829369668
 GameObject:
   m_ObjectHideFlags: 0
@@ -10437,7 +10481,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1149264653}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 392176935}
+        m_TargetAssemblyTypeName: BreachAudioManager, Assembly-CSharp
+        m_MethodName: PlayButtonClick
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1149264653
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10451,15 +10507,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.05882353, g: 0.09803922, b: 0.15686275, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 0}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -10840,6 +10896,17 @@ MonoBehaviour:
   mainMenuScenePath: Assets/StartScene.unity
   freezeTimeOnShow: 1
   pauseAudioOnShow: 1
+--- !u!114 &1194584733 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3006563814391470649, guid: 85d001ea16328ac4c8eae5a499789764, type: 3}
+  m_PrefabInstance: {fileID: 1309545894767253165}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f08735f8307e44b6be5924d8c5e0212, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
 --- !u!1 &1197867653
 GameObject:
   m_ObjectHideFlags: 0
@@ -15000,6 +15067,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1580209991}
   m_CullTransparentMesh: 1
+--- !u!114 &1584708794 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1841272590663743387, guid: fc0575d9ac9714f529053b6e54fcad5a, type: 3}
+  m_PrefabInstance: {fileID: 5597760544036861728}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f08735f8307e44b6be5924d8c5e0212, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
 --- !u!1 &1590315309
 GameObject:
   m_ObjectHideFlags: 0
@@ -15128,6 +15206,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1714057211}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1602104522 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 682890971480159186, guid: cd965d401276eca4a88d4c4b4553cecc, type: 3}
+  m_PrefabInstance: {fileID: 5441511859155021578}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f08735f8307e44b6be5924d8c5e0212, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
 --- !u!1 &1604380721
 GameObject:
   m_ObjectHideFlags: 0
@@ -15985,6 +16074,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1678570862}
   m_CullTransparentMesh: 1
+--- !u!114 &1679770312 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7617853124869740899, guid: cd965d401276eca4a88d4c4b4553cecc, type: 3}
+  m_PrefabInstance: {fileID: 5441511859155021578}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f08735f8307e44b6be5924d8c5e0212, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
 --- !u!114 &1683467975 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3969381889645117142, guid: fc0575d9ac9714f529053b6e54fcad5a, type: 3}
@@ -16876,11 +16976,11 @@ MonoBehaviour:
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
   m_Colors:
-    m_NormalColor: {r: 0.34117648, g: 0.34901962, b: 0.36862746, a: 1}
+    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_PressedColor: {r: 0.23529412, g: 0.23529412, b: 0.23529412, a: 1}
-    m_SelectedColor: {r: 0.76862746, g: 0.76862746, b: 0.76862746, a: 1}
-    m_DisabledColor: {r: 0.078431375, g: 0.078431375, b: 0.078431375, a: 0.5019608}
+    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
@@ -16898,7 +16998,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1804968290}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 392176935}
+        m_TargetAssemblyTypeName: BreachAudioManager, Assembly-CSharp
+        m_MethodName: PlayButtonClick
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1804968290
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16912,15 +17024,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.05882353, g: 0.09803922, b: 0.15686275, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 0}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4

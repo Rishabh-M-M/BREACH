@@ -8562,6 +8562,8 @@ MonoBehaviour:
     - spawner: {fileID: 1683467975}
       count: 1
       startDelay: 5
+    duration: 45
+    advanceEarlyOnClear: 0
   - groups:
     - spawner: {fileID: 1957467141}
       count: 4
@@ -8569,6 +8571,8 @@ MonoBehaviour:
     - spawner: {fileID: 642611629}
       count: 4
       startDelay: 8
+    duration: 50
+    advanceEarlyOnClear: 0
   - groups:
     - spawner: {fileID: 1057884029}
       count: 6
@@ -8585,6 +8589,8 @@ MonoBehaviour:
     - spawner: {fileID: 1683467975}
       count: 3
       startDelay: 6
+    duration: 65
+    advanceEarlyOnClear: 0
   - groups:
     - spawner: {fileID: 642611629}
       count: 5
@@ -8598,6 +8604,8 @@ MonoBehaviour:
     - spawner: {fileID: 439547859}
       count: 4
       startDelay: 3
+    duration: 75
+    advanceEarlyOnClear: 0
   - groups:
     - spawner: {fileID: 1057884029}
       count: 5
@@ -8617,6 +8625,8 @@ MonoBehaviour:
     - spawner: {fileID: 772751173}
       count: 2
       startDelay: 15
+    duration: 55
+    advanceEarlyOnClear: 0
 --- !u!4 &934213408
 Transform:
   m_ObjectHideFlags: 0

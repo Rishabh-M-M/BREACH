@@ -275,7 +275,10 @@ namespace ProjectBreach.Core
                 return false;
             }
 
-            int permanentCost = targetUpgrade.PermanentPowerCost;
+            // Armoury passive (design doc §2.1) discounts the turret-upgrade
+            // purchase cost while the room is online.
+            int permanentCost =
+                ArmouryPassive.ApplyDiscount(targetUpgrade.PermanentPowerCost);
             int operatingCost = targetUpgrade.OperatingPowerCost;
 
             if (permanentCost < 0 || operatingCost < 0)

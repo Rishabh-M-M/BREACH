@@ -167,9 +167,11 @@ public class TurretUpgradeCardUI : MonoBehaviour
 
         if (upgradeCostText != null && showUpgradeCost)
         {
+            // Reflect the Armoury passive discount in the displayed price.
+            int shownCost = ArmouryPassive.ApplyDiscount(permanentUpgradeCost);
             upgradeCostText.text =
                 ColourLabel("UPGRADE COST:") + " " +
-                ColourValue(permanentUpgradeCost.ToString(), Color.white);
+                ColourValue(shownCost.ToString(), Color.white);
         }
     }
 

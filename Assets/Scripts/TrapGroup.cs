@@ -9,15 +9,10 @@ namespace ProjectBreach.Core
         StasisField
     }
 
-    /// <summary>
-    /// Controls one group of trap tiles. Each group is independently activated
-    /// by UI and allocates its own operating power while active.
-    /// </summary>
     public class TrapGroup : DefensiveStructure
     {
         [Header("Trap Group")]
         [SerializeField] private TrapGroupType trapType = TrapGroupType.GravitySpikes;
-
         [Tooltip("Optional testing shortcut. Disable this once UI buttons are wired.")]
         [SerializeField] private bool enableKeyboardTesting = true;
         [SerializeField] private KeyCode toggleKey = KeyCode.T;
@@ -30,9 +25,11 @@ namespace ProjectBreach.Core
         [Min(0)] [SerializeField] private int damagePerTick = 1;
         [Min(0.02f)] [SerializeField] private float damageInterval = 0.1f;
 
-        [Header("Stasis Field Settings")]
-        [Range(0f, 0.95f)] [SerializeField] private float slowAmount = 0.5f;
-        [Min(0.05f)] [SerializeField] private float slowRefreshDuration = 0.3f;
+        [Header("Stasis Field Pull Settings")]
+        [Tooltip("Pull strength in world units per second. Start around 3-5 and tune in Play Mode.")]
+        [Min(0f)] [SerializeField] private float pullSpeed = 4f;
+        [Tooltip("Duration of each pull application. Must be longer than the tile's pull refresh interval.")]
+        [Min(0.1f)] [SerializeField] private float pullApplicationDuration = 0.3f;
 
         [Header("Audio")]
         [SerializeField] private AudioClip activeLoopSound;
@@ -50,8 +47,6 @@ namespace ProjectBreach.Core
         {
             base.Awake();
 
-            // Explicit assignments are safest for independent groups.
-            // Auto-discovery is provided as a convenience when arrays are empty.
             if (gravitySpikeTiles == null || gravitySpikeTiles.Length == 0)
                 gravitySpikeTiles = GetComponentsInChildren<SpikeTrap>(true);
 
@@ -74,10 +69,11 @@ namespace ProjectBreach.Core
 
         private void Start()
         {
+            // Re-acquire operating power through TurnOn rather than assuming a
+            // serialized active state is still funded.
             if (isActive)
             {
-                // A scene-serialized active group must acquire power at runtime.
-                isActive = false;
+                base.TurnOff();
                 TurnOn();
             }
         }
@@ -93,27 +89,45 @@ namespace ProjectBreach.Core
             if (gravitySpikeTiles != null)
             {
                 foreach (SpikeTrap tile in gravitySpikeTiles)
+                {
                     if (tile != null)
                         tile.SetCombatSettings(damagePerTick, damageInterval);
+                }
             }
 
             if (stasisFieldTiles != null)
             {
                 foreach (StasisFieldTile tile in stasisFieldTiles)
+                {
                     if (tile != null)
-                        tile.Configure(slowAmount, slowRefreshDuration);
+                        tile.Configure(pullSpeed, pullApplicationDuration);
+                }
             }
         }
 
         public void Toggle()
         {
-            if (isActive) TurnOff();
-            else TurnOn();
+            if (isActive)
+                TurnOff();
+            else
+                TurnOn();
         }
 
         public override void TurnOn()
         {
-            if (isActive) return;
+            if (isActive)
+                return;
+
+            if (!HasConfiguredTiles())
+            {
+                Debug.LogError(
+                    $"TrapGroup '{name}' cannot activate: no valid tile components are assigned for trap type '{trapType}'.",
+                    this);
+                UIManager.Instance?.ShowMessage("No trap tiles are assigned to this trap group.");
+                return;
+            }
+
+            ConfigureTiles();
 
             PowerManager power = PowerManager.Instance;
             if (power != null)
@@ -127,9 +141,10 @@ namespace ProjectBreach.Core
                 holdsOperatingPower = true;
             }
 
-            base.TurnOn();
-            ConfigureTiles();
+            // Activate the actual trap tiles as part of the same operation as
+            // the group state, so the UI cannot report ON while tiles stay off.
             SetTilesActive(true);
+            base.TurnOn();
             UpdateLoopAudio();
         }
 
@@ -159,19 +174,57 @@ namespace ProjectBreach.Core
             TurnOff();
         }
 
+        private bool HasConfiguredTiles()
+        {
+            if (trapType == TrapGroupType.GravitySpikes)
+            {
+                if (gravitySpikeTiles == null)
+                    return false;
+
+                foreach (SpikeTrap tile in gravitySpikeTiles)
+                {
+                    if (tile != null)
+                        return true;
+                }
+
+                return false;
+            }
+
+            if (stasisFieldTiles == null)
+                return false;
+
+            foreach (StasisFieldTile tile in stasisFieldTiles)
+            {
+                if (tile != null)
+                    return true;
+            }
+
+            return false;
+        }
+
         private void SetTilesActive(bool value)
         {
             if (trapType == TrapGroupType.GravitySpikes)
             {
-                if (gravitySpikeTiles == null) return;
+                if (gravitySpikeTiles == null)
+                    return;
+
                 foreach (SpikeTrap tile in gravitySpikeTiles)
-                    if (tile != null) tile.SetActive(value);
+                {
+                    if (tile != null)
+                        tile.SetActive(value);
+                }
             }
             else
             {
-                if (stasisFieldTiles == null) return;
+                if (stasisFieldTiles == null)
+                    return;
+
                 foreach (StasisFieldTile tile in stasisFieldTiles)
-                    if (tile != null) tile.SetActive(value);
+                {
+                    if (tile != null)
+                        tile.SetActive(value);
+                }
             }
         }
 
@@ -198,6 +251,7 @@ namespace ProjectBreach.Core
                 return;
 
             bool audible = IsRoomAudible();
+
             if (audible && !loopAudioSource.isPlaying)
                 loopAudioSource.Play();
             else if (!audible && loopAudioSource.isPlaying)
@@ -207,6 +261,7 @@ namespace ProjectBreach.Core
         private bool IsRoomAudible()
         {
             TurretAudioController audioController = TurretAudioController.Instance;
+
             return audioController != null &&
                    roomAudioReference != null &&
                    audioController.IsRoomAudioAudible(roomAudioReference);
@@ -226,7 +281,6 @@ namespace ProjectBreach.Core
             if (isActive)
                 base.TurnOff();
 
-            // Release allocated operating power if this group is disabled/destroyed.
             if (holdsOperatingPower)
             {
                 PowerManager.Instance?.Refund(PowerCost);
@@ -236,7 +290,6 @@ namespace ProjectBreach.Core
 
         private void OnDestroy()
         {
-            // Don't rely on child discovery order; deactivate only assigned/owned tiles.
             SetTilesActive(false);
         }
     }

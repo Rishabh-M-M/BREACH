@@ -20,9 +20,7 @@ public class TurretUpgradeCardUI : MonoBehaviour
 
     [Header("Text References")]
     [SerializeField] private TextMeshProUGUI titleText;
-    [SerializeField] private TextMeshProUGUI damageText;
-    [SerializeField] private TextMeshProUGUI rangeText;
-    [SerializeField] private TextMeshProUGUI fireRateText;
+    [SerializeField] private TextMeshProUGUI descriptionText;
 
     [Header("Cost References")]
     [SerializeField] private TextMeshProUGUI powerCostText;
@@ -36,19 +34,11 @@ public class TurretUpgradeCardUI : MonoBehaviour
     [Header("Card Appearance")]
     [SerializeField] private Image cardBackground;
 
-    [Header("Display Stats")]
-    [SerializeField] private float damage = 5f;
-    [SerializeField] private float range = 8f;
-    [SerializeField] private float fireRate = 1f;
-
     [Header("Costs")]
     [SerializeField] private int operatingPowerCost = 30;
     [SerializeField] private int permanentUpgradeCost = 0;
 
-    [Header("Stat Colours")]
-    [SerializeField] private Color betterColour = new Color32(51, 255, 102, 255);
-    [SerializeField] private Color worseColour = new Color32(255, 64, 64, 255);
-    [SerializeField] private Color sameColour = Color.white;
+    [Header("Text Colours")]
     [SerializeField] private Color labelCyan = new Color32(0, 255, 255, 255);
 
     [Header("Card Colours")]
@@ -122,32 +112,40 @@ public class TurretUpgradeCardUI : MonoBehaviour
         if (titleText != null)
             titleText.color = labelCyan;
 
-        UpdateStatsText();
+        UpdateDescriptionText();
         UpdateCostText();
         UpdateButtonState();
     }
 
-    private void UpdateStatsText()
+    private void UpdateDescriptionText()
     {
-        if (damageText != null)
-        {
-            damageText.text =
-                ColourLabel("DAMAGE:") + " " +
-                ColourValue(damage.ToString("0.##"), GetStatColour(damage, 5f, true));
-        }
+        if (descriptionText == null)
+            return;
 
-        if (rangeText != null)
-        {
-            rangeText.text =
-                ColourLabel("RANGE:") + " " +
-                ColourValue(range.ToString("0.##"), GetStatColour(range, 8f, true));
-        }
+        descriptionText.text = GetDescription(cardType);
+    }
 
-        if (fireRateText != null)
+    private string GetDescription(TurretUpgradeCardType type)
+    {
+        switch (type)
         {
-            fireRateText.text =
-                ColourLabel("FIRE RATE:") + " " +
-                ColourValue(fireRate.ToString("0.##") + "s", GetStatColour(fireRate, 1f, false));
+            case TurretUpgradeCardType.DoubleBarrel:
+                return "Paired burst shots with a slower fire rate for boosted damage over time.";
+
+            case TurretUpgradeCardType.HeliosIncinerator:
+                return "Incinerating beam that ramps up damage by locking onto the highest-HP enemy.";
+
+            case TurretUpgradeCardType.RocketLauncher:
+                return "Heavy explosive firepower designed to devastate enemy groups.";
+
+            case TurretUpgradeCardType.Sharpshooter:
+                return "Slow-firing precision weapon built for critical damage through long-range targeting.";
+
+            case TurretUpgradeCardType.BaseTurret:
+                return "Balanced automatic fire for reliable, sustained damage.";
+
+            default:
+                return string.Empty;
         }
     }
 
@@ -193,6 +191,9 @@ public class TurretUpgradeCardUI : MonoBehaviour
 
             case TurretUpgradeCardType.HeliosIncinerator:
                 return currentController.IsHeliosIncinerator;
+
+            case TurretUpgradeCardType.RocketLauncher:
+                return currentController.IsRocketLauncher;
 
             default:
                 return false;
@@ -285,6 +286,9 @@ public class TurretUpgradeCardUI : MonoBehaviour
             case TurretUpgradeCardType.HeliosIncinerator:
                 return TurretVariant.HeliosIncinerator;
 
+            case TurretUpgradeCardType.RocketLauncher:
+                return TurretVariant.RocketLauncher;
+
             default:
                 return TurretVariant.Base;
         }
@@ -315,15 +319,6 @@ public class TurretUpgradeCardUI : MonoBehaviour
         }
 
         panel.TryPurchase(cardType);
-    }
-
-    private Color GetStatColour(float value, float baseValue, bool higherIsBetter)
-    {
-        if (Mathf.Approximately(value, baseValue))
-            return sameColour;
-
-        bool isBetter = higherIsBetter ? value > baseValue : value < baseValue;
-        return isBetter ? betterColour : worseColour;
     }
 
     private string ColourLabel(string label)

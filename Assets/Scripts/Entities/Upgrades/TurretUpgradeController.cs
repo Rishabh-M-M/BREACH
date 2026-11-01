@@ -37,9 +37,6 @@ namespace ProjectBreach.Core
         public HeliosIncineratorUpgrade ActiveHeliosIncinerator =>
             heliosIncineratorUpgrade;
 
-        public RocketLauncherUpgrade ActiveRocketLauncher =>
-            rocketLauncherUpgrade;
-
         // Kept for compatibility with existing UI code.
         // This now means the CURRENT variant is not Base.
         public bool HasCommittedUpgrade => !IsBase;
@@ -71,7 +68,7 @@ namespace ProjectBreach.Core
                         return "Helios Incinerator";
 
                     case TurretVariant.RocketLauncher:
-                        return "RocketLauncher";
+                        return "Rocket Launcher";
 
                     default:
                         return "Base Turret";
@@ -278,10 +275,8 @@ namespace ProjectBreach.Core
                 return false;
             }
 
-            int permanentCost = ArmouryPassive.ApplyDiscount(
-                targetUpgrade.PermanentPowerCost);
-            int operatingCost = ArmouryPassive.ApplyDiscount(
-                targetUpgrade.OperatingPowerCost);
+            int permanentCost = targetUpgrade.PermanentPowerCost;
+            int operatingCost = targetUpgrade.OperatingPowerCost;
 
             if (permanentCost < 0 || operatingCost < 0)
             {
@@ -362,7 +357,7 @@ namespace ProjectBreach.Core
             return TrySwitchVariant(
                 TurretVariant.RocketLauncher,
                 rocketLauncherUpgrade,
-                "RocketLauncher");
+                "Rocket Launcher");
         }
 
         public bool TrySwitchToBase()
@@ -553,7 +548,7 @@ namespace ProjectBreach.Core
             TryUpgradeToHeliosIncinerator();
         }
 
-        [ContextMenu("TEST - Buy RocketLauncher")]
+        [ContextMenu("TEST - Buy Rocket Launcher")]
         private void TestBuyRocketLauncher()
         {
             TryUpgradeToRocketLauncher();

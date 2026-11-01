@@ -22,6 +22,10 @@ public class EnemyMover : MonoBehaviour
     [SerializeField] private float shieldDetectDistance = 5f;
     [SerializeField] private float shieldStopDistance = 2.5f;
 
+    [Header("Stasis Field Pull")]
+    [Tooltip("Current attraction origin, refreshed by StasisFieldTile while inside its trigger.")]
+    [SerializeField] private float pullSpeed = 0f;
+
     public Transform AimPoint => aimPoint;
 
     private Rigidbody rb;
@@ -38,6 +42,9 @@ public class EnemyMover : MonoBehaviour
     private int currentRoomIndex;
     private string currentRoomName;
     private Room spawnRoom;
+
+    private Vector3 pullOrigin;
+    private float pullTimeRemaining;
 
     public bool HasArrived { get; private set; }
 
@@ -86,6 +93,9 @@ public class EnemyMover : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (pullTimeRemaining > 0f)
+            pullTimeRemaining -= Time.fixedDeltaTime;
+
         if (shieldTarget != null && shieldTarget.IsDestroyed)
         {
             shieldTarget = null;
@@ -120,14 +130,18 @@ public class EnemyMover : MonoBehaviour
             }
         }
 
+        Vector3 pullStep = GetPullStep();
+
         if (target == null || HasArrived)
         {
             if (HasArrived)
-            {
                 RotateTowardsAimPoint();
-            }
 
             animator.SetFloat("Steer", 0f);
+
+            if (pullStep.sqrMagnitude > 0f)
+                rb.MovePosition(rb.position + pullStep);
+
             return;
         }
 
@@ -135,7 +149,6 @@ public class EnemyMover : MonoBehaviour
         toTarget.y = 0f;
 
         float distance = toTarget.magnitude;
-
         float effectiveArrivalDistance = shieldTarget != null ? shieldStopDistance : arrivalDistance;
 
         if (distance <= effectiveArrivalDistance)
@@ -143,6 +156,10 @@ public class EnemyMover : MonoBehaviour
             HasArrived = true;
             animator.SetBool("HasArrived", true);
             animator.SetFloat("Steer", 0f);
+
+            if (pullStep.sqrMagnitude > 0f)
+                rb.MovePosition(rb.position + pullStep);
+
             return;
         }
 
@@ -153,11 +170,49 @@ public class EnemyMover : MonoBehaviour
         Quaternion newRotation = Quaternion.RotateTowards(rb.rotation, targetRotation, turnSpeed * Time.fixedDeltaTime);
         rb.MoveRotation(newRotation);
 
-        Vector3 newPosition = rb.position + transform.forward * (moveSpeed * _speedMultiplier) * Time.fixedDeltaTime;
-        rb.MovePosition(newPosition);
+        Vector3 forwardStep = transform.forward * (moveSpeed * _speedMultiplier) * Time.fixedDeltaTime;
+        rb.MovePosition(rb.position + forwardStep + pullStep);
 
         float clampedAngle = Mathf.Clamp(angleToTarget, -maxSteerAngle, maxSteerAngle);
         animator.SetFloat("Steer", clampedAngle / maxSteerAngle);
+    }
+
+    private Vector3 GetPullStep()
+    {
+        if (pullTimeRemaining <= 0f || pullSpeed <= 0f)
+            return Vector3.zero;
+
+        Vector3 direction = pullOrigin - rb.position;
+        direction.y = 0f;
+
+        if (direction.sqrMagnitude < 0.0001f)
+            return Vector3.zero;
+
+        return direction.normalized * pullSpeed * Time.fixedDeltaTime;
+    }
+
+    /// <summary>
+    /// Apply an attraction towards the stasis field's centre.
+    /// Called repeatedly by StasisFieldTile while the enemy is inside.
+    /// </summary>
+    public void ApplyPull(Vector3 origin, float speed, float duration)
+    {
+        if (speed <= 0f || duration <= 0f)
+            return;
+
+        pullOrigin = origin;
+        pullSpeed = speed;
+        pullTimeRemaining = Mathf.Max(pullTimeRemaining, duration);
+    }
+
+    /// <summary>
+    /// Immediately cancels any active stasis-field pull.
+    /// Called during the release phase or when an enemy leaves the field.
+    /// </summary>
+    public void ClearPull()
+    {
+        pullTimeRemaining = 0f;
+        pullSpeed = 0f;
     }
 
     public void SetTarget(Transform newTarget, EnemyTargetPoint targetPoint)
@@ -173,6 +228,7 @@ public class EnemyMover : MonoBehaviour
         turretAimPoint = newAimPoint;
     }
 
+    // Retained for compatibility with other systems that may still apply slows.
     public void ApplySlow(float multiplier, float duration)
     {
         if (multiplier >= 1f || duration <= 0f) return;

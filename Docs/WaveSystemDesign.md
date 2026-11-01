@@ -73,6 +73,8 @@ earlyStartEnabled   // 是否允许玩家提前开波
 // 波次配置
 waves : List<Wave>
   Wave      = List<WaveGroup>
+             + float duration            // 该波存活时长（时间制节奏核心）
+             + bool  advanceEarlyOnClear // 全清后是否提前收波（默认 false = 严格时间制）
   WaveGroup = {
       EnemySpawner_Single spawner;   // 引用现有 spawner 实例
       int   count;                   // 该口该波出几只
@@ -119,8 +121,9 @@ WaveManager 等 firstWaveDelay
       ▼
 ┌→ BroadcastWaveStart(i)（EventRegistry 现成事件，点亮）
 │    对每个 group：spawner.SpawnWave(count)（组间按 startDelay 错峰）
-│    记账：已下令数 vs 已结算数，相等 = 本波清空
-│    ├─ 最后一波清空 → BroadcastAllWavesCleared → GameManager.EndGame(true)
+│    时间制节奏：等 wave.duration 秒，到点即开下一波（不依赖全灭/全结算）
+│    ├─ 可选：advanceEarlyOnClear=true 且本波已全清 → 提前收波
+│    ├─ 最后一波时间到 → BroadcastAllWavesCleared → GameManager.EndGame(true)
 │    │                                        （GameOverScreen 收到 Victory，链路现成）
 │    └─ 还有下一波 → GameManager.SetWaveClearState() → 休整倒计时
 │                    （可被 RequestEarlyStart 打断）
@@ -132,6 +135,7 @@ WaveManager 等 firstWaveDelay
 ## 9. 具体运行示例（时间轴）
 
 示例配置：`firstWaveDelay = 5s`，`restDuration = 20s`；
+Wave 1 / 2 / 3 的 `duration = 30s`，`advanceEarlyOnClear = false`（严格时间制）：
 
 - Wave 1：[ 左门 spawner → 3 只 ]
 - Wave 2：[ 左门 spawner → 2 只（delay 0s），右门 spawner → 2 只（delay 4s）]
@@ -143,31 +147,25 @@ t=0    Play。GameManager.StartGame() → state=Playing
 
 t=5    BroadcastWaveStart(0)
        左 spawner.SpawnWave(3) → t=5 / t=6 / t=7 各出一只（走原 EnemyMover 逻辑）。
-       记账：应结算 3。
 
-t≈20   最后一只被塔打死 → EnemyHealth.Die() → 广播 OnEnemyResolved
-       结算 3/3 → Wave 1 清空 → GameManager.SetWaveClearState()
-       → BroadcastGameStateChanged(WaveClear) → 开始休整倒计时 20s
+t=35   Wave 1 duration(30s) 到点 → 开下一波（无论是否还有怪在场）
+       → GameManager.SetWaveClearState() → 休整倒计时 20s
 
-t≈28   玩家按提前开波按钮 → WaveManager.RequestEarlyStart()
-       剩余 12s 作废，立即进 Wave 2。
+t=55   休整结束（或玩家提前开波）→ BroadcastWaveStart(1)
+       左组 SpawnWave(2)；右组等 startDelay 4s 后 SpawnWave(2)。
 
-t≈28   BroadcastWaveStart(1)
-       左组 SpawnWave(2)：t=28、t=29 出发；
-       右组等 startDelay 4s：t=32 才 SpawnWave(2)，t=32、t=33 出发。
-       记账：应结算 4。
+t=85   Wave 2 duration(30s) 到点 → 休整倒计时（Wave 1/2 残留怪继续被击杀/突破）
 
-t≈50   3 只被塔打死；第 4 只冲进主控制室：
-       BreachZone.OnTriggerEnter → Enemy.Breach() → 先广播 OnEnemyResolved（结算 ✅）
-       → 再走原链路 NotifyBreach → MainControlRoom 扣核心 HP。
-       结算 4/4 → Wave 2 清空 → WaveClear → 休整倒计时。
+t=105  休整结束 → Wave 3（最后一波）：BroadcastWaveStart(2)，左门出 4 只。
 
-t≈70   休整结束 → Wave 3（最后一波）：BroadcastWaveStart(2)，左门出 4 只。
-
-t≈95   4 只全部结算 → BroadcastAllWavesCleared → GameManager.EndGame(true)
+t=135  Wave 3 duration(30s) 到点 → BroadcastAllWavesCleared
+       → GameManager.EndGame(true)
        → BroadcastGameStateChanged(Victory)
        → GameOverScreen（零改动）timeScale=0、暂停音频、0.75s hit-stop 后弹 VICTORY。
 ```
+
+> 说明：时间制下，前一波的残留怪会进入下一波继续存在，结算会计因此不再作为“开波”依据，
+> 仅当 `advanceEarlyOnClear=true` 时才用于提前收波（且残留怪可能让提前收波提前触发，见字段注释）。
 
 ### 边界情况
 
@@ -191,7 +189,8 @@ t≈95   4 只全部结算 → BroadcastAllWavesCleared → GameManager.EndGame(
 
 - [ ] Play 模式跑一个 2~3 波的短配置，波次按配置顺序开波；
 - [ ] 同一波内多个 spawner 按 `startDelay` 错峰出兵；
-- [ ] 波内敌人被全灭 **或突破** 后进入 `WaveClear` 休整；
+- [ ] 波次按 `duration` 时间到点自动开下一波（**不依赖**全灭/全突破）；
+- [ ] 残留怪跨波继续存在；`advanceEarlyOnClear` 开启时全清可提前收波；
 - [ ] 休整期倒计时正常结束开下一波；按按钮（或 ContextMenu）可立即开下一波；
 - [ ] 最后一波清空后弹出 Victory（走 `OnAllWavesCleared → EndGame(true)`）；
 - [ ] 核心中途被摧毁 → GAME OVER，一切冻结；Restart 后波次从头跑；

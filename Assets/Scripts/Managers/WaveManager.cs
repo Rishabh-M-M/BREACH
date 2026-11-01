@@ -40,6 +40,17 @@ namespace ProjectBreach.Core
         public class Wave
         {
             public List<WaveGroup> groups = new List<WaveGroup>();
+
+            [Tooltip("How long this wave stays active (in seconds) before the next wave starts. " +
+                     "The next wave starts when this timer expires, regardless of how many enemies " +
+                     "are still alive — pacing is driven by game time, not by clearing the wave.")]
+            public float duration = 30f;
+
+            [Tooltip("If true, the wave can end early (before its duration) when every enemy it " +
+                     "spawned has been killed or breached. Leave false for strictly time-based pacing. " +
+                     "Note: with overlapping waves, leftover enemies from the previous wave count into " +
+                     "the current one, so early-clear may fire ahead of time.")]
+            public bool advanceEarlyOnClear = false;
         }
 
         [Header("Global Pacing")]
@@ -138,13 +149,13 @@ namespace ProjectBreach.Core
 
             for (int waveIndex = 0; waveIndex < waves.Count; waveIndex++)
             {
-                RunWave(waveIndex, waves[waveIndex]);
+                Wave wave = waves[waveIndex];
+                RunWave(waveIndex, wave);
 
-                // Wait until this wave is fully dispatched and fully settled.
-                while (!(_dispatchComplete && _resolvedCount >= _orderedCount))
-                {
-                    yield return null;
-                }
+                // Time-based pacing: wait for this wave's active duration. The next
+                // wave starts when the timer expires — NOT after all enemies are
+                // killed. Optionally, the wave can end early if fully cleared.
+                yield return WaveActiveDuration(wave);
 
                 bool isLastWave = (waveIndex == waves.Count - 1);
 
@@ -214,6 +225,36 @@ namespace ProjectBreach.Core
             {
                 _dispatchComplete = true;
             }
+        }
+
+        /// <summary>
+        /// Keeps the current wave active for <see cref="Wave.duration"/> seconds
+        /// (time-based pacing). The timer is the single source of truth for when
+        /// the next wave starts — leftover enemies do NOT hold the wave open.
+        ///
+        /// When <see cref="Wave.advanceEarlyOnClear"/> is enabled, the wave may
+        /// end sooner if it is fully dispatched and resolved.
+        /// </summary>
+        private IEnumerator WaveActiveDuration(Wave wave)
+        {
+            float t = 0f;
+
+            while (t < wave.duration)
+            {
+                // Optional early exit: the whole wave was dispatched and settled
+                // before the timer ran out.
+                if (wave.advanceEarlyOnClear
+                    && _dispatchComplete
+                    && _resolvedCount >= _orderedCount)
+                {
+                    break;
+                }
+
+                yield return null;
+                t += Time.deltaTime;
+            }
+
+            Debug.Log($"[WaveManager] Wave active duration elapsed ({wave.duration}s).");
         }
 
         private IEnumerator RestCountdown()

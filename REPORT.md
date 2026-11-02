@@ -173,7 +173,8 @@ We successfully completed user evaluations with **10 participants** in total. Fi
 
 - **Questionnaire Player Base:** 2 Tower Defense/RTS players, 2 players with Surveillance/Management game experience, and 1 casual player with no relevant experience.
 - **Walkthrough Player Background:** Included a diverse range of player skill levels—from hardcore players who successfully cleared all 5 waves, to players who were eliminated by the 2nd or 3rd waves.
-- **Raw Data:** The complete raw data can be found in our repository: [BREACH_playtest_survey_answers.csv](./EvaluationData/BREACH_playtest_survey_answers.csv) and [BREACH_walkthrough_transcripts.md](./EvaluationData/BREACH_walkthrough_transcripts.md). *(Note: Please ensure the relative paths match their exact folder location in the repository).*
+- **Raw Data:** The complete raw data can be found in our repository: [BREACH_playtest_survey_answers.csv](./BREACH_playtest_survey_answers.csv) and [BREACH_walkthrough_transcripts.md](./BREACH_walkthrough_transcripts.md). 
+- **Privacy Note:** To protect participant privacy, all actual player names in the raw data have been anonymized and replaced with "Player 1" through "Player 5", and the CSV has been reformatted accordingly.
 
 ## 9.2 Data Analysis & Identified Issues
 Based on the questionnaire rubric (scored out of 5) and qualitative oral feedback, the game's **audio and atmosphere scored the highest (averaging 4.2/5)**. Players reported successful immersion, noting that the alarm sound effects effectively induced tension. However, several critical issues were identified regarding UI guidance, operational controls, and overall tutorials.

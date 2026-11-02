@@ -11,6 +11,11 @@ public class OpeningCutsceneController : MonoBehaviour
     [Header("Next Scene")]
     [SerializeField] private string nextSceneName = "StartScene";
 
+    [SerializeField] private string mainMenuSceneName = "MainMenu";
+
+    // Set to true when the advertisement is played after Ending A.
+    public static bool PlayAsEndingAdvertisement = false;
+
     private bool hasTransitioned = false;
 
     private void Awake()
@@ -44,8 +49,23 @@ public class OpeningCutsceneController : MonoBehaviour
 
         hasTransitioned = true;
 
-        Debug.Log("NEXUS advertisement finished. Loading gameplay...");
+        if (PlayAsEndingAdvertisement)
+        {
+            PlayAsEndingAdvertisement = false;
 
-        SceneManager.LoadScene(nextSceneName);
+            Debug.Log(
+                "Ending A advertisement finished. Returning to main menu..."
+            );
+
+            SceneManager.LoadScene(mainMenuSceneName);
+        }
+        else
+        {
+            Debug.Log(
+                "NEXUS advertisement finished. Loading gameplay..."
+            );
+
+            SceneManager.LoadScene(nextSceneName);
+        }
     }
 }

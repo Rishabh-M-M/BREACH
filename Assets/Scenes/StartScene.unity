@@ -4108,6 +4108,7 @@ GameObject:
   m_Component:
   - component: {fileID: 439117235}
   - component: {fileID: 439117234}
+  - component: {fileID: 439117236}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -4129,6 +4130,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ProjectBreach.Core.GameManager
   isBossSkillsEnabled: 1
   mainControlRoom: {fileID: 1384470682}
+  endingController: {fileID: 439117236}
 --- !u!4 &439117235
 Transform:
   m_ObjectHideFlags: 0
@@ -4144,6 +4146,24 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &439117236
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 439117233}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3479e1992755d43d3b7d0cfb8d767c88, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EndingSequenceController
+  mainMenuScene: MainMenu
+  openingCutsceneScene: OpeningCutscene
+  corporateJingle: {fileID: 0}
+  glitchSound: {fileID: 8300000, guid: 4f9558294009748cbb1336b928ffdfee, type: 3}
+  fadeDuration: 1.2
+  messagePause: 0.7
 --- !u!114 &439547859 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4652762430494852017, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
@@ -4321,7 +4341,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 717973167318073675, guid: bb1452abf6eabf640be3c3cad8b37672, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.5001221
+      value: -0.5001831
       objectReference: {fileID: 0}
     - target: {fileID: 717973167318073675, guid: bb1452abf6eabf640be3c3cad8b37672, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -4351,55 +4371,6 @@ PrefabInstance:
 --- !u!224 &461656483 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 717973167318073675, guid: bb1452abf6eabf640be3c3cad8b37672, type: 3}
-  m_PrefabInstance: {fileID: 461656482}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &461656484 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7303698311400339125, guid: bb1452abf6eabf640be3c3cad8b37672, type: 3}
-  m_PrefabInstance: {fileID: 461656482}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
---- !u!114 &461656485 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3512494546775429431, guid: bb1452abf6eabf640be3c3cad8b37672, type: 3}
-  m_PrefabInstance: {fileID: 461656482}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
---- !u!114 &461656486 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1247066271860977504, guid: bb1452abf6eabf640be3c3cad8b37672, type: 3}
-  m_PrefabInstance: {fileID: 461656482}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
---- !u!114 &461656487 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 759413708121694984, guid: bb1452abf6eabf640be3c3cad8b37672, type: 3}
-  m_PrefabInstance: {fileID: 461656482}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
---- !u!1 &461656488 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4777254059575299401, guid: bb1452abf6eabf640be3c3cad8b37672, type: 3}
   m_PrefabInstance: {fileID: 461656482}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &464435536
@@ -9214,6 +9185,7 @@ GameObject:
   m_Component:
   - component: {fileID: 934213408}
   - component: {fileID: 934213407}
+  - component: {fileID: 934213409}
   m_Layer: 0
   m_Name: WaveManager
   m_TagString: Untagged
@@ -9327,6 +9299,8 @@ MonoBehaviour:
       startDelay: 15
     duration: 300
     advanceEarlyOnClear: 0
+  bossWaveIndex: 4
+  bossIntroOverlay: {fileID: 934213409}
 --- !u!4 &934213408
 Transform:
   m_ObjectHideFlags: 0
@@ -9342,6 +9316,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &934213409
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 934213406}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7bb7afd4b636449b19e05cbf7e2d3b8c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BossWaveIntroOverlay
+  bossEyeClip: {fileID: 32900000, guid: 1bdfa6b33dec74df48f1f7148fc0a1d7, type: 3}
+  bossEyeRenderTexture: {fileID: 8400000, guid: 24751acc95ffa40f783e1f60600756a8, type: 2}
 --- !u!114 &941175155 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7125228285896843694, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
@@ -12472,16 +12460,16 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1166868064}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5fe78f4846e8fca48994a000f47c8682, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ProjectBreach.Core.GameOverScreen
-  gameOverPanel: {fileID: 461656488}
-  titleText: {fileID: 461656487}
-  subtitleText: {fileID: 461656486}
-  restartButton: {fileID: 461656485}
-  mainMenuButton: {fileID: 461656484}
+  gameOverPanel: {fileID: 0}
+  titleText: {fileID: 0}
+  subtitleText: {fileID: 0}
+  restartButton: {fileID: 0}
+  mainMenuButton: {fileID: 0}
   defeatTitle: GAME OVER
   defeatSubtitle: The Main Control Room has been destroyed.
   victoryTitle: VICTORY

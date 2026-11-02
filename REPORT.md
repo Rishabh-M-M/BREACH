@@ -1,3 +1,8 @@
+
+
+# Evaluation Planing
+---
+
 # 1. Evaluation Techniques
 
 ## Technique 1: Observational Methods – Post-task Walkthroughs
@@ -161,4 +166,37 @@ To keep the evaluation consistent:
 - Separate bugs (something not working as intended) from usability problems (something working but difficult to understand) and balance problems (something working but feeling too easy or too difficult).
 - After changes are made, run a short regression test to confirm that the fix has not broken other rooms, turrets, Power allocation, or the WebGL build.
 
----
+# 9. Evaluation Results & Improvements
+
+## 9.1 Actual Participants & Demographics
+We successfully completed user evaluations with **10 participants** in total. Five evaluations were conducted through post-task walkthroughs (video review), and five via online questionnaires. 
+
+- **Questionnaire Player Base:** 2 Tower Defense/RTS players, 2 players with Surveillance/Management game experience, and 1 casual player with no relevant experience.
+- **Walkthrough Player Background:** Included a diverse range of player skill levels—from hardcore players who successfully cleared all 5 waves, to players who were eliminated by the 2nd or 3rd waves.
+- **Raw Data:** The complete raw data can be found in our repository: [BREACH_playtest_survey_answers.csv](./BREACH_playtest_survey_answers.csv) and [BREACH_walkthrough_transcripts.md](./BREACH_walkthrough_transcripts.md). *(Note: Please ensure the relative paths match their exact folder location in the repository).*
+
+## 9.2 Data Analysis & Identified Issues
+Based on the questionnaire rubric (scored out of 5) and qualitative oral feedback, the game's **audio and atmosphere scored the highest (averaging 4.2/5)**. Players reported successful immersion, noting that the alarm sound effects effectively induced tension. However, several critical issues were identified regarding UI guidance, operational controls, and overall tutorials.
+
+- **Issue 1: Overly Complex Controls Causing "Tunnel Vision" (Score: 2.4/5)**
+  - *Finding:* Forcing the player to repeatedly mouse-click to switch between all 4 rooms caused a severe operational bottleneck.
+  - *Supporting Feedback:* Participant 2 (an RTS veteran) complained that by Wave 5, the game felt more like an APM (Actions Per Minute) test rather than a resource management challenge. Players struggled to rapidly switch cameras, upgrade turrets, toggle power, and set up defenses simultaneously across multiple fronts.
+
+- **Issue 2: Power System Confusion (Score: 3.4/5)**
+  - *Finding:* Many players failed to realize that while upgrades consume a portion of the permanent electricity cap, electricity itself regenerates over time.
+  - *Supporting Feedback:* Participants expressed hesitation in spending electricity because the concept of a "permanent cost" seemed intimidating. As a result, players often hoarded their energy, leading to under-upgraded defenses when facing harder enemy waves.
+
+- **Issue 3: Unclear UI & Room States (Score: 3.0/5)**
+  - *Finding:* Players were unable to quickly identify in-game crises due to confusing and homogenous UI elements.
+  - *Supporting Feedback:* Participant 5 mentioned that all warning indicators were colored red. By the time they cycled through cameras to identify the correct room under attack, it was already too late. Furthermore, when a room was breached, it was hard to identify which specific buff had been lost.
+
+- **Issue 4: Difficulty Spikes & Audio Localization (Score: N/A)**
+  - *Finding:* The early stages did not offer players enough breathing room to learn the core mechanics. Additionally, purely from the audio cues, it was almost impossible to identify *which* specific room was being breached.
+
+## 9.3 Game Improvements Based on Feedback
+To address the issues identified during the playtests, our team implemented the following concrete changes in the final Milestone 4 build:
+
+- **Resolution to Issue 1 (APM & Tunnel Vision):** We adjusted enemy spawning behavior in the later waves. Instead of spreading small groups of enemies across all four rooms simultaneously, we concentrated larger waves into one or two rooms at a time. This significantly reduces the need for constant, frantic room-switching, lowering the required APM while maintaining strategic pressure.
+- **Resolution to Issue 2 (Power System):** We greatly reduced the energy cost for upgrades and encouraged players to allocate energy more freely by introducing an "upgrade discount" room buff. Moreover, we increased the base energy regeneration rate from 3 points/10 seconds to 5 points/10 seconds. Experiencing a faster energy income allows players to spend electricity more confidently.
+- **Resolution to Issue 3 (UI Clarification):** We redesigned the alarm system to reduce visual clutter. We removed non-critical visual alerts (e.g., "not enough electricity" is now simply a textual warning). The glaring visual and audio alarms are now exclusively reserved for severe events, such as room breaches and enemy teleportation, making crises instantly recognizable.
+- **Resolution to Issue 4 (Difficulty Curve & Guidance):** We weakened the enemies in Waves 1 and 2 and restricted their spawn points to a single room. This allows players to safely start the game without needing to switch rooms immediately. Furthermore, a detailed tutorial video has been integrated at the beginning of the game to better onboard new players.

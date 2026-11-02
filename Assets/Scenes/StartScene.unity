@@ -22923,6 +22923,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2010347214028975237, guid: fc0575d9ac9714f529053b6e54fcad5a, type: 3}
+      propertyPath: reappearDelay
+      value: 0.75
+      objectReference: {fileID: 0}
     - target: {fileID: 3328946263123235868, guid: fc0575d9ac9714f529053b6e54fcad5a, type: 3}
       propertyPath: newTarget
       value: 

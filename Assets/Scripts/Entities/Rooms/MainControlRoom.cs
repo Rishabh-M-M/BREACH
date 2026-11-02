@@ -1,3 +1,5 @@
+
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace ProjectBreach.Core
@@ -15,6 +17,9 @@ namespace ProjectBreach.Core
         private int currentCoreHP;
         private bool gameOverSent;
 
+        // Keeps track of rooms already counted.
+        private HashSet<Room> fallenRooms = new HashSet<Room>();
+
         public int MaxHP => maxCoreHP;
         public int CurrentHP => currentCoreHP;
         public bool IsDead => currentCoreHP <= 0;
@@ -22,8 +27,10 @@ namespace ProjectBreach.Core
         private void Awake()
         {
             currentCoreHP = maxCoreHP;
+
             if (breachController == null)
                 breachController = FindObjectOfType<BreachController>();
+
             Debug.Log($"[MainControlRoom] Initialized CoreHP: {currentCoreHP}/{maxCoreHP}");
         }
 
@@ -39,9 +46,30 @@ namespace ProjectBreach.Core
 
         private void HandleRoomFallen(Room room)
         {
-            if (room == null) return;
-            Debug.LogWarning($"[MainControlRoom] Room '{room.RoomName}' fell. Triggering breach visuals.");
-            TriggerBreachVisuals();
+            if (room == null)
+                return;
+
+            // Ignore duplicate events for the same room.
+            if (!fallenRooms.Add(room))
+            {
+                Debug.Log($"[MainControlRoom] Room '{room.RoomName}' was already counted.");
+                return;
+            }
+
+            int newBreachLevel = Mathf.Clamp(fallenRooms.Count, 0, 4);
+
+            Debug.LogWarning(
+                $"[MainControlRoom] Room '{room.RoomName}' fell. " +
+                $"Permanent breach level: {newBreachLevel}/4"
+            );
+
+            if (breachController == null)
+                breachController = FindObjectOfType<BreachController>();
+
+            if (breachController != null)
+                breachController.SetPermanentBreachLevel(newBreachLevel);
+            else
+                Debug.LogWarning("[MainControlRoom] BreachController not found.");
         }
 
         /// <summary>Called when an enemy reaches the main-room breach zone.</summary>
@@ -52,7 +80,7 @@ namespace ProjectBreach.Core
             TakeDamage(coreDamagePerBreach);
         }
 
-        /// <summary>Called when an enemy collides with and damages the main-room shield.</summary>
+        /// <summary>Called when an enemy damages the main-room shield.</summary>
         public void NotifyMainShieldDamaged()
         {
             TriggerBreachVisuals();
@@ -71,20 +99,28 @@ namespace ProjectBreach.Core
 
         public void TakeDamage(int amount)
         {
-            if (IsDead || amount <= 0) return;
+            if (IsDead || amount <= 0)
+                return;
 
             currentCoreHP = Mathf.Max(0, currentCoreHP - amount);
+
             Debug.Log($"[MainControlRoom] CoreHP: {currentCoreHP}/{maxCoreHP}");
+
             EventRegistry.BroadcastCoreHPChanged(currentCoreHP, maxCoreHP);
 
-            if (currentCoreHP <= 0) Die();
+            if (currentCoreHP <= 0)
+                Die();
         }
 
         public void Die()
         {
-            if (gameOverSent) return;
+            if (gameOverSent)
+                return;
+
             gameOverSent = true;
+
             Debug.LogError("[MainControlRoom] Core destroyed! Game over.");
+
             if (GameManager.Instance != null)
                 GameManager.Instance.RegisterCoreDestroyed();
             else

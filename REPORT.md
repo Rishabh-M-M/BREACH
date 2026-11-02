@@ -206,14 +206,14 @@ To address the issues identified during the playtests, our team implemented the 
 
 ## 1. Direct Link
 
-| Asset | Repository Path |
+| **Asset** | **Repository Path** |
 | --- | --- |
-| Particle System Prefab (main) | `Assets/Prefabs/ExplosionEffect.prefab` |
-| Enemy explosion variant | `Assets/Prefabs/ExplosionEffect_Enemy.prefab` |
-| Rocket explosion variant | `Assets/Prefabs/ExplosionEffect Rocket.prefab` |
-| Explosion controller script | `Assets/Scripts/Entities/Enemy/RocketExplosionEffect.cs` |
-| Flash decay script | `Assets/Scripts/Entities/Enemy/FlashDecay.cs` |
-| Particle material | `Assets/Materials/PlasmaTrail.mat` |
+| Particle System Prefab (main) | [ExplosionEffect.prefab](Assets/Prefabs/ExplosionEffect.prefab) |
+| Enemy explosion variant | [ExplosionEffect_Enemy.prefab](Assets/Prefabs/ExplosionEffect_Enemy.prefab) |
+| Rocket explosion variant | [ExplosionEffect Rocket.prefab](Assets/Prefabs/ExplosionEffect%20Rocket.prefab) |
+| Explosion controller script | [RocketExplosionEffect.cs](Assets/Scripts/Entities/Enemy/RocketExplosionEffect.cs) |
+| Flash decay script | [FlashDecay.cs](Assets/Scripts/Entities/Enemy/FlashDecay.cs) |
+| Particle material | [PlasmaTrail.mat](Assets/Materials/PlasmaTrail.mat) |
 
 ---
 

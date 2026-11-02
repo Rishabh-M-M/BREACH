@@ -201,3 +201,80 @@ To address the issues identified during the playtests, our team implemented the 
 - **Resolution to Issue 2 (Power System):** We greatly reduced the energy cost for upgrades and encouraged players to allocate energy more freely by introducing an "upgrade discount" room buff. Moreover, we increased the base energy regeneration rate from 3 points/10 seconds to 5 points/10 seconds. Experiencing a faster energy income allows players to spend electricity more confidently.
 - **Resolution to Issue 3 (UI Clarification):** We redesigned the alarm system to reduce visual clutter. We removed non-critical visual alerts (e.g., "not enough electricity" is now simply a textual warning). The glaring visual and audio alarms are now exclusively reserved for severe events, such as room breaches and enemy teleportation, making crises instantly recognizable.
 - **Resolution to Issue 4 (Difficulty Curve & Guidance):** We weakened the enemies in Waves 1 and 2 and restricted their spawn points to a single room. This allows players to safely start the game without needing to switch rooms immediately. Furthermore, a detailed tutorial video has been integrated at the beginning of the game to better onboard new players.
+
+# 10. Particle System Report— ExplosionEffect
+
+## 1. Direct Link
+
+| Asset | Repository Path |
+| --- | --- |
+| Particle System Prefab (main) | `Assets/Prefabs/ExplosionEffect.prefab` |
+| Enemy explosion variant | `Assets/Prefabs/ExplosionEffect_Enemy.prefab` |
+| Rocket explosion variant | `Assets/Prefabs/ExplosionEffect Rocket.prefab` |
+| Explosion controller script | `Assets/Scripts/Entities/Enemy/RocketExplosionEffect.cs` |
+| Flash decay script | `Assets/Scripts/Entities/Enemy/FlashDecay.cs` |
+| Particle material | `Assets/Materials/PlasmaTrail.mat` |
+
+---
+
+## 2.What does this partical effect do, How does it serve the game
+
+`ExplosionEffect`one-shot Explosion partical effect，when the enemy of projectile get destroyed it would be played. It is compose by two parts
+
+- **Main partical body**：At the point of explosion it will dispense about 25 aquatic colored particals and with in 0.4 second it will cool from bright white into transparent forming a quick fireball.
+- **Flashing sub-entities `Flash`**：A aquatic light source which flash in brightness on the first frame of the explosion, after that within 0.3 seconds it will quickly deem to mimic an explosion light effect
+
+Its contribution to the game is demonstrated with in three aspects：
+
+1. **Interactive feedback**：projectile that collides with burst with an exaplose for player to confirm hit location
+2. **Atmospheric effect**：the aquatic/ white colored plasma explosion + short blinf empahsises the game's sci-fi characteristic, and portrays a unstabke plasma weapon. furthermore the flashing light will also provide better gaming experience when most scenery are in dark lighting
+3. **Gameplay Readability**：The flashing effect can tell the player quickly where combat is happening even under fast camera switch
+---
+
+## 3. Modified Particle Attributes and Reasoning
+
+The key particle attributes adjusted to achieve the explosion effect, along with the reasoning behind each choice, are listed below.
+
+| Attribute | Value | Reasoning |
+| --- | --- | --- |
+| **Duration** (`lengthInSec`) | 0.5 s | An explosion is a transient event; 0.5 s is enough for all particles to burst once and disappear without dragging on. |
+| **Looping** | Off (one-shot) | An explosion happens only once, so it should not emit continuously — the loop is therefore disabled. |
+| **Play On Awake** | On | Lets the prefab play automatically the moment it is instantiated, so no external script needs to trigger the particles themselves. |
+| **Start Lifetime** | 0.4 s | The particle lifetime is slightly shorter than the total duration, ensuring every particle fades out naturally before the system stops and no lingering particles are left behind. |
+| **Start Speed** | 4 | Gives particles enough initial velocity to burst outward, creating a "shockwave scattering" blast feel. |
+| **Start Size** | 0.15 | Uses many small particles combined with a one-shot burst to form a dense, fine-grained fireball rather than a few large chunks. |
+| **Start Color** | White → cyan `(0, 0.706, 1)` | Cyan is the game's unified energy/tech colour; the white-to-cyan ramp makes the core read as white-hot with a cyan periphery. |
+| **Gravity Modifier** | 0 | This is an energy burst rather than falling debris, so gravity is disabled to let particles fly outward in straight lines, matching the intuition of an "energy explosion". |
+| **Shape** | Sphere, `angle 25`, `radius 0.1`, `arc 360` | A spherical emitter with 360° omnidirectional emission scatters particles evenly in all directions instead of a single direction. |
+| **Emission — Burst** | 1 burst at `time 0`, ~25 particles | The defining feature of an explosion is an instantaneous burst; firing a single burst at time zero fits the explosion semantics better than pure rate-over-time. |
+| **Emission — Rate over Time** | 10 | Adds a small number of continuous particles on top of the burst, producing a short "afterglow/ember" tail after the explosion. |
+| **Color over Lifetime** | Cyan → white → transparent | Mimics the temperature change of a real explosion: the core glows white-hot, then cools, darkens, and fades to transparent. The fade also lets particles dissolve instead of popping out abruptly. |
+| **Max Particles** | 1000 | The cap is far above actual usage, preventing particles from being unexpectedly truncated in extreme cases. |
+
+**Complementary adjustments to the `Flash` child object (point light + script):**
+
+| Attribute | Value | Reasoning |
+| --- | --- | --- |
+| Light type / colour | Point light, cyan `(0, 0.706, 1)`, `intensity 3` | Matches the particle colour; the explosion casts a cyan flash on its first frame, reinforcing the instant sense of "energy release". |
+| Light `Range` | 4 | Keeps the flash confined to a small area around the blast point, so it does not wash out the lighting of the whole room. |
+| `FlashDecay.decayTime` | 0.3 s | The flash lasts only a very short time. The script uses **quadratic decay (`t * t`)** rather than linear falloff, producing a realistic "hard punch up front, short tail" flash feel. |
+
+---
+
+## 4. Randomness Usage
+
+- **`Auto Random Seed` = on（1）**：Every realisation of the explosion prefab, Unity automatically generate a new seed, meaning every partical's burst direction, speed, vibration would be different,even when multipal enemy are hit, the explosion wouldn't seem like a copy paste of image
+- Becuase of the use of 360° all directional dispense, the random seed's effect would be further enlarged, making every explosion look natural and non-repeating
+- This effect does not additionally enable `Randomize Rotation Direction` or a random range on `Start Speed`, because the one-shot burst + spherical omnidirectional emission + automatic random seed already provide enough visual variation. Adding extra random parameters would instead cause the explosion to lose its stable, controlled fireball silhouette.
+
+---
+
+## 5. Gameplay GIF
+
+![Explosion demonstration](./Images/ExplosionDemonstration.gif)
+
+(Explosion is used for both enemy and friendly projectile)
+
+
+---
+

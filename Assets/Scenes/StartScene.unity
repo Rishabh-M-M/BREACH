@@ -18202,7 +18202,7 @@ MonoBehaviour:
   clickAmountPerPress: 1
   clicksRequiredToClear: 6
   isBossEncounterActive: 0
-  activateOnWaveNumber: 1
+  activateOnWaveNumber: 5
   testRoomIndex: 1
 --- !u!4 &1800325017
 Transform:
@@ -18231,7 +18231,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8f9c330bd3181243a6b34882aa909cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ProjectBreach.Boss.BossController
-  intervalSeconds: 5
+  intervalSeconds: 15
 --- !u!1 &1804968287
 GameObject:
   m_ObjectHideFlags: 0

@@ -16,6 +16,7 @@ namespace ProjectBreach.Boss
             button = GetComponent<Button>();
             canvasGroup = GetComponent<CanvasGroup>();
             button.onClick.AddListener(OnCoverClicked);
+            SetVisible(false);
         }
 
         protected virtual void Update()

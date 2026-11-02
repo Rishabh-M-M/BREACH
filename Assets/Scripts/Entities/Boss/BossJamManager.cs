@@ -15,6 +15,7 @@ namespace ProjectBreach.Boss
 
         [Header("Boss Encounter")]
         [SerializeField] private bool isBossEncounterActive = false;
+        [SerializeField] private int activateOnWaveNumber = 5; // player-facing wave number, not zero-based waveIndex
 
         [Header("Debug / Testing")]
         [SerializeField] private int testRoomIndex = 1;
@@ -42,6 +43,8 @@ namespace ProjectBreach.Boss
                 state.OnTurretJamCleared += HandleTurretJamCleared;
                 jamStates[i] = state;
             }
+
+            EventRegistry.OnWaveStart += HandleWaveStart; // confirm this matches the event name in EventRegistry.cs
         }
 
         private void Start()
@@ -55,6 +58,11 @@ namespace ProjectBreach.Boss
                     room.OnPermanentlyDisabled += HandleRoomPermanentlyDisabled;
                 }
             }
+        }
+
+        private void OnDestroy()
+        {
+            EventRegistry.OnWaveStart -= HandleWaveStart;
         }
 
         // ============================================================
@@ -195,6 +203,21 @@ namespace ProjectBreach.Boss
         private void HandleCameraJamCleared(int roomIndex)
         {
             Debug.Log($"[BossJamManager] Camera jam cleared in room {roomIndex}.");
+        }
+
+        // ============================================================
+        // WAVE INTEGRATION
+        // ============================================================
+
+        private void HandleWaveStart(int waveIndex)
+        {
+            if (isBossEncounterActive) return;
+
+            int waveNumber = waveIndex + 1; // WaveManager's waveIndex is zero-based
+            if (waveNumber >= activateOnWaveNumber)
+            {
+                ActivateBossEncounter();
+            }
         }
 
         // ============================================================

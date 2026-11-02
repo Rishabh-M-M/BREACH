@@ -8880,7 +8880,7 @@ MonoBehaviour:
     - spawner: {fileID: 7761523458117504719}
       count: 2
       startDelay: 15
-    duration: 55
+    duration: 300
     advanceEarlyOnClear: 0
 --- !u!4 &934213408
 Transform:

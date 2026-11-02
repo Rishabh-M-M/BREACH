@@ -54,10 +54,6 @@ namespace ProjectBreach.Boss
             }
         }
 
-        // ============================================================
-        // CAMERA JAM DECOY - spawned close to the room's camera point
-        // ============================================================
-
         private void HandleCameraJamStarted(int roomIndex)
         {
             if (bossDecoyPrefab == null || cameraUIController == null) return;
@@ -75,20 +71,19 @@ namespace ProjectBreach.Boss
 
             GameObject decoy = Instantiate(bossDecoyPrefab, spawnPosition, spawnRotation);
             cameraJamDecoys[roomIndex] = decoy;
+            decoy.GetComponent<BossSpawnEffect>()?.PlaySpawnEffect();
         }
 
         private void HandleCameraJamCleared(int roomIndex)
         {
-            if (cameraJamDecoys.TryGetValue(roomIndex, out GameObject decoy))
-            {
-                if (decoy != null) Destroy(decoy);
-                cameraJamDecoys.Remove(roomIndex);
-            }
-        }
+            if (!cameraJamDecoys.TryGetValue(roomIndex, out GameObject decoy)) return;
+            cameraJamDecoys.Remove(roomIndex);
+            if (decoy == null) return;
 
-        // ============================================================
-        // TURRET JAM DECOY - spawned at the room's turret anchor
-        // ============================================================
+            BossSpawnEffect effect = decoy.GetComponent<BossSpawnEffect>();
+            if (effect != null) effect.PlayDespawnEffect(() => Destroy(decoy));
+            else Destroy(decoy);
+        }
 
         private void HandleTurretJamStarted(int roomIndex)
         {
@@ -104,15 +99,18 @@ namespace ProjectBreach.Boss
 
             GameObject decoy = Instantiate(bossDecoyPrefab, anchor.position, anchor.rotation);
             turretJamDecoys[roomIndex] = decoy;
+            decoy.GetComponent<BossSpawnEffect>()?.PlaySpawnEffect();
         }
 
         private void HandleTurretJamCleared(int roomIndex)
         {
-            if (turretJamDecoys.TryGetValue(roomIndex, out GameObject decoy))
-            {
-                if (decoy != null) Destroy(decoy);
-                turretJamDecoys.Remove(roomIndex);
-            }
+            if (!turretJamDecoys.TryGetValue(roomIndex, out GameObject decoy)) return;
+            turretJamDecoys.Remove(roomIndex);
+            if (decoy == null) return;
+
+            BossSpawnEffect effect = decoy.GetComponent<BossSpawnEffect>();
+            if (effect != null) effect.PlayDespawnEffect(() => Destroy(decoy));
+            else Destroy(decoy);
         }
     }
 }

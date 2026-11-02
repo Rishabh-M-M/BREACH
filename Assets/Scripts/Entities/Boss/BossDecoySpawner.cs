@@ -66,6 +66,7 @@ namespace ProjectBreach.Boss
                 return;
             }
 
+            BossAlarmAudio.Instance.PlayAlarm();
             Vector3 spawnPosition = cameraPoint.position + cameraPoint.forward * cameraCloseUpDistance;
             Quaternion spawnRotation = Quaternion.LookRotation(cameraPoint.position - spawnPosition);
 
@@ -97,6 +98,7 @@ namespace ProjectBreach.Boss
                 return;
             }
 
+            BossAlarmAudio.Instance.PlayAlarm();
             GameObject decoy = Instantiate(bossDecoyPrefab, anchor.position, anchor.rotation);
             turretJamDecoys[roomIndex] = decoy;
             decoy.GetComponent<BossSpawnEffect>()?.PlaySpawnEffect();

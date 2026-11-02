@@ -14576,7 +14576,7 @@ MonoBehaviour:
   rampDuration: 8
   cooldownDuration: 1
   permanentPowerCost: 0
-  operatingPowerCost: 30
+  operatingPowerCost: 75
   visual: {fileID: 639610803}
   beamRenderer: {fileID: 1242699495}
   beamStart: {fileID: 1214840767}
@@ -22917,6 +22917,7 @@ MonoBehaviour:
   breachColour: {r: 1, g: 0, b: 0, a: 1}
   pulseSpeed: 3
   corruptionStrength: 2
+  breachLevel: 0
   screenRoot: {fileID: 1714057211}
   breachMaterial: {fileID: 2100000, guid: 9d2d2476d28b74a68ae79cc94af3ee77, type: 2}
   breachLights:

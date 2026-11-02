@@ -16,7 +16,8 @@ public class MainMenuNavigation : MonoBehaviour
 
         foreach (Button button in buttons)
         {
-            TMP_Text buttonText = button.GetComponentInChildren<TMP_Text>(true);
+            TMP_Text buttonText =
+                button.GetComponentInChildren<TMP_Text>(true);
 
             if (buttonText == null)
                 continue;
@@ -29,10 +30,6 @@ public class MainMenuNavigation : MonoBehaviour
                     button.onClick.AddListener(StartGame);
                     break;
 
-                case "QUIT":
-                    button.onClick.AddListener(QuitGame);
-                    break;
-
                 case "TUTORIAL":
                     button.onClick.AddListener(() =>
                     {
@@ -41,10 +38,7 @@ public class MainMenuNavigation : MonoBehaviour
                     break;
 
                 case "SKIP TO BOSS":
-                    button.onClick.AddListener(() =>
-                    {
-                        Debug.Log("Skip to Boss will be connected later.");
-                    });
+                    button.onClick.AddListener(SkipToBoss);
                     break;
             }
         }
@@ -56,9 +50,9 @@ public class MainMenuNavigation : MonoBehaviour
         SceneManager.LoadScene("OpeningCutscene");
     }
 
-    private void QuitGame()
+    private void SkipToBoss()
     {
-        Debug.Log("Quitting Breach...");
-        Application.Quit();
+        Debug.Log("Opening Skip to Boss introduction...");
+        SceneManager.LoadScene("BossSkipIntro");
     }
 }

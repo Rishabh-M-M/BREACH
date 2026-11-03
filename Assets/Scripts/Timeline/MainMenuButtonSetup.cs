@@ -62,7 +62,6 @@ public class MainMenuButtonSetup : MonoBehaviour
         "START GAME",
         "TUTORIAL",
         "SKIP TO BOSS",
-        "QUIT"
     };
 
     private void Start()

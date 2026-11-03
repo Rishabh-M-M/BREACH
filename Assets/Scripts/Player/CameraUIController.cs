@@ -1,5 +1,7 @@
+
 using UnityEngine;
 using System.Collections;
+using TMPro;
 
 public class CameraUIController : MonoBehaviour
 {
@@ -46,6 +48,27 @@ public class CameraUIController : MonoBehaviour
     public Transform room2CameraPoint;
     public Transform room3CameraPoint;
     public Transform room4CameraPoint;
+
+    [Header("Room Description UI")]
+    [SerializeField] private TMP_Text passiveAbilityText;
+    [SerializeField] private TMP_Text breachedDescriptionText;
+
+    [Header("Room Description Colours")]
+    [SerializeField]
+    private Color passiveHeadingColour =
+        new Color32(0, 255, 255, 255);
+
+    [SerializeField]
+    private Color passiveDescriptionColour =
+        new Color32(80, 255, 190, 255);
+
+    [SerializeField]
+    private Color breachedHeadingColour =
+        new Color32(255, 105, 45, 255);
+
+    [SerializeField]
+    private Color breachedDescriptionColour =
+        new Color32(255, 145, 75, 255);
 
     private RectTransform cameraScreenRect;
     private CanvasGroup cameraScreenCanvasGroup;
@@ -198,50 +221,30 @@ public class CameraUIController : MonoBehaviour
             timer += Time.unscaledDeltaTime;
 
             float progress =
-                Mathf.Clamp01(
-                    timer / animationDuration
-                );
+                Mathf.Clamp01(timer / animationDuration);
 
             float smoothProgress =
-                1f - Mathf.Pow(
-                    1f - progress,
-                    3f
-                );
+                1f - Mathf.Pow(1f - progress, 3f);
 
             float scale =
-                Mathf.Lerp(
-                    startingScale,
-                    1f,
-                    smoothProgress
-                );
+                Mathf.Lerp(startingScale, 1f, smoothProgress);
 
             float alpha =
-                Mathf.Lerp(
-                    0f,
-                    1f,
-                    smoothProgress
-                );
+                Mathf.Lerp(0f, 1f, smoothProgress);
 
             cameraScreenRect.localScale =
                 Vector3.one * scale;
 
-            cameraScreenCanvasGroup.alpha =
-                alpha;
+            cameraScreenCanvasGroup.alpha = alpha;
 
             yield return null;
         }
 
-        cameraScreenRect.localScale =
-            Vector3.one;
+        cameraScreenRect.localScale = Vector3.one;
+        cameraScreenCanvasGroup.alpha = 1f;
 
-        cameraScreenCanvasGroup.alpha =
-            1f;
-
-        cameraScreenCanvasGroup.interactable =
-            true;
-
-        cameraScreenCanvasGroup.blocksRaycasts =
-            true;
+        cameraScreenCanvasGroup.interactable = true;
+        cameraScreenCanvasGroup.blocksRaycasts = true;
 
         isAnimating = false;
     }
@@ -350,8 +353,7 @@ public class CameraUIController : MonoBehaviour
             glitchOverlay.SetActive(false);
 
         if (cameraScreenRect != null)
-            cameraScreenRect.localScale =
-                Vector3.one;
+            cameraScreenRect.localScale = Vector3.one;
 
         if (cameraScreenCanvasGroup != null)
         {
@@ -370,12 +372,82 @@ public class CameraUIController : MonoBehaviour
     }
 
     // =========================================================
+    // ROOM DESCRIPTIONS
+    // =========================================================
+
+    private void UpdateRoomDescription(int roomIndex)
+    {
+        string passive = "";
+        string breached = "";
+
+        switch (roomIndex)
+        {
+            case 1:
+                passive =
+                    "Enables the minimap and provides breach notifications through alarms and additional information.";
+
+                breached =
+                    "Minimap and breach notifications are disabled.";
+                break;
+
+            case 2:
+                passive =
+                    "Gradually regenerates barrier health across all rooms.";
+
+                breached =
+                    "Ship-wide barrier regeneration stops. Destroyed barriers cannot be restored.";
+                break;
+
+            case 3:
+                passive =
+                    "Reduces power costs for turret upgrades and trap activations.";
+
+                breached =
+                    "Turret upgrades and trap activations may cost more power.";
+                break;
+
+            case 4:
+                passive =
+                    "Increases maximum power capacity over time.";
+
+                breached =
+                    "Maximum power capacity growth stops.";
+                break;
+
+            default:
+                if (passiveAbilityText != null)
+                    passiveAbilityText.text = "";
+
+                if (breachedDescriptionText != null)
+                    breachedDescriptionText.text = "";
+
+                return;
+        }
+
+        if (passiveAbilityText != null)
+        {
+            passiveAbilityText.text =
+                $"<color=#{ColorUtility.ToHtmlStringRGB(passiveHeadingColour)}>PASSIVE ABILITY</color>\n" +
+                $"<color=#{ColorUtility.ToHtmlStringRGB(passiveDescriptionColour)}>{passive}</color>";
+        }
+
+        if (breachedDescriptionText != null)
+        {
+            breachedDescriptionText.text =
+                $"<color=#{ColorUtility.ToHtmlStringRGB(breachedHeadingColour)}>WHEN BREACHED</color>\n" +
+                $"<color=#{ColorUtility.ToHtmlStringRGB(breachedDescriptionColour)}>{breached}</color>";
+        }
+    }
+
+    // =========================================================
     // ROOM 1
     // =========================================================
 
     public void ShowRoom1()
     {
         currentViewedRoomIndex = 1;
+
+        UpdateRoomDescription(1);
 
         ShowRoom(
             room1CameraPoint,
@@ -394,6 +466,8 @@ public class CameraUIController : MonoBehaviour
     {
         currentViewedRoomIndex = 2;
 
+        UpdateRoomDescription(2);
+
         ShowRoom(
             room2CameraPoint,
             "Room 2"
@@ -411,6 +485,8 @@ public class CameraUIController : MonoBehaviour
     {
         currentViewedRoomIndex = 3;
 
+        UpdateRoomDescription(3);
+
         ShowRoom(
             room3CameraPoint,
             "Room 3"
@@ -427,6 +503,8 @@ public class CameraUIController : MonoBehaviour
     public void ShowRoom4()
     {
         currentViewedRoomIndex = 4;
+
+        UpdateRoomDescription(4);
 
         ShowRoom(
             room4CameraPoint,
@@ -457,8 +535,7 @@ public class CameraUIController : MonoBehaviour
         if (roomCameraPoint == null)
         {
             Debug.LogWarning(
-                roomName +
-                " Camera Point is not assigned."
+                roomName + " Camera Point is not assigned."
             );
 
             return;
@@ -479,9 +556,7 @@ public class CameraUIController : MonoBehaviour
             cameraRecordingUI.StartRecording();
 
         Debug.Log(
-            "Showing " +
-            roomName +
-            " camera."
+            "Showing " + roomName + " camera."
         );
     }
 
@@ -493,12 +568,15 @@ public class CameraUIController : MonoBehaviour
             case 2: ShowRoom2(); break;
             case 3: ShowRoom3(); break;
             case 4: ShowRoom4(); break;
+
             default:
-                Debug.LogWarning($"[CameraUIController] ShowRoom called with invalid room index {roomIndex}.");
+                Debug.LogWarning(
+                    $"[CameraUIController] ShowRoom called with invalid room index {roomIndex}."
+                );
                 break;
         }
     }
-    
+
     public Transform GetRoomCameraPoint(int roomIndex)
     {
         switch (roomIndex)
@@ -507,6 +585,7 @@ public class CameraUIController : MonoBehaviour
             case 2: return room2CameraPoint;
             case 3: return room3CameraPoint;
             case 4: return room4CameraPoint;
+
             default: return null;
         }
     }

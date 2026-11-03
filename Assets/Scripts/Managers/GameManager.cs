@@ -1,25 +1,25 @@
+
 using UnityEngine;
 using ProjectBreach.Core;
 
 namespace ProjectBreach.Core
 {
-    /// <summary>
-    /// Global Controller (GRASP: Controller + Facade + Indirection)
-    /// W2: Wired MainControlRoom to complete the Breach → Core damage → Game over chain.
-    /// </summary>
     public class GameManager : Singleton<GameManager>
     {
         public GameState State { get; private set; } = GameState.MainMenu;
 
-        [Header("Boss Skills Master Switch (kill switch)")]
+        [Header("Boss Skills Master Switch")]
         [SerializeField] private bool isBossSkillsEnabled = true;
 
         [Header("References")]
-        [SerializeField] private MainControlRoom mainControlRoom;  // W2: Main control room reference
+        [SerializeField] private MainControlRoom mainControlRoom;
+
+        [Header("Ending Sequences")]
+        [SerializeField] private EndingSequenceController endingController;
 
         protected override void Awake()
         {
-            base.Awake();  // Must be called!
+            base.Awake();
         }
 
         public void StartGame()
@@ -31,21 +31,32 @@ namespace ProjectBreach.Core
 
         public void EndGame(bool isWin)
         {
+            if (State == GameState.Victory || State == GameState.GameOver)
+                return;
+
             State = isWin ? GameState.Victory : GameState.GameOver;
+
             EventRegistry.BroadcastGameStateChanged(State);
+
             Debug.Log($"[GameManager] Game ended: {(isWin ? "Victory" : "Defeat")}");
+
+            if (endingController != null)
+            {
+                endingController.PlayEnding(isWin);
+            }
+            else
+            {
+                Debug.LogError(
+                    "[GameManager] EndingSequenceController is not assigned!"
+                );
+            }
         }
 
         public void RegisterCoreDestroyed()
         {
-            EndGame(isWin: false);
+            EndGame(false);
         }
 
-        /// <summary>
-        /// Called by WaveManager when a wave is fully resolved (killed or breached)
-        /// and more waves remain. Moves the state machine into the WaveClear rest
-        /// period so UI (wave info panel / upgrade prompts) can react.
-        /// </summary>
         public void SetWaveClearState()
         {
             State = GameState.WaveClear;
@@ -53,11 +64,6 @@ namespace ProjectBreach.Core
             Debug.Log("[GameManager] Wave clear — rest period");
         }
 
-        /// <summary>
-        /// Reset the state machine to MainMenu. Called by GameOverScreen before
-        /// loading the start scene, so the next run never inherits a stale
-        /// GameOver/Victory state from the previous one.
-        /// </summary>
         public void ReturnToMainMenu()
         {
             State = GameState.MainMenu;
@@ -83,21 +89,20 @@ namespace ProjectBreach.Core
             Debug.Log($"[GameManager] Boss spawns {count} adds");
         }
 
-        /// <summary>
-        /// Called when an enemy breaches (from Enemy.Breach).
-        /// W2: Wired MainControlRoom.SpawnBreach to complete T05 acceptance.
-        /// </summary>
         public void NotifyBreach(Enemy enemy)
         {
             Debug.Log("[GameManager] Breach occurred!");
 
             if (mainControlRoom != null)
             {
-                mainControlRoom.SpawnBreach(enemy);  // W2: Removed TODO, wired
+                mainControlRoom.SpawnBreach(enemy);
             }
             else
             {
-                Debug.LogError("[GameManager] MainControlRoom not assigned! Please drag the MainControlRoom object in the Inspector.");
+                Debug.LogError(
+                    "[GameManager] MainControlRoom not assigned! " +
+                    "Please drag the MainControlRoom object in the Inspector."
+                );
             }
         }
     }

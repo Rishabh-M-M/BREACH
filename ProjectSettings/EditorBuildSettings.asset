@@ -14,5 +14,14 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/StartScene.unity
     guid: c10d73137cb12634ebeed7ae295b6f4f
+  - enabled: 1
+    path: Assets/Scenes/BossSkipIntro.unity
+    guid: 879a8aa977a2d4d509362bf9ed28c517
+  - enabled: 1
+    path: Assets/Scenes/DefeatEnding.unity
+    guid: 0125cdf8e1af74292b8252512f5251bb
+  - enabled: 1
+    path: Assets/Scenes/VictoryEnding.unity
+    guid: a682a23cdc2274827933c9a0b21e0678
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0

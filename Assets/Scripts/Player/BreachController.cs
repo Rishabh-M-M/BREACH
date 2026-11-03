@@ -1,3 +1,4 @@
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -19,6 +20,11 @@ public class BreachController : MonoBehaviour
     [Tooltip("0 = none, 1 = low, 2 = high.")]
     [Range(0, 2)]
     public float corruptionStrength = 2f;
+
+    [Header("Permanent Breach Level")]
+    [Tooltip("0 = no breach, 1-4 = permanently fallen rooms.")]
+    [Range(0, 4)]
+    public int breachLevel = 0;
 
     [Header("Screen Setup")]
     [Tooltip("MainRoom containing Screen 1-12.")]
@@ -46,12 +52,7 @@ public class BreachController : MonoBehaviour
 
     private Renderer[] screenRenderers;
 
-    // Store the original materials so the screens can be restored
-    // after the breach effect ends.
     private Material[][] originalMaterials;
-
-    // Separate material instances are created for the breach effect
-    // so the original screen materials are not permanently changed.
     private Material[][] breachMaterials;
 
     private bool[] originalLightStates;
@@ -59,21 +60,17 @@ public class BreachController : MonoBehaviour
     private Color[] originalLightColours;
 
     private bool breachRunning;
+    private Coroutine breachCoroutine;
 
-    void Start()
+    private void Start()
     {
         FindScreens();
         StoreOriginalMaterials();
         StoreOriginalLights();
     }
 
-    void Update()
+    private void Update()
     {
-        // B is kept as a manual test key for the breach effect.
-        if (Input.GetKeyDown(KeyCode.B))
-        {
-            StartBreach();
-        }
 
         if (breachRunning)
         {
@@ -81,19 +78,44 @@ public class BreachController : MonoBehaviour
         }
     }
 
-    void FindScreens()
+    // ====================================================
+    // TEST LEVEL CONTROL
+    // ====================================================
+
+    private void SetTestBreachLevel(int level)
     {
-        // If MainRoom was not manually assigned, find it by name.
+        breachLevel = Mathf.Clamp(level, 1, 4);
+
+        Debug.Log(
+            "[BreachController] TEST BREACH LEVEL: "
+            + breachLevel
+        );
+
+        if (breachRunning)
+        {
+            // Update the existing effect immediately.
+            ApplyBreachMaterials();
+        }
+        else
+        {
+            // Start the temporary breach effect.
+            StartBreach();
+        }
+    }
+
+    // ====================================================
+    // FIND SCREENS
+    // ====================================================
+
+    private void FindScreens()
+    {
         if (screenRoot == null)
         {
             GameObject mainRoom =
                 GameObject.Find("MainRoom");
 
             if (mainRoom != null)
-            {
-                screenRoot =
-                    mainRoom.transform;
-            }
+                screenRoot = mainRoom.transform;
         }
 
         if (screenRoot == null)
@@ -102,9 +124,7 @@ public class BreachController : MonoBehaviour
                 "BreachController: MainRoom / screenRoot was not found."
             );
 
-            screenRenderers =
-                new Renderer[0];
-
+            screenRenderers = new Renderer[0];
             return;
         }
 
@@ -119,15 +139,13 @@ public class BreachController : MonoBehaviour
             if (renderer == null)
                 continue;
 
-            // Only objects named Screen 1, Screen 2, etc. are affected.
             if (renderer.gameObject.name.StartsWith("Screen "))
             {
                 foundScreens.Add(renderer);
             }
         }
 
-        screenRenderers =
-            foundScreens.ToArray();
+        screenRenderers = foundScreens.ToArray();
 
         Debug.Log(
             "BreachController found "
@@ -136,7 +154,11 @@ public class BreachController : MonoBehaviour
         );
     }
 
-    void StoreOriginalMaterials()
+    // ====================================================
+    // STORE ORIGINAL MATERIALS
+    // ====================================================
+
+    private void StoreOriginalMaterials()
     {
         originalMaterials =
             new Material[screenRenderers.Length][];
@@ -146,14 +168,11 @@ public class BreachController : MonoBehaviour
 
         for (int i = 0; i < screenRenderers.Length; i++)
         {
-            Renderer renderer =
-                screenRenderers[i];
+            Renderer renderer = screenRenderers[i];
 
             if (renderer == null)
                 continue;
 
-            // Store the original materials so they can be restored
-            // after the breach effect ends.
             originalMaterials[i] =
                 renderer.sharedMaterials;
 
@@ -168,16 +187,21 @@ public class BreachController : MonoBehaviour
                 if (original == null)
                     continue;
 
-                // Create a copy of the original material.
-                // This keeps the original screen material unchanged.
+                if (breachMaterial == null)
+                {
+                    Debug.LogError(
+                        "BreachController: Breach Material is missing."
+                    );
+
+                    continue;
+                }
+
                 Material breach =
                     new Material(original);
 
-                // Replace the shader with the custom breach shader.
-                breach.shader =
-                    breachMaterial.shader;
+                breach.shader = breachMaterial.shader;
 
-                // Preserve the original texture.
+                // Preserve original texture.
                 if (original.HasProperty("_MainTex") &&
                     breach.HasProperty("_MainTex"))
                 {
@@ -195,13 +219,16 @@ public class BreachController : MonoBehaviour
                     );
                 }
 
-                breachMaterials[i][j] =
-                    breach;
+                breachMaterials[i][j] = breach;
             }
         }
     }
 
-    void StoreOriginalLights()
+    // ====================================================
+    // STORE ORIGINAL LIGHTS
+    // ====================================================
+
+    private void StoreOriginalLights()
     {
         originalLightStates =
             new bool[breachLights.Length];
@@ -228,9 +255,12 @@ public class BreachController : MonoBehaviour
         }
     }
 
+    // ====================================================
+    // START BREACH
+    // ====================================================
+
     public void StartBreach()
     {
-        // Prevent multiple breach coroutines from running simultaneously.
         if (breachRunning)
             return;
 
@@ -243,122 +273,106 @@ public class BreachController : MonoBehaviour
             return;
         }
 
-        StartCoroutine(
-            BreachSequence()
-        );
+        breachCoroutine = StartCoroutine(BreachSequence());
     }
 
-    IEnumerator BreachSequence()
+    private IEnumerator BreachSequence()
     {
         breachRunning = true;
 
         Debug.Log("BREACH STARTED");
 
-        // Play the breach sound at the exact moment
-        // the breach effect begins.
         if (audioManager != null)
-        {
             audioManager.PlayBreach();
-        }
 
         ApplyBreachMaterials();
         StartBreachLights();
 
-        // Start the camera shake/distortion at the same time
-        // as the screen and lighting effects.
         if (cameraEffects != null)
         {
             cameraEffects.SetMainRoomShake();
             cameraEffects.StartBreachEffect();
         }
 
-        yield return new WaitForSeconds(
-            breachDuration
-        );
+        yield return new WaitForSeconds(breachDuration);
 
-        // Restore everything after the breach duration.
         RestoreOriginalMaterials();
         RestoreLights();
 
         if (cameraEffects != null)
-        {
             cameraEffects.StopBreachEffect();
-        }
 
         breachRunning = false;
+        breachCoroutine = null;
 
         Debug.Log("BREACH ENDED");
     }
 
-    void ApplyBreachMaterials()
+    // ====================================================
+    // APPLY BREACH MATERIALS
+    // ====================================================
+
+    private void ApplyBreachMaterials()
     {
         for (int i = 0; i < screenRenderers.Length; i++)
         {
-            Renderer renderer =
-                screenRenderers[i];
+            Renderer renderer = screenRenderers[i];
 
             if (renderer == null)
                 continue;
 
-            Material[] materials =
-                breachMaterials[i];
+            Material[] materials = breachMaterials[i];
 
             if (materials == null)
                 continue;
 
             for (int j = 0; j < materials.Length; j++)
             {
-                Material material =
-                    materials[j];
+                Material material = materials[j];
 
                 if (material == null)
                     continue;
 
-                // Apply the values from the BreachController Inspector.
                 if (material.HasProperty("_BreachAmount"))
-                {
                     material.SetFloat(
                         "_BreachAmount",
                         breachAmount
                     );
-                }
 
                 if (material.HasProperty("_BreachColour"))
-                {
                     material.SetColor(
                         "_BreachColour",
                         breachColour
                     );
-                }
 
                 if (material.HasProperty("_PulseSpeed"))
-                {
                     material.SetFloat(
                         "_PulseSpeed",
                         pulseSpeed
                     );
-                }
 
                 if (material.HasProperty("_CorruptionStrength"))
-                {
                     material.SetFloat(
                         "_CorruptionStrength",
                         corruptionStrength
                     );
-                }
+
+                if (material.HasProperty("_BreachLevel"))
+                    material.SetFloat(
+                        "_BreachLevel",
+                        breachLevel
+                    );
             }
 
-            renderer.materials =
-                materials;
-
-            Debug.Log(
-                "Breach material applied to: "
-                + renderer.gameObject.name
-            );
+            renderer.materials = materials;
         }
     }
 
-    void RestoreOriginalMaterials()
+    // ====================================================
+    // RESTORE ORIGINAL MATERIALS
+    // ====================================================
+
+    private void RestoreOriginalMaterials()
     {
         for (int i = 0; i < screenRenderers.Length; i++)
         {
@@ -368,46 +382,32 @@ public class BreachController : MonoBehaviour
             if (originalMaterials[i] == null)
                 continue;
 
-            rendererRestore(
-                screenRenderers[i],
-                originalMaterials[i]
-            );
+            screenRenderers[i].sharedMaterials =
+                originalMaterials[i];
         }
     }
 
-    // Restores the exact original material array.
-    private void rendererRestore(
-        Renderer renderer,
-        Material[] materials)
-    {
-        renderer.sharedMaterials =
-            materials;
-    }
+    // ====================================================
+    // BREACH LIGHTS
+    // ====================================================
 
-    void StartBreachLights()
+    private void StartBreachLights()
     {
         for (int i = 0; i < breachLights.Length; i++)
         {
             if (breachLights[i] == null)
                 continue;
 
-            breachLights[i].enabled =
-                true;
-
-            breachLights[i].color =
-                breachLightColour;
+            breachLights[i].enabled = true;
+            breachLights[i].color = breachLightColour;
         }
     }
 
-    void PulseLights()
+    private void PulseLights()
     {
-        // Convert the sine wave into a 0-1 value.
         float pulse =
-            (Mathf.Sin(
-                Time.time * lightPulseSpeed
-            ) + 1f) * 0.5f;
+            (Mathf.Sin(Time.time * lightPulseSpeed) + 1f) * 0.5f;
 
-        // Use that value to smoothly vary the light intensity.
         float intensity =
             Mathf.Lerp(
                 lightMinIntensity,
@@ -420,15 +420,12 @@ public class BreachController : MonoBehaviour
             if (breachLights[i] == null)
                 continue;
 
-            breachLights[i].intensity =
-                intensity;
-
-            breachLights[i].color =
-                breachLightColour;
+            breachLights[i].intensity = intensity;
+            breachLights[i].color = breachLightColour;
         }
     }
 
-    void RestoreLights()
+    private void RestoreLights()
     {
         for (int i = 0; i < breachLights.Length; i++)
         {
@@ -445,4 +442,31 @@ public class BreachController : MonoBehaviour
                 originalLightColours[i];
         }
     }
+
+
+    // ====================================================
+    // PERMANENT BREACH LEVEL
+    // ====================================================
+
+    public void SetPermanentBreachLevel(int level)
+    {
+        breachLevel = Mathf.Clamp(level, 0, 4);
+
+        Debug.Log(
+            "[BreachController] Permanent breach level updated: "
+            + breachLevel + "/4"
+        );
+
+        if (breachRunning)
+        {
+            // Update the currently running shader effect immediately.
+            ApplyBreachMaterials();
+        }
+        else
+        {
+            // Start the breach effect using the new level.
+            StartBreach();
+        }
+    }
+
 }

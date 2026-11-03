@@ -61,11 +61,7 @@ namespace ProjectBreach.Core
         public float CurrentDps => coolingDown ? 0f : Mathf.Lerp(startingDps, maximumDps, Mathf.Clamp01(rampTimer / rampDuration));
 
         public override string UpgradeInfo =>
-            $"Locks onto the highest-HP enemy with a continuous beam. " +
-            $"DPS ramps from {startingDps:0.##} to {maximumDps:0.##} " +
-            $"over {rampDuration:0.##} seconds. " +
-            $"Range: {attackRange:0.##}. " +
-            $"Cooldown: {cooldownDuration:0.##} seconds.";
+            $"incinerating beam thats ramps-up damage by locking onto the highest HP enemy";
         private void Awake()
         {
             ResolveTurretHead();

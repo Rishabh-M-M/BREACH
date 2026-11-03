@@ -61,12 +61,7 @@ namespace ProjectBreach.Core
         public float ExplosionEffectDuration => explosionEffectDuration;
 
         public override string UpgradeInfo =>
-            $"Launches {magazineSize} explosive rockets before reloading. " +
-            $"Direct damage: {directDamage}. " +
-            $"Explosion damage: {explosionDamage}. " +
-            $"Explosion radius: {explosionRadius:0.##}. " +
-            $"Reload: {reloadDuration:0.##} seconds. " +
-            $"Range: {attackRange:0.##}.";
+            $"incinerating beam thats ramps-up damage by locking onto the highest HP enemy";
         private void Awake()
         {
             magazineSize = Mathf.Max(1, magazineSize);

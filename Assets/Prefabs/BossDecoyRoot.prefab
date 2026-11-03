@@ -1663,7 +1663,7 @@ Transform:
   m_GameObject: {fileID: 3982247371327572789}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 186.53008, y: -0, z: -297.9782}
+  m_LocalPosition: {x: -740.5639, y: 21.68415, z: -394.71655}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1711,6 +1711,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   maxVortexProgress: 1
+  vortexSpeedMultiplier: 1.8
 --- !u!1 &3991916381337823972
 GameObject:
   m_ObjectHideFlags: 0

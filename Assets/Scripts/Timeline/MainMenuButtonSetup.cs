@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 using TMPro;
 
 public class MainMenuButtonSetup : MonoBehaviour
@@ -51,6 +52,9 @@ public class MainMenuButtonSetup : MonoBehaviour
     public AudioClip backgroundMusic;
     [Range(0f, 1f)] public float musicVolume = 0.35f;
 
+    [Header("Scene Settings")]
+    public string tutorialSceneName = "TutorialScene";
+
     private AudioSource musicSource;
     private AudioSource soundSource;
 
@@ -72,18 +76,15 @@ public class MainMenuButtonSetup : MonoBehaviour
 
     private void SetupAudio()
     {
-        // Background music source
         musicSource = gameObject.AddComponent<AudioSource>();
         musicSource.playOnAwake = false;
         musicSource.loop = true;
         musicSource.volume = musicVolume;
 
-        // Button sound source
         soundSource = gameObject.AddComponent<AudioSource>();
         soundSource.playOnAwake = false;
         soundSource.loop = false;
 
-        // Start background music if assigned
         if (backgroundMusic != null)
         {
             musicSource.clip = backgroundMusic;
@@ -234,8 +235,14 @@ public class MainMenuButtonSetup : MonoBehaviour
         text.characterSpacing = characterSpacing;
         text.raycastTarget = false;
 
-        // Add mouse interaction effects
+        // Mouse interaction effects
         SetupButtonEvents(buttonObject, rect, outline);
+
+        // Connect Tutorial button
+        if (buttonName == "TUTORIAL")
+        {
+            button.onClick.AddListener(OpenTutorial);
+        }
     }
 
     private void SetupButtonEvents(
@@ -340,5 +347,16 @@ public class MainMenuButtonSetup : MonoBehaviour
         {
             soundSource.PlayOneShot(hoverSound, hoverVolume);
         }
+    }
+
+    // Open Tutorial Scene
+    private void OpenTutorial()
+    {
+        Debug.Log("[MainMenu] Opening Tutorial Scene.");
+
+        Time.timeScale = 1f;
+        AudioListener.pause = false;
+
+        SceneManager.LoadScene(tutorialSceneName);
     }
 }

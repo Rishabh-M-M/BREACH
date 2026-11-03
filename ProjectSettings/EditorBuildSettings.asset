@@ -23,5 +23,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/VictoryEnding.unity
     guid: a682a23cdc2274827933c9a0b21e0678
+  - enabled: 1
+    path: Assets/Scenes/TutorialScene.unity
+    guid: f43fedf6247284826837905f3af947e3
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0

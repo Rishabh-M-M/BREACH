@@ -6,7 +6,7 @@ Breach logo (`Images/Logo.png`)
 
 
 
-**Team logo, AI concept generated via ChatGPT.**
+**Game and Team logos are AI generated via ChatGPT.**
 
 
 

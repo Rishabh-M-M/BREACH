@@ -119,12 +119,12 @@ namespace ProjectBreach.Core
 
             gameOverSent = true;
 
-            Debug.LogError("[MainControlRoom] Core destroyed! Game over.");
+            Debug.Log("[MainControlRoom] Core destroyed! Game over.");
 
             if (GameManager.Instance != null)
                 GameManager.Instance.RegisterCoreDestroyed();
             else
-                Debug.LogError("[MainControlRoom] GameManager.Instance is missing.");
+                Debug.Log("[MainControlRoom] GameManager.Instance is missing.");
         }
 
         /// <summary>Main shield break is an immediate defeat, independent of core HP.</summary>

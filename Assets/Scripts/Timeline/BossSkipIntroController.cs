@@ -45,6 +45,12 @@ public class BossSkipIntroController : MonoBehaviour
 
     public static bool IsSkipToBossRun { get; private set; }
 
+    public static void ResetSkipToBossRun()
+    {
+        IsSkipToBossRun = false;
+        Debug.Log("[BossSkipIntro] Skip-to-boss flag reset.");
+    }
+
     public static int BonusPower => IsSkipToBossRun ? 200 : 0;
 
     private void Start()

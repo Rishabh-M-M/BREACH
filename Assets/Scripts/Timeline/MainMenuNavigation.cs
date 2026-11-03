@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using TMPro;
+using ProjectBreach.Boss;
 
 public class MainMenuNavigation : MonoBehaviour
 {
@@ -46,7 +47,12 @@ public class MainMenuNavigation : MonoBehaviour
 
     private void StartGame()
     {
+        BossSkipIntroController.ResetSkipToBossRun();
         Debug.Log("Starting NEXUS advertisement...");
+        if (BossJamManager.Instance != null)
+        {
+            BossJamManager.Instance.DeactivateBossEncounter();
+        }
         SceneManager.LoadScene("OpeningCutscene");
     }
 

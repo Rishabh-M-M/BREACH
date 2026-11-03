@@ -4135,6 +4135,8 @@ MonoBehaviour:
   isBossSkillsEnabled: 1
   mainControlRoom: {fileID: 1384470682}
   endingController: {fileID: 439117236}
+  defeatSceneName: DefeatEnding
+  victorySceneName: VictoryEnding
 --- !u!4 &439117235
 Transform:
   m_ObjectHideFlags: 0
@@ -23716,6 +23718,10 @@ PrefabInstance:
     - target: {fileID: 6738271927501848073, guid: cd965d401276eca4a88d4c4b4553cecc, type: 3}
       propertyPath: m_Size.y
       value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6760423041082644168, guid: cd965d401276eca4a88d4c4b4553cecc, type: 3}
+      propertyPath: growthPercent
+      value: 0.05
       objectReference: {fileID: 0}
     - target: {fileID: 7956446722661231936, guid: cd965d401276eca4a88d4c4b4553cecc, type: 3}
       propertyPath: newTarget

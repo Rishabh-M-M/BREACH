@@ -1,4 +1,3 @@
-
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -27,11 +26,15 @@ namespace ProjectBreach.Core
         private void Awake()
         {
             currentCoreHP = maxCoreHP;
+            gameOverSent = false;
 
             if (breachController == null)
                 breachController = FindObjectOfType<BreachController>();
 
-            Debug.Log($"[MainControlRoom] Initialized CoreHP: {currentCoreHP}/{maxCoreHP}");
+            Debug.Log(
+                $"[MainControlRoom] AWAKE | Instance ID: {GetInstanceID()} | " +
+                $"CoreHP: {currentCoreHP}/{maxCoreHP} | gameOverSent: {gameOverSent}"
+            );
         }
 
         private void OnEnable()
@@ -104,32 +107,65 @@ namespace ProjectBreach.Core
 
             currentCoreHP = Mathf.Max(0, currentCoreHP - amount);
 
-            Debug.Log($"[MainControlRoom] CoreHP: {currentCoreHP}/{maxCoreHP}");
+            Debug.Log(
+                $"[MainControlRoom {GetInstanceID()}] CoreHP: {currentCoreHP}/{maxCoreHP}"
+            );
 
-            EventRegistry.BroadcastCoreHPChanged(currentCoreHP, maxCoreHP);
+            // A faulty subscriber must never stop the defeat from registering.
+            try
+            {
+                EventRegistry.BroadcastCoreHPChanged(currentCoreHP, maxCoreHP);
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogException(e);
+            }
 
             if (currentCoreHP <= 0)
                 Die();
         }
 
+        // Public because IDamageable requires it.
         public void Die()
         {
             if (gameOverSent)
+            {
+                Debug.Log(
+                    $"[MainControlRoom {GetInstanceID()}] Die() ignored: defeat already registered."
+                );
                 return;
+            }
 
-            gameOverSent = true;
+            Debug.Log(
+                $"[MainControlRoom {GetInstanceID()}] Die() called. Registering defeat.\n" +
+                StackTraceUtility.ExtractStackTrace()
+            );
 
-            Debug.Log("[MainControlRoom] Core destroyed! Game over.");
+            if (GameManager.Instance == null)
+            {
+                Debug.LogError("[MainControlRoom] GameManager.Instance is missing.");
+                return;
+            }
 
-            if (GameManager.Instance != null)
-                GameManager.Instance.RegisterCoreDestroyed();
-            else
-                Debug.Log("[MainControlRoom] GameManager.Instance is missing.");
+            // Latch only once GameManager has actually started the ending.
+            gameOverSent = GameManager.Instance.RegisterCoreDestroyed();
+
+            if (!gameOverSent)
+            {
+                Debug.LogError(
+                    $"[MainControlRoom {GetInstanceID()}] GameManager did not start the ending. " +
+                    "Defeat is not latched; a later trigger can retry."
+                );
+            }
         }
 
         /// <summary>Main shield break is an immediate defeat, independent of core HP.</summary>
         public void MainShieldBroken()
         {
+            Debug.Log(
+                $"[MainControlRoom {GetInstanceID()}] MainShieldBroken() | gameOverSent={gameOverSent}"
+            );
+
             TriggerBreachVisuals();
             Die();
         }

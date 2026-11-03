@@ -27,6 +27,7 @@ namespace ProjectBreach.Boss
         public float ClickAmountPerPress => clickAmountPerPress;
         public float ClicksRequiredToClear => clicksRequiredToClear;
         public IReadOnlyCollection<int> RoomIndices => jamStates.Keys;
+        protected override bool PersistAcrossScenes => false;
 
         protected override void Awake()
         {
@@ -59,10 +60,17 @@ namespace ProjectBreach.Boss
                 }
             }
         }
-
-        private void OnDestroy()
+        protected override void OnDestroy()
         {
             EventRegistry.OnWaveStart -= HandleWaveStart;
+
+            foreach (Room room in rooms.Values)
+            {
+                if (room != null)
+                    room.OnPermanentlyDisabled -= HandleRoomPermanentlyDisabled;
+            }
+
+            base.OnDestroy();
         }
 
         // ============================================================

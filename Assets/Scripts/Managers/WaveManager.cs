@@ -93,9 +93,10 @@ namespace ProjectBreach.Core
             }
         }
 
-        private void OnDestroy()
+        protected override void OnDestroy()
         {
             EventRegistry.OnEnemyResolved -= HandleEnemyResolved;
+            base.OnDestroy();
         }
 
         // ========== Early start ==========

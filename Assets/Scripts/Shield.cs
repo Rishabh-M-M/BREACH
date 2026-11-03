@@ -90,6 +90,12 @@ public class Shield : MonoBehaviour, IDamageable
 
         if (destroyed)
             BreakShield();
+
+        Debug.Log(
+        $"[Shield] AWAKE | {name} | ID: {GetInstanceID()} | " +
+        $"MainShield: {isMainRoomShield} | HP: {currentHealth}/{maxHealth} | " +
+        $"Destroyed: {destroyed} | BreakHandled: {breakHandled}"
+        );
     }
 
     public void TakeDamage(int damage)
@@ -160,7 +166,7 @@ public class Shield : MonoBehaviour, IDamageable
             breakTimeScale,
             slowMotionDuration
         );
-        
+
 
         if (shieldCollider != null)
             shieldCollider.enabled = false;

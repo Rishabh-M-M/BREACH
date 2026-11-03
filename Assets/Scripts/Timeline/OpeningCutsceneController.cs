@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.Video;
 using UnityEngine.SceneManagement;
-
+using ProjectBreach.Core;
 public class OpeningCutsceneController : MonoBehaviour
 {
     [Header("Video Settings")]
@@ -41,7 +41,6 @@ public class OpeningCutsceneController : MonoBehaviour
             videoPlayer.loopPointReached -= OnVideoFinished;
         }
     }
-
     private void OnVideoFinished(VideoPlayer player)
     {
         if (hasTransitioned)
@@ -53,17 +52,13 @@ public class OpeningCutsceneController : MonoBehaviour
         {
             PlayAsEndingAdvertisement = false;
 
-            Debug.Log(
-                "Ending A advertisement finished. Returning to main menu..."
-            );
+            Debug.Log("Ending A advertisement finished. Returning to main menu...");
 
             SceneManager.LoadScene(mainMenuSceneName);
         }
         else
         {
-            Debug.Log(
-                "NEXUS advertisement finished. Loading gameplay..."
-            );
+            Debug.Log("NEXUS advertisement finished. Loading gameplay...");
 
             SceneManager.LoadScene(nextSceneName);
         }

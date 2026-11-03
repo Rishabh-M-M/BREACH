@@ -18231,7 +18231,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8f9c330bd3181243a6b34882aa909cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ProjectBreach.Boss.BossController
-  intervalSeconds: 15
+  intervalSeconds: 12
 --- !u!1 &1804968287
 GameObject:
   m_ObjectHideFlags: 0

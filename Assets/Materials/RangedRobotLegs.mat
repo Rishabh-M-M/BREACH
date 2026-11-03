@@ -76,7 +76,7 @@ Material:
     - _RingMaxRadius: 15
     - _RingSpeed: 35
     - _RingWidth: 2
-    - _ShakeAmplitude: 0.2
+    - _ShakeAmplitude: 1
     - _ShakeDecay: 5
     - _ShakeFrequency: 45
     - _Shininess: 60

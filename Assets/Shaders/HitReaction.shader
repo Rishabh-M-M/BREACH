@@ -65,7 +65,7 @@ Shader "HitReaction"
 
 			vertOut vert(vertIn v)
 			{
-				float t = _Time.y - _HitTime;
+				float t = max(0.0, _Time.y - _HitTime);
 
 				float decay = exp(-_ShakeDecay * t);
 				float shakeOffset = sin(t * _ShakeFrequency) * _ShakeAmplitude * decay;

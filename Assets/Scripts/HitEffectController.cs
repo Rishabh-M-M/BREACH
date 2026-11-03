@@ -15,10 +15,12 @@ public class HitEffectController : MonoBehaviour
 
     public void TriggerHit()
     {
+        float hitTimeValue = Time.timeSinceLevelLoad;
+
         foreach (Renderer r in targetRenderers)
         {
             r.GetPropertyBlock(propertyBlock);
-            propertyBlock.SetFloat(HitTimeID, Time.time);
+            propertyBlock.SetFloat(HitTimeID, hitTimeValue);
             r.SetPropertyBlock(propertyBlock);
         }
     }

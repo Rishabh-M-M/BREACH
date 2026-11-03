@@ -9294,7 +9294,7 @@ MonoBehaviour:
       count: 1
       startDelay: 15
     duration: 300
-    advanceEarlyOnClear: 0
+    advanceEarlyOnClear: 1
   bossWaveIndex: 4
   bossIntroOverlay: {fileID: 934213409}
 --- !u!4 &934213408

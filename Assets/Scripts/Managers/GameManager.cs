@@ -1,6 +1,7 @@
-
 using UnityEngine;
 using ProjectBreach.Core;
+using System.Collections;
+using UnityEngine.SceneManagement;
 
 namespace ProjectBreach.Core
 {
@@ -17,6 +18,10 @@ namespace ProjectBreach.Core
         [Header("Ending Sequences")]
         [SerializeField] private EndingSequenceController endingController;
 
+        [Header("Ending Fallback (used only if the controller is missing or refuses)")]
+        [SerializeField] private string defeatSceneName = "DefeatEnding";
+        [SerializeField] private string victorySceneName = "VictoryEnding";
+
         protected override void Awake()
         {
             base.Awake();
@@ -24,37 +29,88 @@ namespace ProjectBreach.Core
 
         public void StartGame()
         {
+            // StartGame always begins a fresh run, so it never refuses.
+            // The previous run's state is cleared when MainMenu loads.
             State = GameState.Playing;
+
+            mainControlRoom = FindObjectOfType<MainControlRoom>();
+            endingController = FindObjectOfType<EndingSequenceController>(true);
+
             EventRegistry.BroadcastGameStateChanged(State);
-            Debug.Log("[GameManager] Game started");
+
+            Debug.Log(
+                "[GameManager] New game started. Game state reset. " +
+                $"EndingController: {(endingController != null ? endingController.name : "NOT FOUND")}"
+            );
         }
 
-        public void EndGame(bool isWin)
+        /// <summary>
+        /// Returns true only if an ending was actually started.
+        /// </summary>
+        public bool EndGame(bool isWin)
         {
             if (State == GameState.Victory || State == GameState.GameOver)
-                return;
+            {
+                Debug.LogWarning(
+                    $"[GameManager] EndGame({(isWin ? "Victory" : "Defeat")}) ignored: " +
+                    $"state is already {State}."
+                );
+                return false;
+            }
 
             State = isWin ? GameState.Victory : GameState.GameOver;
 
-            EventRegistry.BroadcastGameStateChanged(State);
+            // A faulty or stale subscriber must never be able to block the ending.
+            try
+            {
+                EventRegistry.BroadcastGameStateChanged(State);
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogException(e);
+            }
 
             Debug.Log($"[GameManager] Game ended: {(isWin ? "Victory" : "Defeat")}");
 
-            if (endingController != null)
-            {
-                endingController.PlayEnding(isWin);
-            }
-            else
-            {
-                Debug.LogError(
-                    "[GameManager] EndingSequenceController is not assigned!"
-                );
-            }
+            // Find the controller belonging to the current gameplay scene.
+            if (endingController == null)
+                endingController = FindObjectOfType<EndingSequenceController>(true);
+
+            if (endingController != null && endingController.PlayEnding(isWin))
+                return true;
+
+            Debug.LogError(
+                "[GameManager] EndingSequenceController missing or refused. " +
+                "Loading the ending scene directly."
+            );
+
+            return LoadEndingSceneDirectly(isWin);
         }
 
-        public void RegisterCoreDestroyed()
+        private bool LoadEndingSceneDirectly(bool isWin)
         {
-            EndGame(false);
+            string sceneName = isWin ? victorySceneName : defeatSceneName;
+
+            if (string.IsNullOrEmpty(sceneName) ||
+                !Application.CanStreamedLevelBeLoaded(sceneName))
+            {
+                Debug.LogError(
+                    $"[GameManager] Scene '{sceneName}' can't be loaded. " +
+                    "Check the name and File > Build Settings."
+                );
+                return false;
+            }
+
+            Time.timeScale = 1f;
+            AudioListener.pause = false;
+
+            SceneManager.LoadScene(sceneName);
+            return true;
+        }
+
+        public bool RegisterCoreDestroyed()
+        {
+            return EndGame(false);
         }
 
         public void SetWaveClearState()
@@ -91,6 +147,9 @@ namespace ProjectBreach.Core
 
         public void NotifyBreach(Enemy enemy)
         {
+            if (mainControlRoom == null)
+                mainControlRoom = FindObjectOfType<MainControlRoom>();
+
             Debug.Log("[GameManager] Breach occurred!");
 
             if (mainControlRoom != null)
@@ -105,5 +164,73 @@ namespace ProjectBreach.Core
                 );
             }
         }
+
+        private void OnEnable()
+        {
+            SceneManager.sceneLoaded += OnSceneLoaded;
+        }
+
+        private void OnDisable()
+        {
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+        }
+
+        private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+        {
+            if (scene.name == "MainMenu")
+            {
+                ResetRunOnMainMenu();
+            }
+            else if (scene.name == "StartScene")
+            {
+                StartCoroutine(InitialiseNewGame());
+            }
+        }
+
+        private void ResetRunOnMainMenu()
+        {
+            Debug.Log("[GameManager] Main Menu loaded. Resetting previous run.");
+
+            State = GameState.MainMenu;
+            EventRegistry.BroadcastGameStateChanged(State);
+
+            // Restore normal Unity settings.
+            Time.timeScale = 1f;
+            AudioListener.pause = false;
+
+            // Reset skip-to-boss state.
+            BossSkipIntroController.ResetSkipToBossRun();
+
+            // Clear boss encounter if a manager still exists.
+            if (ProjectBreach.Boss.BossJamManager.Instance != null)
+            {
+                ProjectBreach.Boss.BossJamManager.Instance.DeactivateBossEncounter();
+            }
+
+            // Clear references to the previous gameplay scene.
+            mainControlRoom = null;
+            endingController = null;
+
+            Debug.Log("[GameManager] Previous run reset completed.");
+        }
+
+        private IEnumerator InitialiseNewGame()
+        {
+            // Wait one frame for the new scene to initialise.
+            yield return null;
+
+            mainControlRoom = FindObjectOfType<MainControlRoom>();
+            endingController = FindObjectOfType<EndingSequenceController>(true);
+
+            Debug.Log("[GameManager] MainControlRoom found: " + (mainControlRoom != null));
+            Debug.Log("[GameManager] EndingController found: " + (endingController != null));
+
+            Debug.Log(
+                $"[GameManager] NEW RUN INITIALISED | " +
+                $"MainControlRoom ID: {(mainControlRoom != null ? mainControlRoom.GetInstanceID() : -1)}"
+            );
+            StartGame();
+        }
     }
+
 }

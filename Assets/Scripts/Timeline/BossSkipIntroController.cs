@@ -10,7 +10,14 @@ using UnityEngine.EventSystems;
 public class BossSkipIntroController : MonoBehaviour
 {
     [Header("Video")]
-    [SerializeField] private VideoClip bossEyeClip;
+    [Tooltip("File name, with extension, of the video inside StreamingAssets. " +
+             "A plain string is used instead of a VideoClip reference: clips " +
+             "that live in StreamingAssets are copied into builds as raw " +
+             "files, NOT packed as assets, so the clip reference can arrive " +
+             "null in a player even though it resolves fine in the editor -- " +
+             "which previously left this scene on a permanent black screen.")]
+    [SerializeField] private string videoFileName = "compressed-jumpscare.mp4";
+
     [SerializeField] private RenderTexture bossEyeRenderTexture;
 
     [Header("Scene")]
@@ -45,19 +52,17 @@ public class BossSkipIntroController : MonoBehaviour
 
     public static bool IsSkipToBossRun { get; private set; }
 
+    public static void ResetSkipToBossRun()
+    {
+        IsSkipToBossRun = false;
+        Debug.Log("[BossSkipIntro] Skip-to-boss flag reset.");
+    }
+
     public static int BonusPower => IsSkipToBossRun ? 200 : 0;
 
     private void Start()
     {
         IsSkipToBossRun = false;
-
-        if (bossEyeClip == null)
-        {
-            Debug.LogError(
-                "[BossSkipIntro] Assign compressed-jumpscare.mp4!"
-            );
-            return;
-        }
 
         if (bossEyeRenderTexture == null)
         {
@@ -321,8 +326,18 @@ public class BossSkipIntroController : MonoBehaviour
         videoPlayer.playOnAwake = false;
         videoPlayer.isLooping = false;
 
-        videoPlayer.source = VideoSource.VideoClip;
-        videoPlayer.clip = bossEyeClip;
+        // Load by URL on EVERY platform, never from a VideoClip reference:
+        // clips in StreamingAssets are copied to builds as raw files and their
+        // asset references can be null in players. URL loading is also
+        // mandatory on WebGL, where VideoPlayer cannot stream a clip out of
+        // the packed .data blob anyway.
+        videoPlayer.source = VideoSource.Url;
+        videoPlayer.url =
+            Application.streamingAssetsPath + "/" + videoFileName;
+
+        // Logged so the exact request URL can be pasted into a browser tab
+        // when diagnosing deployment problems.
+        Debug.Log("[BossSkipIntro] Video URL: " + videoPlayer.url);
 
         videoPlayer.renderMode =
             VideoRenderMode.RenderTexture;
@@ -336,6 +351,12 @@ public class BossSkipIntroController : MonoBehaviour
         videoPlayer.waitForFirstFrame = true;
 
         videoPlayer.loopPointReached += OnVideoFinished;
+
+        // A 404 or a codec the browser rejects must not leave the player on a
+        // black screen: route errors through the normal finish path so the
+        // scene still advances (exactly once, thanks to the videoFinished
+        // flag guarding OnVideoFinished).
+        videoPlayer.errorReceived += OnVideoError;
 
         // Create RawImage as a child of the Canvas.
         videoScreen = new GameObject(
@@ -375,7 +396,7 @@ public class BossSkipIntroController : MonoBehaviour
         if (transitionStarted)
             return;
 
-        if (bossEyeClip == null || bossEyeRenderTexture == null)
+        if (bossEyeRenderTexture == null)
             return;
 
         transitionStarted = true;
@@ -402,8 +423,27 @@ public class BossSkipIntroController : MonoBehaviour
         // Prepare video.
         videoPlayer.Prepare();
 
+        // A missing StreamingAssets file or a stalled network would otherwise
+        // wait here forever on a black screen with no feedback.
+        float prepareDeadline = Time.unscaledTime + 15f;
+
         while (!videoPlayer.isPrepared)
+        {
+            if (Time.unscaledTime >= prepareDeadline)
+            {
+                Debug.LogWarning(
+                    "[BossSkipIntro] Video preparation timed out. " +
+                    "Advancing to gameplay.");
+
+                // Set the guard flag before loading so a late finish event
+                // cannot queue a second scene load.
+                videoFinished = true;
+                StartCoroutine(LoadBossGameplay());
+                yield break;
+            }
+
             yield return null;
+        }
 
         // Play video inside Canvas RawImage.
         videoPlayer.Play();
@@ -411,6 +451,36 @@ public class BossSkipIntroController : MonoBehaviour
         Debug.Log(
             "[BossSkipIntro] Boss-eye video playing inside Canvas."
         );
+
+        // Fail-safe: loopPointReached is the normal exit, but it is not
+        // guaranteed to be delivered on WebGL if the stream stalls, so poll
+        // the player state against a deadline derived from the clip length.
+        float finishDeadline =
+            Time.unscaledTime + (float)videoPlayer.length + 10f;
+
+        while (videoPlayer.isPlaying && Time.unscaledTime < finishDeadline)
+            yield return null;
+
+        if (!videoFinished)
+        {
+            if (Time.unscaledTime >= finishDeadline)
+            {
+                Debug.LogWarning(
+                    "[BossSkipIntro] Finish event overdue. " +
+                    "Advancing to gameplay.");
+            }
+
+            OnVideoFinished(videoPlayer);
+        }
+    }
+
+    private void OnVideoError(VideoPlayer source, string message)
+    {
+        Debug.LogWarning(
+            "[BossSkipIntro] Video error: " + message +
+            " -- advancing to gameplay.");
+
+        OnVideoFinished(source);
     }
 
     private void OnVideoFinished(VideoPlayer source)

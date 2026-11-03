@@ -9288,55 +9288,55 @@ MonoBehaviour:
     advanceEarlyOnClear: 1
   - groups:
     - spawner: {fileID: 439547859}
-      count: 5
+      count: 2
       startDelay: 35
     - spawner: {fileID: 1057884029}
       count: 5
       startDelay: 15
     - spawner: {fileID: 595610267}
-      count: 5
+      count: 3
       startDelay: 12
     - spawner: {fileID: 1683467975}
-      count: 2
+      count: 1
       startDelay: 5
     - spawner: {fileID: 1957467141}
-      count: 3
+      count: 2
       startDelay: 3
     - spawner: {fileID: 1826806565}
-      count: 5
+      count: 3
       startDelay: 7
     - spawner: {fileID: 124149995}
-      count: 10
+      count: 3
       startDelay: 15
     - spawner: {fileID: 642611629}
-      count: 8
+      count: 2
       startDelay: 45
     - spawner: {fileID: 275631826}
-      count: 5
+      count: 1
       startDelay: 45
     - spawner: {fileID: 275631826}
-      count: 5
+      count: 2
       startDelay: 65
     - spawner: {fileID: 307576245047738483}
-      count: 3
+      count: 2
       startDelay: 50
     - spawner: {fileID: 1520032769}
-      count: 4
+      count: 1
       startDelay: 50
     - spawner: {fileID: 7761523458117504719}
       count: 2
       startDelay: 50
     - spawner: {fileID: 595610267}
-      count: 5
+      count: 3
       startDelay: 75
     - spawner: {fileID: 1957467141}
-      count: 4
+      count: 2
       startDelay: 75
     - spawner: {fileID: 642611629}
-      count: 7
+      count: 4
       startDelay: 95
     - spawner: {fileID: 307576245047738483}
-      count: 5
+      count: 2
       startDelay: 95
     - spawner: {fileID: 439547859}
       count: 2
@@ -9354,25 +9354,25 @@ MonoBehaviour:
       count: 2
       startDelay: 120
     - spawner: {fileID: 7761523458117504719}
-      count: 2
+      count: 1
       startDelay: 140
     - spawner: {fileID: 1683467975}
       count: 2
       startDelay: 160
     - spawner: {fileID: 7761523458117504719}
-      count: 2
+      count: 1
       startDelay: 160
     - spawner: {fileID: 439547859}
-      count: 2
+      count: 1
       startDelay: 180
     - spawner: {fileID: 439547859}
-      count: 4
+      count: 3
       startDelay: 200
     - spawner: {fileID: 275631826}
-      count: 10
+      count: 1
       startDelay: 120
     - spawner: {fileID: 642611629}
-      count: 10
+      count: 2
       startDelay: 120
     duration: 300
     advanceEarlyOnClear: 1

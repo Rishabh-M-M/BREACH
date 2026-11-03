@@ -1,4 +1,4 @@
-# Game Design Document (GDD): BREACH — NEXUS
+# Game Design Document (GDD): BREACH
 
 
 

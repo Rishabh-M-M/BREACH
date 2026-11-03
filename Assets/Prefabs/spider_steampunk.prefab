@@ -227,7 +227,7 @@ MonoBehaviour:
   shieldLayer:
     serializedVersion: 2
     m_Bits: 8
-  shieldDetectDistance: 15
+  shieldDetectDistance: 40
   shieldStopDistance: 7
   pullSpeed: 0
 --- !u!114 &945925789390322575
@@ -260,7 +260,7 @@ MonoBehaviour:
   dashDistance: 7
   dashOutTime: 0.15
   dashBackTime: 0.2
-  attackCooldown: 1.75
+  attackCooldown: 1.5
   biteTriggerName: 
 --- !u!23 &3450272020908012589
 MeshRenderer:

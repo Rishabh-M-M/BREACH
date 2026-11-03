@@ -1390,6 +1390,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 22225025112293737, guid: 51ea48c5634202b4683b442079ed7fa7, type: 3}
     - target: {fileID: 7034642799511958071, guid: 51c5821c735349c45a9200f0f800ef30, type: 3}
+      propertyPath: spawnSideOffset
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 7034642799511958071, guid: 51c5821c735349c45a9200f0f800ef30, type: 3}
       propertyPath: targetPoints.Array.size
       value: 1
       objectReference: {fileID: 0}
@@ -5961,6 +5965,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 591735083}
   m_CullTransparentMesh: 1
+--- !u!114 &595610267 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6620681196754717930, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
+  m_PrefabInstance: {fileID: 3809056587959303647}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e277c8cd9de1c8447a286f52ec12ed2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner_Single
 --- !u!1 &617117850
 GameObject:
   m_ObjectHideFlags: 0
@@ -9206,93 +9221,159 @@ MonoBehaviour:
   earlyStartEnabled: 1
   waves:
   - groups:
-    - spawner: {fileID: 1957467141}
-      count: 5
-      startDelay: 0
-    - spawner: {fileID: 1683467975}
-      count: 1
-      startDelay: 5
-    duration: 45
-    advanceEarlyOnClear: 0
-  - groups:
-    - spawner: {fileID: 1957467141}
-      count: 4
-      startDelay: 0
-    - spawner: {fileID: 642611629}
-      count: 4
-      startDelay: 8
-    - spawner: {fileID: 124149995}
-      count: 2
-      startDelay: 8
-    - spawner: {fileID: 1531131122}
-      count: 1
-      startDelay: 8
-    duration: 50
-    advanceEarlyOnClear: 0
-  - groups:
-    - spawner: {fileID: 1057884029}
-      count: 6
-      startDelay: 0
-    - spawner: {fileID: 307576245047738483}
-      count: 6
-      startDelay: 12
-    - spawner: {fileID: 7761523458117504719}
+    - spawner: {fileID: 1826806565}
       count: 3
-      startDelay: 4
-    - spawner: {fileID: 275631826}
+      startDelay: 0
+    - spawner: {fileID: 1957467141}
+      count: 1
+      startDelay: 3
+    - spawner: {fileID: 1683467975}
       count: 2
       startDelay: 7
-    - spawner: {fileID: 1683467975}
+    duration: 25
+    advanceEarlyOnClear: 1
+  - groups:
+    - spawner: {fileID: 1957467141}
       count: 3
-      startDelay: 6
-    - spawner: {fileID: 124149995}
-      count: 3
-      startDelay: 6
-    duration: 65
-    advanceEarlyOnClear: 0
+      startDelay: 4
+    - spawner: {fileID: 642611629}
+      count: 4
+      startDelay: 0
+    - spawner: {fileID: 275631826}
+      count: 2
+      startDelay: 8
+    - spawner: {fileID: 1531131122}
+      count: 4
+      startDelay: 10
+    duration: 35
+    advanceEarlyOnClear: 1
+  - groups:
+    - spawner: {fileID: 1057884029}
+      count: 10
+      startDelay: 0
+    - spawner: {fileID: 1531131122}
+      count: 6
+      startDelay: 18
+    - spawner: {fileID: 1826806565}
+      count: 5
+      startDelay: 12
+    - spawner: {fileID: 275631826}
+      count: 10
+      startDelay: 8
+    duration: 35
+    advanceEarlyOnClear: 1
   - groups:
     - spawner: {fileID: 642611629}
-      count: 5
-      startDelay: 10
+      count: 6
+      startDelay: 15
     - spawner: {fileID: 1957467141}
-      count: 8
+      count: 4
       startDelay: 10
     - spawner: {fileID: 307576245047738483}
-      count: 5
-      startDelay: 16
-    - spawner: {fileID: 439547859}
       count: 4
-      startDelay: 3
-    - spawner: {fileID: 1531131122}
+      startDelay: 35
+    - spawner: {fileID: 439547859}
+      count: 6
+      startDelay: 30
+    - spawner: {fileID: 7761523458117504719}
       count: 2
       startDelay: 3
     - spawner: {fileID: 1826806565}
       count: 3
       startDelay: 3
-    duration: 75
-    advanceEarlyOnClear: 0
+    - spawner: {fileID: 7761523458117504719}
+      count: 3
+      startDelay: 3
+    duration: 65
+    advanceEarlyOnClear: 1
   - groups:
+    - spawner: {fileID: 439547859}
+      count: 5
+      startDelay: 35
     - spawner: {fileID: 1057884029}
       count: 5
-      startDelay: 10
-    - spawner: {fileID: 1957467141}
-      count: 5
-      startDelay: 6
-    - spawner: {fileID: 307576245047738483}
+      startDelay: 15
+    - spawner: {fileID: 595610267}
       count: 5
       startDelay: 12
-    - spawner: {fileID: 642611629}
-      count: 5
-      startDelay: 18
-    - spawner: {fileID: 275631826}
+    - spawner: {fileID: 1683467975}
+      count: 2
+      startDelay: 5
+    - spawner: {fileID: 1957467141}
       count: 3
-      startDelay: 14
+      startDelay: 3
+    - spawner: {fileID: 1826806565}
+      count: 5
+      startDelay: 7
+    - spawner: {fileID: 124149995}
+      count: 10
+      startDelay: 15
+    - spawner: {fileID: 642611629}
+      count: 8
+      startDelay: 45
+    - spawner: {fileID: 275631826}
+      count: 5
+      startDelay: 45
+    - spawner: {fileID: 275631826}
+      count: 5
+      startDelay: 65
+    - spawner: {fileID: 307576245047738483}
+      count: 3
+      startDelay: 50
+    - spawner: {fileID: 1520032769}
+      count: 4
+      startDelay: 50
     - spawner: {fileID: 7761523458117504719}
       count: 2
-      startDelay: 15
-    - spawner: {fileID: 124149995}
+      startDelay: 50
+    - spawner: {fileID: 595610267}
+      count: 5
+      startDelay: 75
+    - spawner: {fileID: 1957467141}
+      count: 4
+      startDelay: 75
+    - spawner: {fileID: 642611629}
+      count: 7
+      startDelay: 95
+    - spawner: {fileID: 307576245047738483}
+      count: 5
+      startDelay: 95
+    - spawner: {fileID: 439547859}
+      count: 2
+      startDelay: 75
+    - spawner: {fileID: 7761523458117504719}
       count: 1
-      startDelay: 15
+      startDelay: 95
+    - spawner: {fileID: 1683467975}
+      count: 3
+      startDelay: 75
+    - spawner: {fileID: 7761523458117504719}
+      count: 2
+      startDelay: 85
+    - spawner: {fileID: 7761523458117504719}
+      count: 2
+      startDelay: 120
+    - spawner: {fileID: 7761523458117504719}
+      count: 2
+      startDelay: 140
+    - spawner: {fileID: 1683467975}
+      count: 2
+      startDelay: 160
+    - spawner: {fileID: 7761523458117504719}
+      count: 2
+      startDelay: 160
+    - spawner: {fileID: 439547859}
+      count: 2
+      startDelay: 180
+    - spawner: {fileID: 439547859}
+      count: 4
+      startDelay: 200
+    - spawner: {fileID: 275631826}
+      count: 10
+      startDelay: 120
+    - spawner: {fileID: 642611629}
+      count: 10
+      startDelay: 120
     duration: 300
     advanceEarlyOnClear: 1
   bossWaveIndex: 4
@@ -11270,9 +11351,9 @@ MonoBehaviour:
   rotationSound: {fileID: 8300000, guid: dfc8e02a652bd43b29605c1b79937c61, type: 3}
   powerOnSound: {fileID: 8300000, guid: 945fc4d746947416e822e21d831ef7bd, type: 3}
   powerOffSound: {fileID: 8300000, guid: f5e893e2518334f60a2138ff234001c8, type: 3}
-  fireVolume: 1
-  rotationVolume: 1
-  powerVolume: 0.5
+  fireVolume: 0.015
+  rotationVolume: 0.085
+  powerVolume: 0.015
   rotationAudioThreshold: 0.05
 --- !u!4 &1078086769
 Transform:
@@ -15635,6 +15716,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0167454249bc16f4da614817e0690e65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ProjectBreach.Core.Turret
+--- !u!114 &1520032769 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3207971897093991269, guid: 85d001ea16328ac4c8eae5a499789764, type: 3}
+  m_PrefabInstance: {fileID: 1309545894767253165}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e277c8cd9de1c8447a286f52ec12ed2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner_Single
 --- !u!1 &1521398995
 GameObject:
   m_ObjectHideFlags: 0
@@ -15929,7 +16021,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e277c8cd9de1c8447a286f52ec12ed2c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner_Single
-  enemyPrefab: {fileID: 22225025112293737, guid: 51ea48c5634202b4683b442079ed7fa7, type: 3}
+  enemyPrefab: {fileID: 22225025112293737, guid: 27f3e7e36a8b2fc4f86bfdf56b70e1aa, type: 3}
   targetPoints:
   - {fileID: 1309545894767253167}
   enemiesToSpawn: 6
@@ -19354,15 +19446,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2018218700711820583, guid: 51c5821c735349c45a9200f0f800ef30, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2018218700711820583, guid: 51c5821c735349c45a9200f0f800ef30, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2018218700711820583, guid: 51c5821c735349c45a9200f0f800ef30, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: 180
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2018218700711820583, guid: 51c5821c735349c45a9200f0f800ef30, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
@@ -19387,6 +19479,10 @@ PrefabInstance:
     - target: {fileID: 7034642799511958071, guid: 51c5821c735349c45a9200f0f800ef30, type: 3}
       propertyPath: enemiesToSpawn
       value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 7034642799511958071, guid: 51c5821c735349c45a9200f0f800ef30, type: 3}
+      propertyPath: spawnSideOffset
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 7034642799511958071, guid: 51c5821c735349c45a9200f0f800ef30, type: 3}
       propertyPath: targetPoints.Array.size
@@ -23452,10 +23548,42 @@ PrefabInstance:
       propertyPath: m_Name
       value: RoomBAirLock
       objectReference: {fileID: 0}
+    - target: {fileID: 3396266086655812912, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -505.4913
+      objectReference: {fileID: 0}
+    - target: {fileID: 3396266086655812912, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 10.57635
+      objectReference: {fileID: 0}
+    - target: {fileID: 3562313537662362352, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
+      propertyPath: m_Name
+      value: AirLockRobotEnemySpawner
+      objectReference: {fileID: 0}
+    - target: {fileID: 4038955216190571578, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
+      propertyPath: m_Name
+      value: AirLockEnemySpawnerSpider
+      objectReference: {fileID: 0}
+    - target: {fileID: 4652762430494852017, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
+      propertyPath: spawnSideOffset
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 5060414650661117287, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
       propertyPath: roomAudioReference
       value: 
       objectReference: {fileID: 941175155}
+    - target: {fileID: 5945810814660405792, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
+      propertyPath: enemyPrefab
+      value: 
+      objectReference: {fileID: 22225025112293737, guid: 27f3e7e36a8b2fc4f86bfdf56b70e1aa, type: 3}
+    - target: {fileID: 5945810814660405792, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
+      propertyPath: enemiesToSpawn
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 5945810814660405792, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
+      propertyPath: spawnSideOffset
+      value: 15
+      objectReference: {fileID: 0}
     - target: {fileID: 6055558246196504447, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
       propertyPath: m_LocalPosition.x
       value: -835.4
@@ -23496,6 +23624,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6620681196754717930, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
+      propertyPath: spawnSideOffset
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 7874474230338912243, guid: eb7b14d3e84597d4883aee4121876f4c, type: 3}
       propertyPath: newTarget
       value: 
@@ -23525,6 +23657,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1231746487266214289, guid: cd965d401276eca4a88d4c4b4553cecc, type: 3}
+      propertyPath: spawnSideOffset
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 3832042784038529337, guid: cd965d401276eca4a88d4c4b4553cecc, type: 3}
+      propertyPath: spawnSideOffset
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 5227575215137367593, guid: cd965d401276eca4a88d4c4b4553cecc, type: 3}
       propertyPath: m_LocalPosition.y
       value: 8.4
@@ -23629,6 +23769,10 @@ PrefabInstance:
       propertyPath: reappearDelay
       value: 0.75
       objectReference: {fileID: 0}
+    - target: {fileID: 2238847036342394126, guid: fc0575d9ac9714f529053b6e54fcad5a, type: 3}
+      propertyPath: spawnSideOffset
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 3328946263123235868, guid: fc0575d9ac9714f529053b6e54fcad5a, type: 3}
       propertyPath: newTarget
       value: 
@@ -23645,6 +23789,10 @@ PrefabInstance:
       propertyPath: destinationPoint
       value: 
       objectReference: {fileID: 800765704}
+    - target: {fileID: 3969381889645117142, guid: fc0575d9ac9714f529053b6e54fcad5a, type: 3}
+      propertyPath: spawnSideOffset
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 4546133574531730460, guid: fc0575d9ac9714f529053b6e54fcad5a, type: 3}
       propertyPath: m_Center.y
       value: 15

@@ -62,11 +62,21 @@ namespace ProjectBreach.Core
 
         public bool EarlyStartEnabled => earlyStartEnabled;
 
+        // This manager holds direct references to the scene's spawner objects,
+        // so it must NOT persist across scene loads. If it did, a restart after
+        // a loss would keep a stale instance whose spawner references point at
+        // destroyed objects (every group skipped -> nothing spawns) and whose
+        // Start() would never re-run the wave loop.
+        protected override bool PersistAcrossScenes => false;
+
         // ========== Lifecycle ==========
 
         protected override void Awake()
         {
             base.Awake();
+            if (Instance != this)
+                return;
+
             EventRegistry.OnEnemyResolved += HandleEnemyResolved;
         }
 

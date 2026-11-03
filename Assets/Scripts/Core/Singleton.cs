@@ -10,6 +10,15 @@ namespace ProjectBreach.Core
     {
         public static T Instance { get; private set; }
 
+        /// <summary>
+        /// Whether this singleton should survive scene loads (DontDestroyOnLoad).
+        /// Managers that hold direct references to scene objects (e.g. WaveManager
+        /// references its scene's spawners) must override this to false so they are
+        /// recreated fresh on every scene load — otherwise a restart leaves a stale
+        /// instance pointing at destroyed objects and it never re-runs its Start loop.
+        /// </summary>
+        protected virtual bool PersistAcrossScenes => true;
+
         protected virtual void Awake()
         {
             if (Instance != null && Instance != this)
@@ -19,7 +28,8 @@ namespace ProjectBreach.Core
                 return;
             }
             Instance = (T)this;
-            DontDestroyOnLoad(gameObject);
+            if (PersistAcrossScenes)
+                DontDestroyOnLoad(gameObject);
         }
     }
 }

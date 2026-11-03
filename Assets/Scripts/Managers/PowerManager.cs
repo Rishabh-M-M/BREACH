@@ -16,6 +16,11 @@ namespace ProjectBreach.Core
     /// </summary>
     public class PowerManager : Singleton<PowerManager>
     {
+        // Run-scoped state: power must reset to its scene defaults on every run,
+        // so this manager must NOT survive scene loads (a restart after a loss
+        // should not carry over the previous run's power/load).
+        protected override bool PersistAcrossScenes => false;
+
         [Header("Power Settings")]
         [SerializeField] private int maxPower = 100;
 

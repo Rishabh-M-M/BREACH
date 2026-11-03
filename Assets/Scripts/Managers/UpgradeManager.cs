@@ -15,6 +15,11 @@ namespace ProjectBreach.Core
     /// </summary>
     public class UpgradeManager : Singleton<UpgradeManager>
     {
+        // Run-scoped state: upgrade points must reset to their scene defaults on
+        // every run, so this manager must NOT survive scene loads (a restart
+        // should start a fresh 100-point budget, not keep the previous run's).
+        protected override bool PersistAcrossScenes => false;
+
         [Header("Economy (spec 9.4)")]
         [SerializeField] private int startingPoints = 100;
         [SerializeField] private int pointsPerKill = 10;

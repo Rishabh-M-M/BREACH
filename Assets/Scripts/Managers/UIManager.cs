@@ -9,6 +9,11 @@ namespace ProjectBreach.Core
 {
     public class UIManager : Singleton<UIManager>
     {
+        // Scene-bound: holds direct references to this scene's UI objects and the
+        // GeneratorPassive. It must NOT survive scene loads or a restart would
+        // keep references to destroyed objects (broken power bar / generator UI).
+        protected override bool PersistAcrossScenes => false;
+
         [Header("Power UI")]
         [SerializeField] private Slider powerBar;
         [SerializeField] private TextMeshProUGUI powerText;

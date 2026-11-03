@@ -4341,7 +4341,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 717973167318073675, guid: bb1452abf6eabf640be3c3cad8b37672, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.5001831
+      value: -0.50024414
       objectReference: {fileID: 0}
     - target: {fileID: 717973167318073675, guid: bb1452abf6eabf640be3c3cad8b37672, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -9257,7 +9257,7 @@ MonoBehaviour:
     - spawner: {fileID: 1826806565}
       count: 5
       startDelay: 12
-    - spawner: {fileID: 275631826}
+    - spawner: {fileID: 1826806565}
       count: 10
       startDelay: 8
     duration: 35

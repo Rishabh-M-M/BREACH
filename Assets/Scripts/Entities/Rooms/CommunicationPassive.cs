@@ -48,6 +48,9 @@ namespace ProjectBreach.Core
 
         private float _hideTimer = 0f;
 
+        /// <summary>Cached solid-white sprite so Filled HP bars honour fillAmount.</summary>
+        private static Sprite _solidSprite;
+
         private struct MinimapRow
         {
             public Room room;
@@ -124,13 +127,22 @@ namespace ProjectBreach.Core
             Text title = CreateText(_window, "MAP", 14, Color.white, TextAnchor.MiddleLeft);
             SetTopLeft(title.rectTransform, 6f, 0f, windowWidth - 12f, titleHeight);
 
-            // One row per external room (skip blank / leftover room names).
-            int index = 0;
+            // One row per external room (skip blank / leftover room names),
+            // sorted into a fixed display order: Comms, Regen, Armory, Generator.
+            List<Room> rooms = new List<Room>();
             foreach (Room room in FindObjectsByType<Room>(FindObjectsSortMode.None))
             {
                 if (room == null || string.IsNullOrWhiteSpace(room.RoomName))
                     continue;
 
+                rooms.Add(room);
+            }
+            rooms.Sort((a, b) =>
+                GetRoomSortPriority(a).CompareTo(GetRoomSortPriority(b)));
+
+            int index = 0;
+            foreach (Room room in rooms)
+            {
                 BuildRow(room, index);
                 index++;
             }
@@ -376,6 +388,30 @@ namespace ProjectBreach.Core
             return (room.RoomName, null);
         }
 
+        /// <summary>
+        /// Display order for a room row, so the minimap always lists rooms as
+        /// Comms, Regen, Armory, Generator regardless of scene object order.
+        /// Unknown rooms fall back to the end.
+        /// </summary>
+        private static int GetRoomSortPriority(Room room)
+        {
+            string key = Normalize(room.RoomName);
+
+            if (key.Contains("corridor") || key.Contains("comm"))
+                return 0;
+            if (key.Contains("shield") || key.Contains("regen")
+                || key.Contains("airlock"))
+                return 1;
+            if (key.Contains("armory") || key.Contains("armour")
+                || key.Contains("shop"))
+                return 2;
+            if (key.Contains("server") || key.Contains("generator")
+                || key.Contains("power"))
+                return 3;
+
+            return 4;
+        }
+
         private static string Normalize(string name)
         {
             return name == null ? "" : name.Replace(" ", "").ToLowerInvariant();
@@ -430,12 +466,35 @@ namespace ProjectBreach.Core
             rt.SetParent(parent, false);
 
             Image img = go.GetComponent<Image>();
+            img.sprite = GetSolidSprite();
             img.color = color;
             img.type = Image.Type.Filled;
             img.fillMethod = Image.FillMethod.Horizontal;
             img.fillAmount = 1f;
 
             return img;
+        }
+
+        /// <summary>
+        /// Filled images need a sprite to honour fillAmount reliably (see
+        /// SecurityMinimap.CreateSolidSprite). Returns a cached solid-white
+        /// sprite so the barrier HP bars actually shrink/grow with the shield.
+        /// </summary>
+        private static Sprite GetSolidSprite()
+        {
+            if (_solidSprite == null)
+            {
+                Texture2D white = Texture2D.whiteTexture;
+                _solidSprite = Sprite.Create(
+                    white,
+                    new Rect(0f, 0f, white.width, white.height),
+                    new Vector2(0.5f, 0.5f),
+                    100f
+                );
+                _solidSprite.name = "CommunicationPassive Solid Sprite";
+            }
+
+            return _solidSprite;
         }
 
         /// <summary>Places a rect with its top-left at (x, y) inside the parent, sized (w, h).</summary>

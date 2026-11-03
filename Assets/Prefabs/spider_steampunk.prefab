@@ -217,8 +217,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af8687635b6adf9489585ba920afcc69, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyMover
+  isAntiGravity: 0
   target: {fileID: 0}
-  moveSpeed: 13
+  moveSpeed: 15
   turnSpeed: 150
   maxSteerAngle: 45
   arrivalDistance: 0.8
@@ -227,7 +228,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   shieldDetectDistance: 15
-  shieldStopDistance: 10
+  shieldStopDistance: 7
+  pullSpeed: 0
 --- !u!114 &945925789390322575
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -254,11 +256,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5fef386f96c34c41992c219f73440b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyMeleeAttack
-  damagePerHit: 1
-  dashDistance: 10
+  damagePerHit: 3
+  dashDistance: 7
   dashOutTime: 0.15
   dashBackTime: 0.2
-  attackCooldown: 1.5
+  attackCooldown: 1.75
   biteTriggerName: 
 --- !u!23 &3450272020908012589
 MeshRenderer:

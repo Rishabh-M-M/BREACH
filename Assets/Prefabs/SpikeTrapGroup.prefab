@@ -48,7 +48,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f08735f8307e44b6be5924d8c5e0212, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  powerCost: 10
+  powerCost: 5
   isActive: 0
   trapType: 0
   enableKeyboardTesting: 1

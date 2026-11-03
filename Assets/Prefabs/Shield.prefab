@@ -106,8 +106,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c02b6d49a94514bb58eab71a6ab0ee67, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  maxHealth: 100
-  currentHealth: 100
+  maxHealth: 120
+  currentHealth: 120
   baseOpacity: 0.08
   fadeSpeed: 1.5
   shatterSound: {fileID: 8300000, guid: ee7d76e1ffa9d46d995d24aa5b654f96, type: 3}

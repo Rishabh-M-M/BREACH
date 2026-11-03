@@ -61,7 +61,7 @@ namespace ProjectBreach.Core
         public float ExplosionEffectDuration => explosionEffectDuration;
 
         public override string UpgradeInfo =>
-            $"incinerating beam thats ramps-up damage by locking onto the highest HP enemy";
+            $"Heavy explosive firepower designed to devastate enemy groups.";
         private void Awake()
         {
             magazineSize = Mathf.Max(1, magazineSize);

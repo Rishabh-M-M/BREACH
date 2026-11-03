@@ -65,7 +65,7 @@ namespace ProjectBreach.Core
         public override int OperatingPowerCost => operatingPowerCost;
 
         public override string UpgradeInfo =>
-            $"incinerating beam thats ramps-up damage by locking onto the highest HP enemy";
+            $"Slow-firing precision weapon built for critical damage by long-range targeting.";
         private void Awake()
         {
             if (turretHead == null)

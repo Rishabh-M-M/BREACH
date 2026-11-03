@@ -1,3 +1,4 @@
+
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -26,6 +27,7 @@ public class TrapEquipmentSlotUI : MonoBehaviour
     [SerializeField] private Color pressedColour = new Color(0f, 0.75f, 1f);
     [SerializeField] private Color selectedColour = new Color(0.059f, 0.259f, 0.388f);
     [SerializeField] private Color disabledColour = new Color(0.149f, 0.149f, 0.169f);
+
     private void Awake()
     {
         if (button == null)
@@ -77,13 +79,17 @@ public class TrapEquipmentSlotUI : MonoBehaviour
         if (targetTrap == null)
             return;
 
-        // Toggle the entire TrapGroup.
-        // TrapGroup manages its own power allocation and refunds.
+        // Never allow a trap to activate in a breached room.
+        if (targetTrap.IsRoomBreached)
+        {
+            Refresh();
+            return;
+        }
+
         targetTrap.Toggle();
 
         Refresh();
 
-        // Return the button to its normal visual state.
         if (button != null)
             button.OnDeselect(null);
     }
@@ -102,6 +108,21 @@ public class TrapEquipmentSlotUI : MonoBehaviour
                 slotText.text =
                     $"<color=#B0C4DE>{equipmentName}</color>\n" +
                     "<color=#777777>— EMPTY —</color>";
+            }
+
+            return;
+        }
+
+        // Breached room: disable the slot completely.
+        if (targetTrap.IsRoomBreached)
+        {
+            button.interactable = false;
+
+            if (slotText != null)
+            {
+                slotText.text =
+                    $"<color=#B0C4DE>{equipmentName}</color>\n" +
+                    "<color=#FF3333>BREACHED</color>";
             }
 
             return;

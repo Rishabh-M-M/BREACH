@@ -1,3 +1,4 @@
+
 using UnityEngine;
 using ProjectBreach.Core;
 
@@ -43,6 +44,10 @@ namespace ProjectBreach.Core
         public TrapGroupType Type => trapType;
         public bool IsGroupActive => isActive;
 
+        // Checks whether the room containing this trap group is permanently disabled.
+        public bool IsRoomBreached =>
+            OwnerRoom != null && OwnerRoom.IsPermanentlyDisabled;
+
         protected override void Awake()
         {
             base.Awake();
@@ -54,6 +59,7 @@ namespace ProjectBreach.Core
                 stasisFieldTiles = GetComponentsInChildren<StasisFieldTile>(true);
 
             loopAudioSource = GetComponent<AudioSource>();
+
             if (loopAudioSource == null)
                 loopAudioSource = gameObject.AddComponent<AudioSource>();
 
@@ -69,8 +75,8 @@ namespace ProjectBreach.Core
 
         private void Start()
         {
-            // Re-acquire operating power through TurnOn rather than assuming a
-            // serialized active state is still funded.
+            // Re-acquire operating power through TurnOn rather than assuming
+            // a serialized active state is still funded.
             if (isActive)
             {
                 base.TurnOff();
@@ -80,6 +86,16 @@ namespace ProjectBreach.Core
 
         private void Update()
         {
+            // A breached room cannot operate traps.
+            // Turn off active traps and refund their operating power.
+            if (IsRoomBreached)
+            {
+                if (isActive || holdsOperatingPower)
+                    TurnOff();
+
+                return;
+            }
+
             if (enableKeyboardTesting && Input.GetKeyDown(toggleKey))
                 Toggle();
         }
@@ -107,6 +123,12 @@ namespace ProjectBreach.Core
 
         public void Toggle()
         {
+            if (IsRoomBreached)
+            {
+                TurnOff();
+                return;
+            }
+
             if (isActive)
                 TurnOff();
             else
@@ -118,18 +140,35 @@ namespace ProjectBreach.Core
             if (isActive)
                 return;
 
+            // Prevent activation in a breached room.
+            if (IsRoomBreached)
+            {
+                TurnOff();
+
+                Debug.Log(
+                    $"Cannot activate trap group '{name}': its room has been breached.",
+                    this
+                );
+
+                return;
+            }
+
             if (!HasConfiguredTiles())
             {
                 Debug.LogError(
                     $"TrapGroup '{name}' cannot activate: no valid tile components are assigned for trap type '{trapType}'.",
                     this);
-                UIManager.Instance?.ShowMessage("No trap tiles are assigned to this trap group.");
+
+                UIManager.Instance?.ShowMessage(
+                    "No trap tiles are assigned to this trap group.");
+
                 return;
             }
 
             ConfigureTiles();
 
             PowerManager power = PowerManager.Instance;
+
             if (power != null)
             {
                 if (!power.TryAllocate(PowerCost))
@@ -141,10 +180,10 @@ namespace ProjectBreach.Core
                 holdsOperatingPower = true;
             }
 
-            // Activate the actual trap tiles as part of the same operation as
-            // the group state, so the UI cannot report ON while tiles stay off.
             SetTilesActive(true);
+
             base.TurnOn();
+
             UpdateLoopAudio();
         }
 
@@ -158,6 +197,7 @@ namespace ProjectBreach.Core
             }
 
             SetTilesActive(false);
+
             base.TurnOff();
 
             if (holdsOperatingPower)

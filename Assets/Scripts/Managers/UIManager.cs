@@ -1,4 +1,3 @@
-
 using UnityEngine;
 using UnityEngine.UI;
 using ProjectBreach.Core;
@@ -26,12 +25,12 @@ namespace ProjectBreach.Core
         [SerializeField] private TextMeshProUGUI regenerationTimerText;
         [SerializeField] private TextMeshProUGUI regenerationAmountText;
 
-        [Header("Generator Display Settings")]
-        [SerializeField] private float generatorInterval = 10f;
-        [SerializeField] private float growthPercent = 0.05f;
-        [SerializeField] private int minGrowth = 5;
-
-        private float generatorTimer;
+        // NOTE: no generator interval / growth / timer fields live here. The
+        // HUD used to keep a second serialized copy of the GeneratorPassive
+        // config plus its own tick timer, and the two copies silently
+        // diverged (the green "+X POWER" label kept growing while the real
+        // growth stayed flat). All generator readings now come straight from
+        // the GeneratorPassive component, which is the single source of truth.
 
         [Header("Message UI")]
         [SerializeField] private GameObject messagePanel;
@@ -122,8 +121,6 @@ namespace ProjectBreach.Core
         {
             if (generatorPassive == null || !generatorPassive.IsEnabled)
             {
-                generatorTimer = 0f;
-
                 if (generatorUI != null)
                     generatorUI.SetActive(false);
 
@@ -133,15 +130,14 @@ namespace ProjectBreach.Core
             if (generatorUI != null && !generatorUI.activeSelf)
                 generatorUI.SetActive(true);
 
-            if (generatorInterval <= 0f)
+            // Read interval, live tick progress and the predicted amount from
+            // the passive itself, so the countdown, the progress bar and the
+            // "+X POWER" label always match the growth that will be applied.
+            float interval = generatorPassive.IntervalSeconds;
+            if (interval <= 0f)
                 return;
 
-            generatorTimer += Time.deltaTime;
-
-            if (generatorTimer >= generatorInterval)
-                generatorTimer -= generatorInterval;
-
-            float progress = Mathf.Clamp01(generatorTimer / generatorInterval);
+            float progress = generatorPassive.Progress;
 
             if (generatorProgressBar != null)
                 generatorProgressBar.value = progress;
@@ -149,22 +145,18 @@ namespace ProjectBreach.Core
             if (regenerationTimerText != null)
             {
                 int secondsRemaining =
-                    Mathf.CeilToInt(generatorInterval - generatorTimer);
+                    Mathf.CeilToInt(interval * (1f - progress));
 
                 regenerationTimerText.text =
                     $"CHARGING: {secondsRemaining}s";
             }
 
-            if (regenerationAmountText != null && PowerManager.Instance != null)
+            if (regenerationAmountText != null)
             {
-                int nextIncrease = Mathf.Max(
-                    minGrowth,
-                    Mathf.RoundToInt(
-                        PowerManager.Instance.MaxPower * growthPercent
-                    )
-                );
-
-                regenerationAmountText.text = $" +{nextIncrease} POWER";
+                // NextGrowthAmount internally handles a missing PowerManager,
+                // so no extra null check is needed here.
+                regenerationAmountText.text =
+                    $" +{generatorPassive.NextGrowthAmount} POWER";
             }
         }
 

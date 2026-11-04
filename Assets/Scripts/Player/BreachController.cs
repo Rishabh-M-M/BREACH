@@ -153,18 +153,6 @@ public class BreachController : MonoBehaviour
 
     private void Update()
     {
-        // Temporary keyboard testing: press 1, 2, 3 or 4.
-        if (Input.GetKeyDown(KeyCode.Alpha1))
-            SetTestBreachLevel(1);
-
-        if (Input.GetKeyDown(KeyCode.Alpha2))
-            SetTestBreachLevel(2);
-
-        if (Input.GetKeyDown(KeyCode.Alpha3))
-            SetTestBreachLevel(3);
-
-        if (Input.GetKeyDown(KeyCode.Alpha4))
-            SetTestBreachLevel(4);
 
         // Keep your existing breach light pulsing.
         if (breachRunning)

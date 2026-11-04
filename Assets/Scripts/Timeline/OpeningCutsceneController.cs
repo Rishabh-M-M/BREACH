@@ -32,7 +32,7 @@ public class OpeningCutsceneController : MonoBehaviour
     [SerializeField] private string videoFileName = "compressed-StartScene-3.mp4";
 
     [Header("Next Scene")]
-    [SerializeField] private string nextSceneName = "StartScene";
+    [SerializeField] private string nextSceneName = "Gameplay";
 
     [SerializeField] private string mainMenuSceneName = "MainMenu";
 

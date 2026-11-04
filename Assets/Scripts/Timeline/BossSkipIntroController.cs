@@ -21,7 +21,7 @@ public class BossSkipIntroController : MonoBehaviour
     [SerializeField] private RenderTexture bossEyeRenderTexture;
 
     [Header("Scene")]
-    [SerializeField] private string gameplayScene = "StartScene";
+    [SerializeField] private string gameplayScene = "Gameplay";
 
     [Header("Appearance")]
     [SerializeField]

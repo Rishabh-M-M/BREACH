@@ -181,7 +181,7 @@ namespace ProjectBreach.Core
             {
                 ResetRunOnMainMenu();
             }
-            else if (scene.name == "StartScene")
+            else if (scene.name == "Gameplay")
             {
                 StartCoroutine(InitialiseNewGame());
             }

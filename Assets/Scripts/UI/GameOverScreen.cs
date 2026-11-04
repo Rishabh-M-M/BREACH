@@ -43,7 +43,7 @@ namespace ProjectBreach.Core
         [Tooltip("Seconds of frozen hit-stop before the panel pops. Real-time, because timeScale is already 0.")]
         [SerializeField] private float panelShowDelay = 0.75f;
         [Tooltip("Path of the start/menu scene exactly as listed in Build Settings.")]
-        [SerializeField] private string mainMenuScenePath = "Assets/StartScene.unity";
+        [SerializeField] private string mainMenuScenePath = "Gameplay";
 
         [Header("Behavior")]
         [SerializeField] private bool freezeTimeOnShow = true;

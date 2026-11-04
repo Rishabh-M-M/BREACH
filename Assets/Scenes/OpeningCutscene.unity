@@ -524,7 +524,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::OpeningCutsceneController
   videoPlayer: {fileID: 689012131}
-  nextSceneName: StartScene
+  videoFileName: compressed-StartScene-3.mp4
+  nextSceneName: Gameplay
+  mainMenuSceneName: MainMenu
+  playbackStartTimeout: 3
+  skipInputGrace: 0.5
+  finishTimeoutMargin: 10
+  hardCapSeconds: 120
 --- !u!1 &1755871212
 GameObject:
   m_ObjectHideFlags: 0

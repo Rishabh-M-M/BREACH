@@ -240,9 +240,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e2b47f19123f444fa19fb373f28d553, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BossSkipIntroController
-  bossEyeClip: {fileID: 32900000, guid: 1bdfa6b33dec74df48f1f7148fc0a1d7, type: 3}
+  videoFileName: compressed-jumpscare.mp4
   bossEyeRenderTexture: {fileID: 8400000, guid: 24751acc95ffa40f783e1f60600756a8, type: 2}
-  gameplayScene: StartScene
+  gameplayScene: Gameplay
   backgroundColour: {r: 0.008, g: 0.012, b: 0.025, a: 1}
   accentRed: {r: 1, g: 0.035, b: 0.06, a: 1}
   cyan: {r: 0, g: 0.85, b: 1, a: 1}

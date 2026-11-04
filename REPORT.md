@@ -366,3 +366,41 @@ The rest are tuned on the boss's Material:
 
 • [Unity Scripting API: MaterialPropertyBlock](https://docs.unity.com/en-us/engine/6000.6/script-reference/unityengine/materialpropertyblock)
 
+
+# Contribution Report
+
+
+## Jason Han
+- wave spawning and pacing system
+- timed waves and rest periods between them
+- along with the logic for what happens when a room's shield fails and enemies breach into the Main Control Room.
+- turret and enemy projectiles and pathing
+- power system and power increasing over time
+- contributed to fixing bugs across the project
+
+## Hitarth Chheda
+- all cutscenes and their transition into gameplay
+- the multi-room camera-switching UI and equipment panel
+- the room models
+- shader used for the room breach visual
+- in-game tutorial.
+
+## Rishabh Maheshwari
+- turrets controls
+- turret firing
+- turret upgrades
+- power on/off economy
+- traps
+- room shields
+- majority of the GDD.
+
+## Marcus Minnelli
+- enemy models and animations
+- enemy movement
+- enemy attacking and health
+- enemy spawning
+- enemy integration with shields and turrets
+- boss model and shading
+- boss integration with the camera, turret controls, and wave system
+
+

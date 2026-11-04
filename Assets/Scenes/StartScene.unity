@@ -25647,7 +25647,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6760423041082644168, guid: cd965d401276eca4a88d4c4b4553cecc, type: 3}
       propertyPath: growthPercent
-      value: 0.05
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7956446722661231936, guid: cd965d401276eca4a88d4c4b4553cecc, type: 3}
       propertyPath: newTarget

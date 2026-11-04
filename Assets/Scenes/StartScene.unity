@@ -10157,7 +10157,7 @@ MonoBehaviour:
       count: 5
       startDelay: 12
     - spawner: {fileID: 1826806565}
-      count: 6
+      count: 10
       startDelay: 8
     duration: 35
     advanceEarlyOnClear: 1

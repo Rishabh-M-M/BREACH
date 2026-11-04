@@ -367,6 +367,94 @@ The rest are tuned on the boss's Material:
 • [Unity Scripting API: MaterialPropertyBlock](https://docs.unity.com/en-us/engine/6000.6/script-reference/unityengine/materialpropertyblock)
 
 
+
+
+# 11. Shader Report
+
+## Shader 2 - BreachRoom
+
+## 11.5 Theme
+
+This shader fits Theme 2, Surface Appearance and Procedural Effects. It uses custom vertex and fragment shader programming to create an increasingly corrupted appearance across the main room's security screens. The distortion, glitching, electrical cracks and digital interference are generated procedurally at runtime rather than relying on pre-authored damage textures or animations.
+
+## 11.6 Why This Effect Was Chosen
+
+As enemies breach the player's defences and more rooms fall, the main control room becomes increasingly vulnerable. The team wanted this progression to be reflected visually, rather than communicating danger only through gameplay events or UI warnings. The shader transforms the security screens into a visual indicator of the game's escalating threat. Its red pulsing, signal interference and electrical corruption become more intense across four breach levels, reinforcing the feeling that the security system is progressively failing.
+
+## 11.7 BreachRoom Shader
+
+**Source file:** [BreachRoom](./Assets/Shaders/BreachRoom.shader)
+
+A custom Cg/HLSL vertex and fragment shader applied to the main room's security screens. The vertex stage uses animated sine and cosine waves with procedural noise to displace screen vertices, creating subtle geometric distortion. The fragment stage combines seven effects: heat distortion, red pulsing, horizontal glitch bands, digital scanlines, procedural electrical cracks, digital static and red edge glow. These effects are controlled independently and become stronger as the breach level increases, making the screens appear increasingly unstable and corrupted.
+
+### Usage in the Game
+
+Applied to the main room's screen renderers through `BreachController.cs`, replacing their original materials temporarily while preserving their screen textures. When a breach occurs, the shader activates alongside red pulsing lights, breach audio and camera shake. The effect lasts five seconds, after which the original screen materials and light settings are restored.
+
+The shader is also connected to room progression. `MainControlRoom.cs` tracks fallen rooms and passes the number of fallen rooms to `BreachController.SetPermanentBreachLevel()`. This selects one of four corruption profiles, ensuring subsequent breach events reflect the current game progression.
+
+### Setup
+
+The controller creates temporary material instances using the `Custom/BreachRoom` shader and applies the shader properties through `Material.SetFloat()` and `Material.SetColor()`.
+
+The main parameters are:
+
+- `_BreachAmount` / `_BreachColour` - overall effect intensity and corruption colour.
+- `_PulseSpeed` / `_PulseIntensity` - red pulse speed and intensity.
+- `_CorruptionStrength` / `_BreachLevel` - overall corruption and progression-based scaling.
+- `_HeatDistortionStrength` - animated heat distortion.
+- `_GlitchStrength` - horizontal signal interference.
+- `_ScanlineStrength` - digital scanline visibility.
+- `_CrackStrength` - procedural electrical crack intensity.
+- `_StaticStrength` - digital static and flashing interference.
+- `_EdgeGlowStrength` - red glow around screen edges.
+
+Four `BreachLevelProfile` configurations in `BreachController.cs` control the values of these parameters:
+
+| Setting | Level 1 | Level 2 | Level 3 | Level 4 |
+| --- | ---: | ---: | ---: | ---: |
+| Pulse Speed | 3.5 | 4.5 | 6 | 8 |
+| Corruption | 0.5 | 0.9 | 1.4 | 2 |
+| Heat Distortion | 0.5 | 0.8 | 1.3 | 1.8 |
+| Horizontal Glitch | 0.4 | 0.8 | 1.3 | 2 |
+| Scanlines | 0.35 | 0.65 | 1.1 | 1.6 |
+| Electrical Cracks | 0.2 | 0.6 | 1.1 | 1.8 |
+| Digital Static | 0.2 | 0.6 | 1.2 | 2 |
+| Edge Glow | 0.45 | 0.8 | 1.3 | 2 |
+| Pulse Intensity | 0.6 | 0.9 | 1.3 | 1.8 |
+
+These profiles allow each corruption stage to be tuned independently through the Unity Inspector without modifying the shader code.
+
+### GIFs
+
+![Level 0 - Original Appearance](./Images/BreachLevel0.gif)
+
+(Original security screen appearance before any breaches occur. No corruption, distortion, glitching or electrical effects are applied.)
+
+![Level 1 - Initial Corruption](./Images/BreachLevel1.gif)
+
+(Initial screen corruption with subtle distortion and red pulsing.)
+
+![Level 2 - Increasing Corruption](./Images/BreachLevel2.gif)
+
+(Stronger glitching, scanlines and electrical cracks.)
+
+![Level 3 - Severe Corruption](./Images/BreachLevel3.gif)
+
+(Severe screen distortion with increased static and red glow.)
+
+![Level 4 - Critical Corruption](./Images/BreachLevel4.gif)
+
+(Maximum configured corruption with intense interference and electrical effects.)
+
+### External Resources
+
+- Unity Documentation: [Writing vertex and fragment shaders](https://docs.unity3d.com/ru/current/Manual/ShaderTut2.html)
+- Unity Documentation: [Built-in shader include files](https://docs.unity.com/en-us/engine/6000.3/manual/materials-and-shaders/shaders/writing-shaders-birp/use-built-in-shader-methods-birp/sl-builtin-includes)
+- Unity Documentation: [Accessing shader properties in Cg/HLSL](https://docs.unity.com/en-us/engine/6000.3/manual/materials-and-shaders/shaders/writing-custom/shader-writing/writing-shader-change-properties/sl-properties-in-programs)
+
+
+
 # Contribution Report
 
 

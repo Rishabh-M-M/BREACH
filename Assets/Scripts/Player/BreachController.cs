@@ -3,6 +3,23 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
+public class BreachLevelProfile
+{
+    [Header("Main Settings")]
+    [Range(0, 10)] public float pulseSpeed = 3f;
+    [Range(0, 2)] public float corruptionStrength = 0.5f;
+
+    [Header("Individual Effects")]
+    [Range(0, 2)] public float heatDistortion = 0.5f;
+    [Range(0, 2)] public float horizontalGlitch = 0.4f;
+    [Range(0, 2)] public float scanlines = 0.35f;
+    [Range(0, 2)] public float electricalCracks = 0.2f;
+    [Range(0, 2)] public float digitalStatic = 0.2f;
+    [Range(0, 2)] public float edgeGlow = 0.45f;
+    [Range(0, 2)] public float pulseIntensity = 0.6f;
+}
+
 public class BreachController : MonoBehaviour
 {
     [Header("Breach Settings")]
@@ -17,20 +34,71 @@ public class BreachController : MonoBehaviour
     public float pulseSpeed = 3f;
 
     [Header("Screen Corruption")]
-    [Tooltip("0 = none, 1 = low, 2 = high.")]
     [Range(0, 2)]
     public float corruptionStrength = 2f;
 
     [Header("Permanent Breach Level")]
-    [Tooltip("0 = no breach, 1-4 = permanently fallen rooms.")]
     [Range(0, 4)]
     public int breachLevel = 0;
 
-    [Header("Screen Setup")]
-    [Tooltip("MainRoom containing Screen 1-12.")]
-    public Transform screenRoot;
+    [Header("Level 1 - Initial Corruption")]
+    public BreachLevelProfile level1 = new BreachLevelProfile
+    {
+        pulseSpeed = 3.5f,
+        corruptionStrength = 0.5f,
+        heatDistortion = 0.5f,
+        horizontalGlitch = 0.4f,
+        scanlines = 0.35f,
+        electricalCracks = 0.2f,
+        digitalStatic = 0.2f,
+        edgeGlow = 0.45f,
+        pulseIntensity = 0.6f
+    };
 
-    [Tooltip("Material using the Custom/BreachRoom shader.")]
+    [Header("Level 2 - Increasing Corruption")]
+    public BreachLevelProfile level2 = new BreachLevelProfile
+    {
+        pulseSpeed = 4.5f,
+        corruptionStrength = 0.9f,
+        heatDistortion = 0.8f,
+        horizontalGlitch = 0.8f,
+        scanlines = 0.65f,
+        electricalCracks = 0.6f,
+        digitalStatic = 0.6f,
+        edgeGlow = 0.8f,
+        pulseIntensity = 0.9f
+    };
+
+    [Header("Level 3 - Severe Corruption")]
+    public BreachLevelProfile level3 = new BreachLevelProfile
+    {
+        pulseSpeed = 6f,
+        corruptionStrength = 1.4f,
+        heatDistortion = 1.3f,
+        horizontalGlitch = 1.3f,
+        scanlines = 1.1f,
+        electricalCracks = 1.1f,
+        digitalStatic = 1.2f,
+        edgeGlow = 1.3f,
+        pulseIntensity = 1.3f
+    };
+
+    [Header("Level 4 - Critical Corruption")]
+    public BreachLevelProfile level4 = new BreachLevelProfile
+    {
+        pulseSpeed = 8f,
+        corruptionStrength = 2f,
+        heatDistortion = 1.8f,
+        horizontalGlitch = 2f,
+        scanlines = 1.6f,
+        electricalCracks = 1.8f,
+        digitalStatic = 2f,
+        edgeGlow = 2f,
+        pulseIntensity = 1.8f
+    };
+
+    [Header("Screen Setup")]
+    public Transform screenRoot;
     public Material breachMaterial;
 
     [Header("Breach Lights")]
@@ -50,6 +118,16 @@ public class BreachController : MonoBehaviour
     [Header("Audio")]
     public BreachAudioManager audioManager;
 
+    // Active individual effect values sent to the shader.
+    [Header("Active Shader Values - Runtime")]
+    [Range(0, 2)] public float heatDistortionStrength = 1f;
+    [Range(0, 2)] public float glitchStrength = 1f;
+    [Range(0, 2)] public float scanlineStrength = 1f;
+    [Range(0, 2)] public float crackStrength = 1f;
+    [Range(0, 2)] public float staticStrength = 1f;
+    [Range(0, 2)] public float edgeGlowStrength = 1f;
+    [Range(0, 2)] public float pulseIntensity = 1f;
+
     private Renderer[] screenRenderers;
 
     private Material[][] originalMaterials;
@@ -67,15 +145,88 @@ public class BreachController : MonoBehaviour
         FindScreens();
         StoreOriginalMaterials();
         StoreOriginalLights();
+
+        // Apply the profile corresponding to the starting level.
+        ApplyLevelProfile(breachLevel);
     }
+
 
     private void Update()
     {
+        // Temporary keyboard testing: press 1, 2, 3 or 4.
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+            SetTestBreachLevel(1);
 
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+            SetTestBreachLevel(2);
+
+        if (Input.GetKeyDown(KeyCode.Alpha3))
+            SetTestBreachLevel(3);
+
+        if (Input.GetKeyDown(KeyCode.Alpha4))
+            SetTestBreachLevel(4);
+
+        // Keep your existing breach light pulsing.
         if (breachRunning)
         {
             PulseLights();
         }
+    }
+
+
+    // ====================================================
+    // APPLY LEVEL PROFILE
+    // ====================================================
+
+    private void ApplyLevelProfile(int level)
+    {
+        BreachLevelProfile profile = null;
+
+        switch (level)
+        {
+            case 1:
+                profile = level1;
+                break;
+
+            case 2:
+                profile = level2;
+                break;
+
+            case 3:
+                profile = level3;
+                break;
+
+            case 4:
+                profile = level4;
+                break;
+        }
+
+        // Level 0 keeps the normal Inspector values.
+        if (profile == null)
+            return;
+
+        pulseSpeed = profile.pulseSpeed;
+        corruptionStrength = profile.corruptionStrength;
+
+        heatDistortionStrength = profile.heatDistortion;
+        glitchStrength = profile.horizontalGlitch;
+        scanlineStrength = profile.scanlines;
+        crackStrength = profile.electricalCracks;
+        staticStrength = profile.digitalStatic;
+        edgeGlowStrength = profile.edgeGlow;
+        pulseIntensity = profile.pulseIntensity;
+
+        Debug.Log(
+            $"[BreachController] Applied Level {level} profile."
+        );
+
+        Debug.Log(
+            $"Pulse: {pulseSpeed} | Corruption: {corruptionStrength} | " +
+            $"Heat: {heatDistortionStrength} | Glitch: {glitchStrength} | " +
+            $"Scanlines: {scanlineStrength} | Cracks: {crackStrength} | " +
+            $"Static: {staticStrength} | Edge Glow: {edgeGlowStrength} | " +
+            $"Pulse Intensity: {pulseIntensity}"
+        );
     }
 
     // ====================================================
@@ -86,19 +237,14 @@ public class BreachController : MonoBehaviour
     {
         breachLevel = Mathf.Clamp(level, 1, 4);
 
-        Debug.Log(
-            "[BreachController] TEST BREACH LEVEL: "
-            + breachLevel
-        );
+        ApplyLevelProfile(breachLevel);
 
         if (breachRunning)
         {
-            // Update the existing effect immediately.
             ApplyBreachMaterials();
         }
         else
         {
-            // Start the temporary breach effect.
             StartBreach();
         }
     }
@@ -111,8 +257,7 @@ public class BreachController : MonoBehaviour
     {
         if (screenRoot == null)
         {
-            GameObject mainRoom =
-                GameObject.Find("MainRoom");
+            GameObject mainRoom = GameObject.Find("MainRoom");
 
             if (mainRoom != null)
                 screenRoot = mainRoom.transform;
@@ -128,8 +273,7 @@ public class BreachController : MonoBehaviour
             return;
         }
 
-        List<Renderer> foundScreens =
-            new List<Renderer>();
+        List<Renderer> foundScreens = new List<Renderer>();
 
         Renderer[] allRenderers =
             screenRoot.GetComponentsInChildren<Renderer>(true);
@@ -148,9 +292,9 @@ public class BreachController : MonoBehaviour
         screenRenderers = foundScreens.ToArray();
 
         Debug.Log(
-            "BreachController found "
-            + screenRenderers.Length
-            + " screens."
+            "BreachController found " +
+            screenRenderers.Length +
+            " screens."
         );
     }
 
@@ -173,16 +317,14 @@ public class BreachController : MonoBehaviour
             if (renderer == null)
                 continue;
 
-            originalMaterials[i] =
-                renderer.sharedMaterials;
+            originalMaterials[i] = renderer.sharedMaterials;
 
             breachMaterials[i] =
                 new Material[originalMaterials[i].Length];
 
             for (int j = 0; j < originalMaterials[i].Length; j++)
             {
-                Material original =
-                    originalMaterials[i][j];
+                Material original = originalMaterials[i][j];
 
                 if (original == null)
                     continue;
@@ -196,12 +338,10 @@ public class BreachController : MonoBehaviour
                     continue;
                 }
 
-                Material breach =
-                    new Material(original);
+                Material breach = new Material(original);
 
                 breach.shader = breachMaterial.shader;
 
-                // Preserve original texture.
                 if (original.HasProperty("_MainTex") &&
                     breach.HasProperty("_MainTex"))
                 {
@@ -244,14 +384,9 @@ public class BreachController : MonoBehaviour
             if (breachLights[i] == null)
                 continue;
 
-            originalLightStates[i] =
-                breachLights[i].enabled;
-
-            originalLightIntensities[i] =
-                breachLights[i].intensity;
-
-            originalLightColours[i] =
-                breachLights[i].color;
+            originalLightStates[i] = breachLights[i].enabled;
+            originalLightIntensities[i] = breachLights[i].intensity;
+            originalLightColours[i] = breachLights[i].color;
         }
     }
 
@@ -334,22 +469,13 @@ public class BreachController : MonoBehaviour
                     continue;
 
                 if (material.HasProperty("_BreachAmount"))
-                    material.SetFloat(
-                        "_BreachAmount",
-                        breachAmount
-                    );
+                    material.SetFloat("_BreachAmount", breachAmount);
 
                 if (material.HasProperty("_BreachColour"))
-                    material.SetColor(
-                        "_BreachColour",
-                        breachColour
-                    );
+                    material.SetColor("_BreachColour", breachColour);
 
                 if (material.HasProperty("_PulseSpeed"))
-                    material.SetFloat(
-                        "_PulseSpeed",
-                        pulseSpeed
-                    );
+                    material.SetFloat("_PulseSpeed", pulseSpeed);
 
                 if (material.HasProperty("_CorruptionStrength"))
                     material.SetFloat(
@@ -358,9 +484,48 @@ public class BreachController : MonoBehaviour
                     );
 
                 if (material.HasProperty("_BreachLevel"))
+                    material.SetFloat("_BreachLevel", breachLevel);
+
+                if (material.HasProperty("_HeatDistortionStrength"))
                     material.SetFloat(
-                        "_BreachLevel",
-                        breachLevel
+                        "_HeatDistortionStrength",
+                        heatDistortionStrength
+                    );
+
+                if (material.HasProperty("_GlitchStrength"))
+                    material.SetFloat(
+                        "_GlitchStrength",
+                        glitchStrength
+                    );
+
+                if (material.HasProperty("_ScanlineStrength"))
+                    material.SetFloat(
+                        "_ScanlineStrength",
+                        scanlineStrength
+                    );
+
+                if (material.HasProperty("_CrackStrength"))
+                    material.SetFloat(
+                        "_CrackStrength",
+                        crackStrength
+                    );
+
+                if (material.HasProperty("_StaticStrength"))
+                    material.SetFloat(
+                        "_StaticStrength",
+                        staticStrength
+                    );
+
+                if (material.HasProperty("_EdgeGlowStrength"))
+                    material.SetFloat(
+                        "_EdgeGlowStrength",
+                        edgeGlowStrength
+                    );
+
+                if (material.HasProperty("_PulseIntensity"))
+                    material.SetFloat(
+                        "_PulseIntensity",
+                        pulseIntensity
                     );
             }
 
@@ -432,17 +597,11 @@ public class BreachController : MonoBehaviour
             if (breachLights[i] == null)
                 continue;
 
-            breachLights[i].enabled =
-                originalLightStates[i];
-
-            breachLights[i].intensity =
-                originalLightIntensities[i];
-
-            breachLights[i].color =
-                originalLightColours[i];
+            breachLights[i].enabled = originalLightStates[i];
+            breachLights[i].intensity = originalLightIntensities[i];
+            breachLights[i].color = originalLightColours[i];
         }
     }
-
 
     // ====================================================
     // PERMANENT BREACH LEVEL
@@ -452,21 +611,20 @@ public class BreachController : MonoBehaviour
     {
         breachLevel = Mathf.Clamp(level, 0, 4);
 
+        ApplyLevelProfile(breachLevel);
+
         Debug.Log(
-            "[BreachController] Permanent breach level updated: "
-            + breachLevel + "/4"
+            "[BreachController] Permanent breach level updated: " +
+            breachLevel + "/4"
         );
 
         if (breachRunning)
         {
-            // Update the currently running shader effect immediately.
             ApplyBreachMaterials();
         }
         else
         {
-            // Start the breach effect using the new level.
             StartBreach();
         }
     }
-
 }

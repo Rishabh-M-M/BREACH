@@ -5,14 +5,21 @@ Shader "Custom/BreachRoom"
     {
         _MainTex ("Texture", 2D) = "white" {}
 
+        [Header(Main Breach Settings)]
         _BreachAmount ("Breach Amount", Range(0, 1)) = 1
         _BreachColour ("Breach Colour", Color) = (1, 0, 0, 1)
         _PulseSpeed ("Pulse Speed", Range(0, 10)) = 3
-
         _CorruptionStrength ("Corruption Strength", Range(0, 2)) = 1
-
-        // 0 = no breach, 1-4 = permanently fallen rooms.
         _BreachLevel ("Permanent Breach Level", Range(0, 4)) = 0
+
+        [Header(Individual Effect Controls)]
+        _HeatDistortionStrength ("Heat Distortion Strength", Range(0, 2)) = 1
+        _GlitchStrength ("Horizontal Glitch Strength", Range(0, 2)) = 1
+        _ScanlineStrength ("Scanline Strength", Range(0, 2)) = 1
+        _CrackStrength ("Electrical Crack Strength", Range(0, 2)) = 1
+        _StaticStrength ("Digital Static Strength", Range(0, 2)) = 1
+        _EdgeGlowStrength ("Edge Glow Strength", Range(0, 2)) = 1
+        _PulseIntensity ("Pulse Intensity", Range(0, 2)) = 1
     }
 
     SubShader
@@ -57,6 +64,14 @@ Shader "Custom/BreachRoom"
             float _PulseSpeed;
             float _CorruptionStrength;
             float _BreachLevel;
+
+            float _HeatDistortionStrength;
+            float _GlitchStrength;
+            float _ScanlineStrength;
+            float _CrackStrength;
+            float _StaticStrength;
+            float _EdgeGlowStrength;
+            float _PulseIntensity;
 
             // ==================================================
             // PROCEDURAL RANDOM FUNCTIONS
@@ -106,7 +121,6 @@ Shader "Custom/BreachRoom"
                     _BreachAmount *
                     (0.003 + level * 0.018);
 
-                // Multiple overlapping waves.
                 float wave1 =
                     sin(v.vertex.x * 9.0 + time * 2.5);
 
@@ -124,7 +138,6 @@ Shader "Custom/BreachRoom"
                     wave2 * 0.35 +
                     wave3 * 0.25;
 
-                // Irregular animated vertex movement.
                 float vertexNoise =
                     sin(
                         v.vertex.x * 21.0 +
@@ -136,16 +149,13 @@ Shader "Custom/BreachRoom"
                     (combinedWave + vertexNoise * 0.25)
                     * deformation;
 
-                // Displace along the vertex normal.
                 displacedVertex +=
                     v.normal * displacement;
 
-                // Additional horizontal movement.
                 displacedVertex.x +=
                     sin(v.vertex.y * 12.0 + time * 2.0)
                     * deformation * 0.2;
 
-                // Additional vertical movement.
                 displacedVertex.y +=
                     cos(v.vertex.x * 15.0 - time * 2.5)
                     * deformation * 0.2;
@@ -199,7 +209,8 @@ Shader "Custom/BreachRoom"
 
                 float heatStrength =
                     intensity *
-                    (0.001 + level * 0.012);
+                    (0.001 + level * 0.012) *
+                    _HeatDistortionStrength;
 
                 float2 distortedUV = i.uv;
 
@@ -231,10 +242,13 @@ Shader "Custom/BreachRoom"
                     _BreachColour.rgb *
                     (0.8 + aggressivePulse * (0.4 + level));
 
+                float controlledPulse =
+                    saturate(pulse * _PulseIntensity);
+
                 float3 finalRGB =
                     lerp(
                         original.rgb,
-                        lerp(darkBreach, brightBreach, pulse),
+                        lerp(darkBreach, brightBreach, controlledPulse),
                         intensity
                     );
 
@@ -271,7 +285,8 @@ Shader "Custom/BreachRoom"
                 float glitchOffset =
                     (randomValue - 0.5) *
                     (0.008 + level * 0.025) *
-                    corruption;
+                    corruption *
+                    _GlitchStrength;
 
                 float2 glitchUV = distortedUV;
                 glitchUV.x += glitchOffset;
@@ -283,7 +298,12 @@ Shader "Custom/BreachRoom"
                     lerp(
                         finalRGB,
                         glitched,
-                        corruption * intensity * 0.65
+                        saturate(
+                            corruption *
+                            intensity *
+                            0.65 *
+                            _GlitchStrength
+                        )
                     );
 
                 // ------------------------------------------------
@@ -294,7 +314,9 @@ Shader "Custom/BreachRoom"
                     sin(i.uv.y * (500.0 + level * 400.0));
 
                 float scanlineStrength =
-                    (0.04 + level * 0.12) * intensity;
+                    (0.04 + level * 0.12) *
+                    intensity *
+                    _ScanlineStrength;
 
                 finalRGB *=
                     1.0 - abs(scanline) * scanlineStrength;
@@ -362,7 +384,8 @@ Shader "Custom/BreachRoom"
                     crackMask *
                     crackFlicker *
                     corruptionLevel *
-                    intensity;
+                    intensity *
+                    _CrackStrength;
 
                 finalRGB +=
                     _BreachColour.rgb *
@@ -388,14 +411,14 @@ Shader "Custom/BreachRoom"
                 float staticAmount =
                     step(staticThreshold, staticNoise) *
                     corruptionLevel *
-                    intensity;
+                    intensity *
+                    _StaticStrength;
 
                 finalRGB +=
                     _BreachColour.rgb *
                     staticAmount *
                     0.8;
 
-                // Occasional bright static flashes.
                 float flashNoise =
                     hash21(float2(floor(time * 9.0), 17.0));
 
@@ -410,7 +433,8 @@ Shader "Custom/BreachRoom"
                     flash *
                     level *
                     intensity *
-                    0.25;
+                    0.25 *
+                    _StaticStrength;
 
                 // ------------------------------------------------
                 // 7. RED CORRUPTION GLOW
@@ -433,7 +457,8 @@ Shader "Custom/BreachRoom"
                     edgeGlow *
                     aggressivePulse *
                     intensity *
-                    (0.15 + level * 0.65);
+                    (0.15 + level * 0.65) *
+                    _EdgeGlowStrength;
 
                 finalRGB +=
                     _BreachColour.rgb *

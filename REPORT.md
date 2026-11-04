@@ -351,13 +351,14 @@ The rest are tuned on the boss's Material:
 • `_TwistAmount` - spiral rotation on fully consumed vertices.
 
 ### GIFs
-![Spawn demonstration](./Images/ExplosionDemonstration.gif)
-
-(Boss spawning in front of camera, external static effect applied on top)
-
-!(Despawn demonstration](./Images/ExplosionDemonstration.gif)
+![Despawn demonstration](./Images/BossDespawn.gif)
 
 (Boss leaving when getting cleared by the player)
+
+
+![Spawn demonstration](./Images/BossSpawn.gif)
+
+(Boss spawning in front of camera, external static effect applied on top)
 
 ### External Resources
 

@@ -297,8 +297,6 @@ An unlit fragment shader on a flat quad. It samples a noise texture through a po
 ### Usage in the Game
 Applied to the "Vortex" quad, a child of the boss prefab (BossDecoyRoot), beneath the boss model. BossSpawnEffect.cs drives _Progress on spawn and despawn, opening it to full radius partway through the effect then closing it again, a vortex opening to let the boss through, then sealing shut.
 
-### GIFS
-
 ### Setup
 _Progress is set every frame from [BossSpawnEffect.cs](add link to script):
 
@@ -330,9 +328,6 @@ A Surface Shader on the boss's own mesh, keeping standard Unity lighting while a
 ### Usage in the Game
 Applied as the boss model's material, replacing its default Standard one. Driven by the same `BossSpawnEffect.cs`: `_Progress` is set to 1 - `curveValue`, so the mesh is always exactly as "consumed" as it is "shrunk", for both spawn and despawn.
 
-### GIFs
-(insert a short gameplay capture of the boss spiralling into/out of the vortex here)
-
 ### Setup
 `_Progress` is set every frame via the same MaterialPropertyBlock pattern, across every renderer under the boss's visual root:
 
@@ -355,6 +350,14 @@ The rest are tuned on the boss's Material:
 • `_WipeSoftness` - how gradual the feet-to-head wave is.
 • `_TwistAmount` - spiral rotation on fully consumed vertices.
 
+### GIFs
+![Spawn demonstration](./Images/ExplosionDemonstration.gif)
+
+(Boss spawning in front of camera, external static effect applied on top)
+
+!(Despawn demonstration](./Images/ExplosionDemonstration.gif)
+
+(Boss leaving when getting cleared by the player)
 
 ### External Resources
 

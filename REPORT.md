@@ -457,7 +457,6 @@ These profiles allow each corruption stage to be tuned independently through the
 
 # Contribution Report
 
-
 ## Jason Han
 - wave spawning and pacing system
 - timed waves and rest periods between them
@@ -465,6 +464,14 @@ These profiles allow each corruption stage to be tuned independently through the
 - turret and enemy projectiles and pathing
 - power system and power increasing over time
 - contributed to fixing bugs across the project
+- project integration lead: set up the Project 2 repository, migrated Project 1 files, and managed branch merges and conflict resolution throughout development
+- built the core game loop and room construction, including the Comms Room, passive room buffs and the upgrade discount buff
+- wired the UI into the core systems: HP bars, room order and rotation, start scene and game over flow
+- built and deployed the WebGL build, fixed WebGL video playback (mp4), and reduced asset and texture sizes for performance
+- enemy manager fixes, spider spawn and enemy room fixes
+- wave 5 end fix, energy regeneration and electricity system changes after playtesting
+- evaluation: collected and anonymised the raw survey and walkthrough data, and wrote the evaluation results and improvements section
+- wrote the Particle System Report (ExplosionEffect)
 
 ## Hitarth Chheda
 - all cutscenes and their transition into gameplay
@@ -472,6 +479,16 @@ These profiles allow each corruption stage to be tuned independently through the
 - the room models
 - shader used for the room breach visual
 - in-game tutorial.
+- room camera setup, camera feeds and the camera UI (REC indicator and recording timer)
+- Breach mode: red pulsing lights, camera effects and BreachController integration
+- room-switching buttons, close button and view-cameras controls
+- minimap and the main room turret button
+- turret upgrade menu and its fixes, plus linking traps into the UI
+- doors and lights
+- main menu and start scene, screens and the Nexus
+- power system UI integration and power fixes
+- boss skip button, end screen fixes and general bug fixes
+- facilitated three of the post-task walkthrough sessions
 
 ## Rishabh Maheshwari
 - turrets controls
@@ -481,6 +498,15 @@ These profiles allow each corruption stage to be tuned independently through the
 - traps
 - room shields
 - majority of the GDD.
+- individual turret upgrade paths (DB, SS, HI Laser and Rocket), upgrade logic and upgrade descriptions shown in the menu
+- Turret Audio Manager, including muting turret audio in rooms that are not open, and sniper and sound fixes
+- shield prefab, shield shatter effect and shield hitbox fix
+- trap system: Stasis trap, trap group prefab, trap slots, and room prefabs that hold traps
+- differentiated enemy attack types
+- turret, combat and wave balancing passes, including waves 3 and 5 after playtesting
+- main menu scaling, prefab updates and removal of old scenes
+- README, GDD images and GDD updates
+- designed the Google Forms questionnaire and feedback questions
 
 ## Marcus Minnelli
 - enemy models and animations
@@ -490,5 +516,11 @@ These profiles allow each corruption stage to be tuned independently through the
 - enemy integration with shields and turrets
 - boss model and shading
 - boss integration with the camera, turret controls, and wave system
-
-
+- ranged, spider and flying enemy types, with hit reactions applied to all enemies
+- enemy and boss audio, including boss spawn audio
+- boss event manager, event buttons and event visuals, which jam cameras and turrets
+- boss spawn and despawn shaders (BossVortex and BossConsumeDeform), plus the HitReaction and enemy shader fixes
+- boss placement in wave 5 and removal of duplicate bosses from scenes
+- button size adjustments
+- facilitated two of the post-task walkthrough sessions
+- report GIFs, links and the shader report sections

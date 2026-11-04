@@ -146,7 +146,7 @@ RectTransform:
   m_GameObject: {fileID: 308130676}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 2.3107052, y: 2.3107052, z: 2.3107052}
+  m_LocalScale: {x: 2.510705, y: 2.310705, z: 2.3107052}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1169781084}
@@ -522,6 +522,7 @@ MonoBehaviour:
   hoverVolume: 0.4
   backgroundMusic: {fileID: 8300000, guid: a37a9491d2f9e44bcbd4d2fbddbf4892, type: 3}
   musicVolume: 0.35
+  tutorialSceneName: TutorialScene
 --- !u!114 &1169781086
 MonoBehaviour:
   m_ObjectHideFlags: 0

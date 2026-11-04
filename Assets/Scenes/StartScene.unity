@@ -10186,93 +10186,108 @@ MonoBehaviour:
     duration: 65
     advanceEarlyOnClear: 1
   - groups:
-    - spawner: {fileID: 439547859}
-      count: 2
-      startDelay: 35
-    - spawner: {fileID: 1057884029}
-      count: 5
-      startDelay: 15
-    - spawner: {fileID: 595610267}
-      count: 3
-      startDelay: 12
-    - spawner: {fileID: 1683467975}
-      count: 1
-      startDelay: 5
-    - spawner: {fileID: 1957467141}
-      count: 2
-      startDelay: 3
-    - spawner: {fileID: 1826806565}
-      count: 3
-      startDelay: 7
     - spawner: {fileID: 124149995}
+      count: 4
+      startDelay: 3
+    - spawner: {fileID: 642611629}
+      count: 5
+      startDelay: 0
+    - spawner: {fileID: 275631826}
+      count: 2
+      startDelay: 10
+    - spawner: {fileID: 595610267}
+      count: 2
+      startDelay: 18
+    - spawner: {fileID: 1826806565}
+      count: 4
+      startDelay: 27
+    - spawner: {fileID: 275631826}
+      count: 2
+      startDelay: 36
+    - spawner: {fileID: 1057884029}
       count: 3
-      startDelay: 15
+      startDelay: 45
     - spawner: {fileID: 642611629}
       count: 2
-      startDelay: 45
-    - spawner: {fileID: 275631826}
-      count: 1
-      startDelay: 45
-    - spawner: {fileID: 275631826}
+      startDelay: 54
+    - spawner: {fileID: 1683467975}
       count: 2
-      startDelay: 65
-    - spawner: {fileID: 307576245047738483}
+      startDelay: 63
+    - spawner: {fileID: 439547859}
       count: 2
-      startDelay: 50
-    - spawner: {fileID: 1520032769}
-      count: 1
-      startDelay: 50
-    - spawner: {fileID: 7761523458117504719}
-      count: 2
-      startDelay: 50
-    - spawner: {fileID: 595610267}
-      count: 3
-      startDelay: 75
+      startDelay: 72
+    - spawner: {fileID: 124149995}
+      count: 4
+      startDelay: 81
     - spawner: {fileID: 1957467141}
       count: 2
-      startDelay: 75
+      startDelay: 90
+    - spawner: {fileID: 595610267}
+      count: 3
+      startDelay: 99
+    - spawner: {fileID: 275631826}
+      count: 3
+      startDelay: 108
+    - spawner: {fileID: 1531131122}
+      count: 3
+      startDelay: 117
+    - spawner: {fileID: 439547859}
+      count: 2
+      startDelay: 126
+    - spawner: {fileID: 642611629}
+      count: 3
+      startDelay: 135
+    - spawner: {fileID: 1826806565}
+      count: 4
+      startDelay: 144
+    - spawner: {fileID: 1057884029}
+      count: 3
+      startDelay: 153
+    - spawner: {fileID: 275631826}
+      count: 2
+      startDelay: 162
+    - spawner: {fileID: 1957467141}
+      count: 2
+      startDelay: 171
+    - spawner: {fileID: 439547859}
+      count: 3
+      startDelay: 180
+    - spawner: {fileID: 124149995}
+      count: 5
+      startDelay: 189
+    - spawner: {fileID: 1683467975}
+      count: 2
+      startDelay: 198
+    - spawner: {fileID: 595610267}
+      count: 3
+      startDelay: 207
+    - spawner: {fileID: 642611629}
+      count: 3
+      startDelay: 216
+    - spawner: {fileID: 7761523458117504719}
+      count: 2
+      startDelay: 225
+    - spawner: {fileID: 1057884029}
+      count: 4
+      startDelay: 234
+    - spawner: {fileID: 275631826}
+      count: 3
+      startDelay: 243
+    - spawner: {fileID: 1826806565}
+      count: 4
+      startDelay: 252
+    - spawner: {fileID: 595610267}
+      count: 3
+      startDelay: 261
+    - spawner: {fileID: 124149995}
+      count: 4
+      startDelay: 270
+    - spawner: {fileID: 439547859}
+      count: 3
+      startDelay: 279
     - spawner: {fileID: 642611629}
       count: 4
-      startDelay: 95
-    - spawner: {fileID: 307576245047738483}
-      count: 2
-      startDelay: 95
-    - spawner: {fileID: 439547859}
-      count: 2
-      startDelay: 75
-    - spawner: {fileID: 7761523458117504719}
-      count: 1
-      startDelay: 95
-    - spawner: {fileID: 1683467975}
-      count: 3
-      startDelay: 75
-    - spawner: {fileID: 7761523458117504719}
-      count: 2
-      startDelay: 85
-    - spawner: {fileID: 7761523458117504719}
-      count: 2
-      startDelay: 120
-    - spawner: {fileID: 7761523458117504719}
-      count: 1
-      startDelay: 140
-    - spawner: {fileID: 1683467975}
-      count: 2
-      startDelay: 160
-    - spawner: {fileID: 7761523458117504719}
-      count: 1
-      startDelay: 160
-    - spawner: {fileID: 439547859}
-      count: 1
-      startDelay: 180
-    - spawner: {fileID: 439547859}
-      count: 3
-      startDelay: 200
-    - spawner: {fileID: 275631826}
-      count: 1
-      startDelay: 120
-    - spawner: {fileID: 642611629}
-      count: 2
-      startDelay: 120
+      startDelay: 288
     duration: 300
     advanceEarlyOnClear: 1
   bossWaveIndex: 4
@@ -17082,17 +17097,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0167454249bc16f4da614817e0690e65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ProjectBreach.Core.Turret
---- !u!114 &1520032769 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3207971897093991269, guid: 85d001ea16328ac4c8eae5a499789764, type: 3}
-  m_PrefabInstance: {fileID: 1309545894767253165}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e277c8cd9de1c8447a286f52ec12ed2c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner_Single
 --- !u!1 &1521398995
 GameObject:
   m_ObjectHideFlags: 0

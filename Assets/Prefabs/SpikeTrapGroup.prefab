@@ -60,7 +60,7 @@ MonoBehaviour:
   - {fileID: 6849758645280706785}
   stasisFieldTiles: []
   damagePerTick: 1
-  damageInterval: 0.1
+  damageInterval: 0.4
   pullSpeed: 4
   pullApplicationDuration: 0.3
   activeLoopSound: {fileID: 8300000, guid: f2e09431828aa48c99e80bb49a9a6105, type: 3}

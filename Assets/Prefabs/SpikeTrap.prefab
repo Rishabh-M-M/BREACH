@@ -1566,7 +1566,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpikeTrap
   damage: 1
-  damageInterval: 0.2
+  damageInterval: 0.4
   activationDelay: 0.5
   deactivationDelay: 0.3
 --- !u!1 &7765463337658249212

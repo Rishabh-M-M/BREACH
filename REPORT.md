@@ -290,7 +290,7 @@ This pairing combines two procedural shader techniques to produce one spawn/desp
 The boss is a decoy rather than a persistent entity, so without a clear transition it would simply pop in and out of existence, which reads as a bug rather than a deliberate reveal. The team's collective idea was for the boss to look like it emerges from, and is pulled back into, a black-hole-style vortex. The two shaders can't be merged (BossVortex paints an unlit flat portal, while BossConsumeDeform deforms and lights the boss's own 3D mesh), but both read the same `_Progress`-driven timing from `BossSpawnEffect.cs`, so the portal opening and closing and the boss spiralling into it always stay in sync, reading as one combined effect rather than two separate ones.
 
 ## 11.3 BossVertex Shader
-**Source file:** (add link to script)
+**Source file:** [BossVertex.shader](./Assets/Shaders/BossVertex.shader)
 
 An unlit fragment shader on a flat quad. It samples a noise texture through a polar-coordinate swirl (UV converted to radius/angle, angle offset by radius and time) and tints the result between a core and rim colour. A radius mask driven by _Progress reveals the quad outward from its centre, with _EdgeSoftness softening the edge, this is what makes it read as a vortex opening and closing rather than fading.
 
@@ -298,7 +298,7 @@ An unlit fragment shader on a flat quad. It samples a noise texture through a po
 Applied to the "Vortex" quad, a child of the boss prefab (BossDecoyRoot), beneath the boss model. BossSpawnEffect.cs drives _Progress on spawn and despawn, opening it to full radius partway through the effect then closing it again, a vortex opening to let the boss through, then sealing shut.
 
 ### Setup
-_Progress is set every frame from [BossSpawnEffect.cs](add link to script):
+_Progress is set every frame from [BossSpawnEffect.cs](./Assets/Scripts/Entities/Boss/BossSpawnEffect.cs):
 
 ```
 float vortexT = Mathf.Clamp01(t * vortexSpeedMultiplier);
@@ -321,7 +321,7 @@ The rest are Material-level properties:
 
 ## 11.4 BossConsumeDeform Shader
 
-**Source file:** (add a link to BossConsumeDeform.shader here)
+**Source file:** [BossConsumeDeform.shader](./Assets/Shaders/BossConsumeDeform.shader)
 
 A Surface Shader on the boss's own mesh, keeping standard Unity lighting while adding a custom vertex function. Vertices near the feet reach a "consumed" state before those near the head, as _Progress rises from 0 to 1. Consumed vertices spiral around the vertical axis and pull inward and down toward the vortex plane, rather than just scaling down. This makes it look like it is being spun and sucked in, not shrunk.
 
@@ -351,17 +351,18 @@ The rest are tuned on the boss's Material:
 • `_TwistAmount` - spiral rotation on fully consumed vertices.
 
 ### GIFs
-![Spawn demonstration](./Images/ExplosionDemonstration.gif)
-
-(Boss spawning in front of camera, external static effect applied on top)
-
-!(Despawn demonstration](./Images/ExplosionDemonstration.gif)
+![Despawn demonstration](./Images/BossDespawn.gif)
 
 (Boss leaving when getting cleared by the player)
 
+
+![Spawn demonstration](./Images/BossSpawn.gif)
+
+(Boss spawning in front of camera, external static effect applied on top)
+
 ### External Resources
 
-• Unity Documentation: Writing vertex and fragment shaders
+• [Unity Documentation: Writing vertex and fragment shaders](https://docs.unity3d.com/462/Documentation/Manual/SL-ShaderPrograms.html)
 
-• Unity Scripting API: MaterialPropertyBlock
+• [Unity Scripting API: MaterialPropertyBlock](https://docs.unity.com/en-us/engine/6000.6/script-reference/unityengine/materialpropertyblock)
 

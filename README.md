@@ -95,7 +95,7 @@
 
 
 
-Project: BREACH places the player in control of NEXUS, a spacecraft under attack by an unknown mechanical enemy force. Confined to the Main Control Room, the player monitors four external rooms through surveillance feeds and allocates shared Power to pre-placed turrets and traps. Each room provides a passive benefit while it remains online. When an external room's barrier is destroyed, that room is breached: its camera feed and passive benefit are lost, and enemies can advance through that route into Main Control. The player must balance surveillance, defensive coverage, and Power allocation while protecting the Main Control Room.
+BREACH places the player in control of NEXUS, a spacecraft under attack by an unknown mechanical enemy force. Confined to the Main Control Room, the player monitors four external rooms through surveillance feeds and allocates shared Power to pre-placed turrets and traps. Each room provides a passive benefit while it remains online. When an external room's barrier is destroyed, that room is breached: its camera feed and passive benefit are lost, and enemies can advance through that route into Main Control. The player must balance surveillance, defensive coverage, and Power allocation while protecting the Main Control Room.
 
 
 
